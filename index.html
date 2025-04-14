@@ -30,7 +30,7 @@
 </head>
 <body>
   <div class="logo">
-    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+    <img src="https://i.postimg.cc/placeholder/logo.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
   </div>
   <div class="tagline">Capturing Creativity</div>
   <button class="add-button" onclick="checkCode('add')">Add Preset</button>
@@ -57,11 +57,11 @@
 
     function checkCode(action, index = null) {
       const code = prompt("Enter collaborator code:");
-      if (code === "042404") { // Replace NEWCODE with your new code (e.g., "studio123")
+      if (code === "NEWCODE") { // Replace NEWCODE with your new code (e.g., "studio123")
         if (action === "add") {
           window.location.href = "upload.html";
         } else if (action === "edit" && index !== null) {
-          editPreset(index);
+          window.location.href = `edit.html?index=${index}`;
         } else if (action === "delete" && index !== null) {
           deletePreset(index);
         }
@@ -93,6 +93,7 @@
             <div class="preset-info">
               <h3>${preset.name}</h3>
               <p>Price: ₹${preset.price}</p>
+              <p>File: <a href="${preset.presetFile}" target="_blank">Download Preview</a></p>
               <button onclick="checkCode('edit', ${index})">Edit</button>
               <button onclick="checkCode('delete', ${index})" style="background-color: #ef4444;">Delete</button>
               <a href="payment.html?price=${preset.price}">
@@ -119,7 +120,6 @@
         const feedbacks = data.record.feedbacks || [];
         const feedbackList = document.getElementById("feedbackList");
         feedbackList.innerHTML = "";
-        // Sort by timestamp (latest first), limit to 5
         feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 5).forEach(feedback => {
           const card = document.createElement("div");
           card.className = "feedback-card";
@@ -146,10 +146,11 @@
 
         const newName = prompt("Edit Preset Name:", preset.name);
         const newPrice = prompt("Edit Price:", preset.price);
+        const newPresetFile = prompt("Edit Google Docs Link or ZIP File URL:", preset.presetFile);
         const newThumbnail = prompt("Edit Thumbnail URL:", preset.thumbnail);
 
-        if (newName && newPrice && newPrice) {
-          presets[index] = { name: newName, price: newPrice, thumbnail: newThumbnail };
+        if (newName && newPrice && newPresetFile && newThumbnail) {
+          presets[index] = { name: newName, price: newPrice, presetFile: newPresetFile, thumbnail: newThumbnail };
           const updateResponse = await fetch(API_URL, {
             method: "PUT",
             headers: {
