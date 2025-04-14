@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Feedback - FNL Studio</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #0f172a, #1e293b);
+      color: white;
+      text-align: center;
+      padding: 30px;
+    }
+    .logo img { width: 200px; height: auto; margin-top: 40px; }
+    h1 { font-size: 32px; margin: 20px 0; }
+    .feedback-list { max-width: 800px; margin: 20px auto; text-align: left; }
+    .feedback-card { background-color: #111827; border-radius: 10px; padding: 10px; margin: 10px 0; }
+    .feedback-card .rating { color: #ffd700; }
+    .add-button { position: fixed; bottom: 20px; right: 20px; background-color: #10b981; padding: 10px 20px; border: none; border-radius: 50%; font-size: 24px; color: white; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="https://i.postimg.cc/placeholder/logo.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+  </div>
+  <h1>Feedback</h1>
+  <div class="feedback-list" id="feedbackList"></div>
+  <button class="add-button" onclick="window.location.href='addfeedback.html?name=' + encodeURIComponent(getQueryParam('name'))">+</button>
+
+  <script>
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    async function loadFeedback() {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error("Failed to fetch feedback");
+        const data = await response.json();
+        const feedbacks = data.record.feedbacks || [];
+        const feedbackList = document.getElementById("feedbackList");
+        feedbackList.innerHTML = "";
+        feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(feedback => {
+          const card = document.createElement("div");
+          card.className = "feedback-card";
+          card.innerHTML = `
+            <p><strong>${feedback.name}</strong> (${feedback.rating}⭐)</p>
+            <p>${feedback.comment}</p>
+          `;
+          feedbackList.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Error loading feedback:", error);
+      }
+    }
+
+    window.onload = loadFeedback;
+  </script>
+</body>
+</html>
