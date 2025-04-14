@@ -61,8 +61,8 @@
       margin: 5px 0;
     }
     .preset-card button {
+      margin-top: 5px;
       padding: 5px 10px;
-      margin: 2px;
       background-color: #3b82f6;
       border: none;
       border-radius: 6px;
@@ -71,22 +71,13 @@
     }
     .about {
       margin-top: 50px;
-      text-align: left;
+      border-top: 1px solid #444;
+      padding-top: 30px;
+      font-size: 14px;
+      color: #ccc;
       max-width: 800px;
       margin-left: auto;
       margin-right: auto;
-    }
-    .about h2 {
-      color: #10b981;
-    }
-    .about p {
-      margin-top: 10px;
-      line-height: 1.6;
-    }
-    .copyright {
-      margin-top: 40px;
-      font-size: 14px;
-      color: #ccc;
     }
   </style>
 </head>
@@ -102,40 +93,13 @@
 
   <div class="about">
     <h2>About Us</h2>
-    <p>
-      Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz.
-      We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets
-      for photo and video editors. Whether you're just starting out or you're a seasoned creator,
-      our presets are crafted to give your content a unique, polished look with just a few clicks.
-    </p>
+    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
+    <br />
+    <h3>© 2025 FNL Studio. All rights reserved.</h3>
+    <p>All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
   </div>
-
-  <div class="copyright">
-    © 2025 FNL Studio. All rights reserved.<br/>
-    All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws.
-    Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.
-  </div>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCQ0cdeCBVCYVfHDgeVPtSDNpyoe0uSBnc",
-      authDomain: "fnl-studio-63eda.firebaseapp.com",
-      projectId: "fnl-studio-63eda",
-      storageBucket: "fnl-studio-63eda.firebasestorage.app",
-      messagingSenderId: "180513254305",
-      appId: "1:180513254305:web:75be8f880613c8630679e0",
-      measurementId: "G-CPG36ETV5K"
-    };
-
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore(app);
-
     function checkCode() {
       const code = prompt("Enter collaborator code:");
       if (code === "007") {
@@ -147,49 +111,47 @@
     }
 
     function loadPresets() {
+      const presets = JSON.parse(localStorage.getItem("presets") || "[]");
       const container = document.getElementById("presetList");
-      db.collection("presets").get().then((snapshot) => {
-        container.innerHTML = "";
-        snapshot.forEach((doc) => {
-          const preset = doc.data();
-          const presetId = doc.id;
-          const card = document.createElement("div");
-          card.className = "preset-card";
-          card.innerHTML = `
-            <img src="${preset.thumbnail}" alt="Thumbnail">
-            <div class="preset-info">
-              <h3>${preset.name}</h3>
-              <p>Price: ₹${preset.price}</p>
-              <button onclick="editPreset('${presetId}')">Edit</button>
-              <button onclick="deletePreset('${presetId}')">Delete</button>
-            </div>
-            <button onclick="window.location.href='https://www.instagram.com/fnl_studio_?igsh=MTQ3eDMwbmdmb3d1dg=='">Buy</button>
-          `;
-          container.appendChild(card);
-        });
+      container.innerHTML = "";
+
+      presets.forEach((preset, index) => {
+        const card = document.createElement("div");
+        card.className = "preset-card";
+        card.innerHTML = `
+          <img src="${preset.thumbnail}" alt="Thumbnail">
+          <div class="preset-info">
+            <h3>${preset.name}</h3>
+            <p>Price: ₹${preset.price}</p>
+            <button onclick="editPreset(${index})">Edit</button>
+            <button onclick="deletePreset(${index})" style="background-color: #ef4444;">Delete</button>
+          </div>
+        `;
+        container.appendChild(card);
       });
     }
 
-    function editPreset(id) {
-      const newName = prompt("Enter new name for the preset:");
-      const newPrice = prompt("Enter new price:");
-      if (newName && newPrice) {
-        db.collection("presets").doc(id).update({
-          name: newName,
-          price: newPrice
-        }).then(() => {
-          alert("Preset updated!");
-          loadPresets();
-        });
+    function editPreset(index) {
+      const presets = JSON.parse(localStorage.getItem("presets") || "[]");
+      const preset = presets[index];
+
+      const newName = prompt("Edit Preset Name:", preset.name);
+      const newPrice = prompt("Edit Price:", preset.price);
+      const newThumbnail = prompt("Edit Thumbnail URL:", preset.thumbnail);
+
+      if (newName && newPrice && newThumbnail) {
+        presets[index] = { name: newName, price: newPrice, thumbnail: newThumbnail };
+        localStorage.setItem("presets", JSON.stringify(presets));
+        loadPresets();
       }
     }
 
-    function deletePreset(id) {
+    function deletePreset(index) {
+      const presets = JSON.parse(localStorage.getItem("presets") || "[]");
       if (confirm("Are you sure you want to delete this preset?")) {
-        db.collection("presets").doc(id).delete().then(() => {
-          alert("Preset deleted!");
-          loadPresets();
-        });
+        presets.splice(index, 1);
+        localStorage.setItem("presets", JSON.stringify(presets));
+        loadPresets();
       }
     }
 
