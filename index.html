@@ -11,29 +11,69 @@
       color: white;
       text-align: center;
       padding: 30px;
+      margin: 0;
+      position: relative;
     }
-    .logo img { width: 200px; height: auto; margin-top: 40px; }
+    .logo img { width: 200px; height: auto; margin-top: 10px; }
     .tagline { font-size: 20px; margin: 10px 0 30px; }
-    .add-button { margin: 30px 0; background-color: #10b981; padding: 12px 25px; border: none; border-radius: 10px; font-size: 16px; color: white; cursor: pointer; }
     #message { margin-top: 10px; font-weight: bold; }
     .preset-card { background-color: #111827; border-radius: 20px; padding: 10px; margin: 20px auto; width: 90%; max-width: 400px; display: flex; align-items: center; justify-content: space-between; }
     .preset-card img { border-radius: 12px; width: 100px; height: 100px; object-fit: cover; }
     .preset-info { flex: 1; text-align: left; margin-left: 15px; }
     .preset-info h3 { margin: 5px 0; }
-    .preset-card button { margin-top: 5px; padding: 5px 10px; background-color: #3b82f6; border: none; border-radius: 6px; color: white; cursor: pointer; }
+    .preset-info p { margin: 5px 0; }
     .feedback-section { margin-top: 30px; }
     .feedback-card { background-color: #111827; border-radius: 10px; padding: 10px; margin: 10px auto; max-width: 400px; text-align: left; }
     .feedback-card .rating { color: #ffd700; }
     .read-more { margin-top: 20px; background-color: #ef4444; padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; }
     .about { margin-top: 50px; border-top: 1px solid #444; padding-top: 30px; font-size: 14px; color: #ccc; max-width: 800px; margin-left: auto; margin-right: auto; }
+    .menu-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    .menu {
+      position: fixed;
+      top: 0;
+      right: -50%;
+      width: 50%;
+      height: 100%;
+      background-color: #1e293b;
+      padding: 20px;
+      transition: right 0.3s ease;
+      z-index: 1000;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+    }
+    .menu.open { right: 0; }
+    .menu input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: none;
+      background-color: #111827;
+      color: white;
+    }
+    .menu button {
+      background-color: #10b981;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
   <div class="logo">
-    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <div class="tagline">Capturing Creativity</div>
-  <button class="add-button" onclick="checkCode('add')">Add Preset</button>
   <div id="message"></div>
   <div id="presetList"></div>
   <div class="feedback-section">
@@ -49,30 +89,16 @@
     <p>All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
     <p>After buying a preset, follow the payment instructions on the payment page and DM us on Instagram @fnl_studio_ with proof!</p>
   </div>
+  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+  <div class="menu" id="sideMenu">
+    <input type="text" id="searchBar" placeholder="Search Presets..." onkeyup="searchPresets()">
+    <button onclick="window.location.href='adminlogin.html'">Collaborators</button>
+  </div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-
-    function checkCode(action, index = null) {
-      const code = prompt("Enter collaborator code:");
-      if (code === "NEWCODE") { // Replace NEWCODE with your new code (e.g., "studio123")
-        if (action === "add") {
-          window.location.href = "upload.html";
-        } else if (action === "edit" && index !== null) {
-          window.location.href = `edit.html?index=${index}`;
-        } else if (action === "delete" && index !== null) {
-          deletePreset(index);
-        }
-      } else {
-        document.getElementById("message").textContent = "You are not the collaborator.";
-        document.getElementById("message").style.color = "red";
-        setTimeout(() => {
-          document.getElementById("message").textContent = "";
-        }, 3000);
-      }
-    }
 
     async function loadPresets() {
       try {
@@ -85,7 +111,7 @@
         const container = document.getElementById("presetList");
         container.innerHTML = "";
 
-        presets.forEach((preset, index) => {
+        presets.forEach((preset) => {
           const card = document.createElement("div");
           card.className = "preset-card";
           card.innerHTML = `
@@ -93,9 +119,6 @@
             <div class="preset-info">
               <h3>${preset.name}</h3>
               <p>Price: ₹${preset.price}</p>
-              <p>File: <a href="${preset.presetFile}" target="_blank">Download Preview</a></p>
-              <button onclick="checkCode('edit', ${index})">Edit</button>
-              <button onclick="checkCode('delete', ${index})" style="background-color: #ef4444;">Delete</button>
               <a href="payment.html?price=${preset.price}">
                 <button style="background-color: #10b981; margin-top: 5px;">Buy Now</button>
               </a>
@@ -134,66 +157,17 @@
       }
     }
 
-    async function editPreset(index) {
-      try {
-        const response = await fetch(API_URL + "/latest", {
-          headers: { "X-Master-Key": MASTER_KEY }
-        });
-        if (!response.ok) throw new Error("Failed to fetch presets");
-        const data = await response.json();
-        const presets = data.record.presets || [];
-        const preset = presets[index];
-
-        const newName = prompt("Edit Preset Name:", preset.name);
-        const newPrice = prompt("Edit Price:", preset.price);
-        const newPresetFile = prompt("Edit Google Docs Link or ZIP File URL:", preset.presetFile);
-        const newThumbnail = prompt("Edit Thumbnail URL:", preset.thumbnail);
-
-        if (newName && newPrice && newPresetFile && newThumbnail) {
-          presets[index] = { name: newName, price: newPrice, presetFile: newPresetFile, thumbnail: newThumbnail };
-          const updateResponse = await fetch(API_URL, {
-            method: "PUT",
-            headers: {
-              "X-Master-Key": MASTER_KEY,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ presets, feedbacks: data.record.feedbacks || [] })
-          });
-          if (!updateResponse.ok) throw new Error("Failed to update preset");
-          loadPresets();
-          alert("Preset updated successfully!");
-        }
-      } catch (error) {
-        console.error("Error editing preset:", error);
-        alert("Error updating preset.");
-      }
+    function toggleMenu() {
+      const menu = document.getElementById("sideMenu");
+      menu.classList.toggle("open");
     }
 
-    async function deletePreset(index) {
-      if (confirm("Are you sure you want to delete this preset?")) {
-        try {
-          const response = await fetch(API_URL + "/latest", {
-            headers: { "X-Master-Key": MASTER_KEY }
-          });
-          if (!response.ok) throw new Error("Failed to fetch presets");
-          const data = await response.json();
-          const presets = data.record.presets || [];
-          presets.splice(index, 1);
-          const updateResponse = await fetch(API_URL, {
-            method: "PUT",
-            headers: {
-              "X-Master-Key": MASTER_KEY,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ presets, feedbacks: data.record.feedbacks || [] })
-          });
-          if (!updateResponse.ok) throw new Error("Failed to delete preset");
-          loadPresets();
-          alert("Preset deleted successfully!");
-        } catch (error) {
-          console.error("Error deleting preset:", error);
-          alert("Error deleting preset.");
-        }
+    function searchPresets() {
+      const query = document.getElementById("searchBar").value.toLowerCase();
+      const presets = document.getElementsByClassName("preset-card");
+      for (let preset of presets) {
+        const name = preset.getElementsByTagName("h3")[0].textContent.toLowerCase();
+        preset.style.display = name.includes(query) ? "flex" : "none";
       }
     }
 
