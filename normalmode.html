@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Normal Mode - FNL Studio</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #0f172a, #1e293b);
+      color: white;
+      text-align: center;
+      padding: 30px;
+      margin: 0;
+    }
+    .logo img { width: 200px; height: auto; margin-top: 10px; }
+    #presetList { max-width: 800px; margin: 20px auto; text-align: left; }
+    .preset-card { background-color: #111827; border-radius: 20px; padding: 10px; margin: 10px 0; display: flex; align-items: center; justify-content: space-between; }
+    .preset-card img { border-radius: 12px; width: 100px; height: 100px; object-fit: cover; }
+    .preset-info { flex: 1; text-align: left; margin-left: 15px; }
+    .preset-info h3 { margin: 5px 0; }
+    .preset-info p { margin: 5px 0; }
+    input {
+      width: 80%;
+      max-width: 400px;
+      padding: 8px;
+      margin: 20px auto;
+      border-radius: 5px;
+      border: none;
+      background-color: #1e293b;
+      color: white;
+    }
+    .admins-button {
+      background-color: #10b981;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .buy-now {
+      background-color: #ff5722;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      font-weight: bold;
+    }
+    .buy-now:hover {
+      background-color: #e64a19;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
+  </div>
+  <input type="text" id="searchBar" placeholder="Search Presets..." onkeyup="searchPresets()">
+  <div id="presetList"></div>
+  <button class="admins-button" onclick="window.location.href='adminlogin.html'">ADMINS</button>
+
+  <script>
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+    async function loadPresets() {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error("Failed to fetch presets");
+        const data = await response.json();
+        const presets = data.record.presets || [];
+        const container = document.getElementById("presetList");
+        container.innerHTML = "";
+
+        presets.forEach((preset) => {
+          const card = document.createElement("div");
+          card.className = "preset-card";
+          card.innerHTML = `
+            <img src="${preset.thumbnail}" alt="Thumbnail">
+            <div class="preset-info">
+              <h3>${preset.name}</h3>
+              <p>Price: ₹${preset.price}</p>
+              <button class="buy-now" onclick="confirmBuy('${preset.price}')">Buy Now</button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Error loading presets:", error);
+      }
+    }
+
+    function searchPresets() {
+      const query = document.getElementById("searchBar").value.toLowerCase();
+      const presets = document.getElementsByClassName("preset-card");
+      for (let preset of presets) {
+        const name = preset.getElementsByTagName("h3")[0].textContent.toLowerCase();
+        preset.style.display = name.includes(query) ? "flex" : "none";
+      }
+    }
+
+    function confirmBuy(price) {
+      if (confirm("Are you sure you want to proceed to payment for ₹" + price + "?")) {
+        window.location.href = `payment.html?price=${price}`;
+      }
+    }
+
+    window.onload = () => { loadPresets(); };
+  </script>
+</body>
+</html>
