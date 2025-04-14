@@ -12,11 +12,11 @@
       text-align: center;
       padding: 30px;
     }
-    .logo { font-size: 40px; font-weight: bold; margin-top: 40px; }
+    .logo img { width: 200px; height: auto; margin-top: 40px; } /* Adjust width as needed */
     .tagline { font-size: 20px; margin: 10px 0 30px; }
     .add-button { margin: 30px 0; background-color: #10b981; padding: 12px 25px; border: none; border-radius: 10px; font-size: 16px; color: white; cursor: pointer; }
     #message { margin-top: 10px; font-weight: bold; }
-    .preset-card { background-color: #111827; border-radius: 20px; padding: 10px; margen: 20px auto; width: 90%; max-width: 400px; display: flex; align-items: center; justify-content: space-between; }
+    .preset-card { background-color: #111827; border-radius: 20px; padding: 10px; margin: 20px auto; width: 90%; max-width: 400px; display: flex; align-items: center; justify-content: space-between; }
     .preset-card img { border-radius: 12px; width: 100px; height: 100px; object-fit: cover; }
     .preset-info { flex: 1; text-align: left; margin-left: 15px; }
     .preset-info h3 { margin: 5px 0; }
@@ -25,9 +25,11 @@
   </style>
 </head>
 <body>
-  <div class="logo">FNL <span style="color:#3b82f6;">STUDIO</span></div>
+  <div class="logo">
+    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+  </div>
   <div class="tagline">Capturing Creativity</div>
-  <button class="add-button" onclick="checkCode()">Add Preset</button>
+  <button class="add-button" onclick="checkCode('add')">Add Preset</button>
   <div id="message"></div>
   <div id="presetList"></div>
   <div class="about">
@@ -36,21 +38,30 @@
     <br />
     <h3>© 2025 FNL Studio. All rights reserved.</h3>
     <p>All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
-    <p>After buying a preset, DM us on X @yourhandle with payment proof to receive your preset!</p>
+    <p>After buying a preset, DM us on Instagram @fnl_studio_ with payment proof to receive your preset!</p>
   </div>
 
   <script>
-    const BIN_ID = "67fccb0b8960c979a584b5d5"; // Replace with your JSONBin Bin ID (e.g., 123abc456def789)
-    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO"; // Replace with your JSONBin Master Key (e.g., $2b$10$xyz...)
+    const BIN_ID = "67fccb0b8960c979a584b5d5"; // Your Bin ID
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO"; // Your Master Key
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-    function checkCode() {
+    function checkCode(action, index = null) {
       const code = prompt("Enter collaborator code:");
       if (code === "007") {
-        window.location.href = "upload.html";
+        if (action === "add") {
+          window.location.href = "upload.html";
+        } else if (action === "edit" && index !== null) {
+          editPreset(index);
+        } else if (action === "delete" && index !== null) {
+          deletePreset(index);
+        }
       } else {
         document.getElementById("message").textContent = "You are not the collaborator.";
         document.getElementById("message").style.color = "red";
+        setTimeout(() => {
+          document.getElementById("message").textContent = "";
+        }, 3000);
       }
     }
 
@@ -73,9 +84,9 @@
             <div class="preset-info">
               <h3>${preset.name}</h3>
               <p>Price: ₹${preset.price}</p>
-              <button onclick="editPreset(${index})">Edit</button>
-              <button onclick="deletePreset(${index})" style="background-color: #ef4444;">Delete</button>
-              <a href="https://paypal.me/yourusername/${preset.price}" target="_blank">
+              <button onclick="checkCode('edit', ${index})">Edit</button>
+              <button onclick="checkCode('delete', ${index})" style="background-color: #ef4444;">Delete</button>
+              <a href="https://www.instagram.com/fnl_studio_" target="_blank">
                 <button style="background-color: #10b981; margin-top: 5px;">Buy Now</button>
               </a>
             </div>
