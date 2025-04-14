@@ -28,7 +28,7 @@
 </head>
 <body>
   <div class="logo">
-    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+    <img src="https://i.postimg.cc/placeholder/logo.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
   </div>
   <h1>Payment Page</h1>
   <div class="form-container">
@@ -54,9 +54,9 @@
       <p>Scan the QR code to complete your payment. Upload proof below.</p>
     </div>
     <div id="upload-box">
-      <label for="screenshot">Upload Payment Screenshot:</label>
+      <label for="screenshot">Upload Payment Proof:</label>
       <input type="file" id="screenshot" accept="image/*" required />
-      <img id="screenshot-preview" alt="Screenshot Preview" />
+      <img id="screenshot-preview" alt="Proof Preview" />
       <button onclick="submitPayment()">Done</button>
     </div>
   </div>
@@ -74,6 +74,7 @@
     function checkFields() {
       const allFilled = inputs.every(input => input.value.trim() !== '');
       document.getElementById('pay-box').style.display = allFilled ? 'block' : 'none';
+      document.getElementById('upload-box').style.display = allFilled ? 'block' : 'none';
     }
 
     document.getElementById('screenshot').addEventListener('change', function(e) {
@@ -84,7 +85,6 @@
           document.getElementById('screenshot-preview').src = e.target.result;
         };
         reader.readAsDataURL(file);
-        document.getElementById('upload-box').style.display = 'block';
       }
     });
 
@@ -96,7 +96,7 @@
       const screenshot = document.getElementById('screenshot').files[0];
 
       if (!screenshot) {
-        alert("Please upload a screenshot.");
+        alert("Please upload payment proof.");
         return;
       }
 
@@ -108,7 +108,6 @@
       formData.append('screenshot', screenshot);
 
       try {
-        // Email via simple form submission (note: requires server-side handling)
         const emailResponse = await fetch('https://formsubmit.co/ajax/' + EMAIL_TO, {
           method: 'POST',
           body: formData
