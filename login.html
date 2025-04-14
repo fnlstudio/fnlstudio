@@ -23,7 +23,7 @@
 </head>
 <body>
   <div class="logo">
-    <img src="https://i.postimg.cc/placeholder/logo.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <h1>Login</h1>
   <div class="form-group" id="loginForm">
@@ -36,6 +36,9 @@
   <script>
     const LOGIN_KEY = "fnlStudioLogin";
     const LOGIN_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
     // Check if already logged in
     window.onload = function() {
@@ -43,6 +46,7 @@
       if (storedLogin) {
         const { name, timestamp } = JSON.parse(storedLogin);
         if (Date.now() - timestamp < LOGIN_EXPIRY) {
+          saveLoginDetail(name);
           window.location.href = `feedback.html?name=${encodeURIComponent(name)}`;
           return;
         } else {
@@ -61,15 +65,47 @@
         errorDiv.style.display = 'block';
         return;
       }
+      if (name.toUpperCase() === "FNL ADMIN") {
+        errorDiv.textContent = "This name is reserved for admin.";
+        errorDiv.style.display = 'block';
+        return;
+      }
 
       // Save login and redirect
       try {
         localStorage.setItem(LOGIN_KEY, JSON.stringify({ name, timestamp: Date.now() }));
+        saveLoginDetail(name);
         window.location.href = `feedback.html?name=${encodeURIComponent(name)}`;
       } catch (e) {
         errorDiv.textContent = "Error saving login. Try again or check browser settings.";
         errorDiv.style.display = 'block';
         console.error("Login error:", e);
+      }
+    }
+
+    async function saveLoginDetail(name) {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error("Failed to fetch data");
+        const data = await response.json();
+        let loginDetails = data.record.login_details || [];
+        const existingDetail = loginDetails.find(d => d.name === name);
+        if (!existingDetail) {
+          loginDetails.push({ name, reviews: [] });
+        }
+        const updateResponse = await fetch(API_URL, {
+          method: "PUT",
+          headers: {
+            "X-Master-Key": MASTER_KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ ...data.record, login_details: loginDetails })
+        });
+        if (!updateResponse.ok) throw new Error("Failed to save login detail");
+      } catch (error) {
+        console.error("Error saving login detail:", error);
       }
     }
   </script>
