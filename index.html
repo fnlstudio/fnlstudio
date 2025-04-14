@@ -24,13 +24,13 @@
     .feedback-section { margin-top: 30px; }
     .feedback-card { background-color: #111827; border-radius: 10px; padding: 10px; margin: 10px auto; max-width: 400px; text-align: left; }
     .feedback-card .rating { color: #ffd700; }
-    .read-all { margin-top: 20px; background-color: #ef4444; padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; }
+    .read-more { margin-top: 20px; background-color: #ef4444; padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; }
     .about { margin-top: 50px; border-top: 1px solid #444; padding-top: 30px; font-size: 14px; color: #ccc; max-width: 800px; margin-left: auto; margin-right: auto; }
   </style>
 </head>
 <body>
   <div class="logo">
-    <img src="https://i.postimg.cc/placeholder/logo.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
   </div>
   <div class="tagline">Capturing Creativity</div>
   <button class="add-button" onclick="checkCode('add')">Add Preset</button>
@@ -39,7 +39,7 @@
   <div class="feedback-section">
     <h2>Customer Feedback</h2>
     <div id="feedbackList"></div>
-    <button class="read-all" onclick="window.location.href='login.html'">Read All Feedback</button>
+    <button class="read-more" onclick="window.location.href='feedback.html'">Read More Feedback</button>
   </div>
   <div class="about">
     <h2>About Us</h2>
@@ -120,7 +120,7 @@
         const feedbacks = data.record.feedbacks || [];
         const feedbackList = document.getElementById("feedbackList");
         feedbackList.innerHTML = "";
-        feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 5).forEach(feedback => {
+        feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 3).forEach(feedback => {
           const card = document.createElement("div");
           card.className = "feedback-card";
           card.innerHTML = `
