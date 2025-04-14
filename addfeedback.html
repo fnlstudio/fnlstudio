@@ -26,7 +26,7 @@
 </head>
 <body>
   <div class="logo">
-    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <h1>Add Feedback</h1>
   <div class="form-group">
@@ -72,7 +72,7 @@
             const feedback = feedbacks[index];
             if (feedback.name === decodeURIComponent(name)) {
               document.getElementById('comment').value = feedback.comment;
-              updateStars(feedback.rating); // Set stars
+              updateStars(feedback.rating);
             } else {
               alert("You can only edit your own feedback.");
               window.location.href = "feedback.html?name=" + encodeURIComponent(name);
@@ -119,23 +119,27 @@
         if (!response.ok) throw new Error("Failed to fetch data");
         const data = await response.json();
         const feedbacks = data.record.feedbacks || [];
+        let loginDetails = data.record.login_details || [];
+
+        const feedback = {
+          name: decodeURIComponent(name),
+          rating: rating,
+          comment: comment,
+          timestamp: new Date().toISOString(),
+          likes: 0,
+          dislikes: 0,
+          replies: []
+        };
 
         if (index !== null && index >= 0 && index < feedbacks.length) {
-          // Edit existing feedback
-          feedbacks[index] = {
-            name: decodeURIComponent(name),
-            rating: rating,
-            comment: comment,
-            timestamp: new Date().toISOString()
-          };
+          feedbacks[index] = feedback;
+          const existingDetail = loginDetails.find(d => d.name === decodeURIComponent(name));
+          if (existingDetail) existingDetail.reviews = feedbacks.filter(f => f.name === decodeURIComponent(name)).map(f => f.comment);
         } else {
-          // Add new feedback
-          feedbacks.push({
-            name: decodeURIComponent(name),
-            rating: rating,
-            comment: comment,
-            timestamp: new Date().toISOString()
-          });
+          feedbacks.push(feedback);
+          const existingDetail = loginDetails.find(d => d.name === decodeURIComponent(name));
+          if (existingDetail) existingDetail.reviews.push(comment);
+          else loginDetails.push({ name: decodeURIComponent(name), reviews: [comment] });
         }
 
         const updateResponse = await fetch(API_URL, {
@@ -144,7 +148,7 @@
             "X-Master-Key": MASTER_KEY,
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ presets: data.record.presets || [], feedbacks })
+          body: JSON.stringify({ presets: data.record.presets || [], feedbacks, login_details: loginDetails })
         });
         if (!updateResponse.ok) throw new Error("Failed to save feedback");
         alert("Feedback " + (index !== null ? "updated" : "submitted") + " successfully!");
