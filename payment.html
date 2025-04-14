@@ -28,7 +28,7 @@
 </head>
 <body>
   <div class="logo">
-    <img src="https://i.postimg.cc/placeholder/logo.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
   </div>
   <h1>Payment Page</h1>
   <div class="form-container">
@@ -64,8 +64,12 @@
 
   <script>
     const EMAIL_TO = "fnlstudio1@gmail.com";
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const urlParams = new URLSearchParams(window.location.search);
     const price = urlParams.get('price');
+
     document.getElementById('price').value = price ? `₹${price}` : 'N/A';
 
     const inputs = [document.getElementById('name'), document.getElementById('email'), document.getElementById('phone'), document.getElementById('price')];
@@ -92,7 +96,7 @@
       const name = document.getElementById('name').value;
       const email = document.getElementById('email').value;
       const phone = document.getElementById('phone').value;
-      const price = document.getElementById('price').value;
+      const price = document.getElementById('price').value.replace('₹', '');
       const screenshot = document.getElementById('screenshot').files[0];
 
       if (!screenshot) {
@@ -113,14 +117,32 @@
           body: formData
         });
         if (emailResponse.ok) {
-          alert("Details sent to fnlstudio1@gmail.com. Redirecting...");
+          // Find the preset with matching price
+          const dataResponse = await fetch(API_URL + "/latest", {
+            headers: { "X-Master-Key": MASTER_KEY }
+          });
+          if (!dataResponse.ok) throw new Error("Failed to fetch presets");
+          const data = await dataResponse.json();
+          const preset = data.record.presets.find(p => p.price === price);
+          if (preset && preset.presetFile) {
+            // Trigger download
+            const link = document.createElement('a');
+            link.href = preset.presetFile;
+            link.download = `${preset.name}.zip` || `${preset.name}.gdoc`; // Adjust based on file type
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          } else {
+            alert("Preset file not found. Contact support.");
+          }
+          alert("Details sent to fnlstudio1@gmail.com. Preset download started!");
           window.location.href = 'index.html';
         } else {
           throw new Error("Email failed");
         }
       } catch (error) {
-        console.error("Error sending email:", error);
-        alert("Failed to send details. Please try again or contact support.");
+        console.error("Error processing payment:", error);
+        alert("Failed to process payment. Please try again or contact support.");
       }
     }
   </script>
