@@ -14,135 +14,83 @@
     }
     .logo img { width: 200px; height: auto; margin-top: 40px; }
     h1 { font-size: 32px; margin: 20px 0; }
-    .form-container { max-width: 500px; margin: 0 auto; text-align: left; }
-    .form-group { margin: 15px 0; }
+    .form-group { max-width: 500px; margin: 20px auto; text-align: left; }
     label { display: block; margin-bottom: 5px; font-weight: bold; }
-    input, textarea { width: 100%; padding: 8px; border-radius: 5px; border: none; background-color: #1e293b; color: white; }
-    input[readonly] { background-color: #2d3b53; }
-    #pay-box, #upload-box { display: none; margin-top: 20px; }
-    #pay-box img { width: 200px; height: auto; }
-    #screenshot-preview { max-width: 200px; margin-top: 10px; }
-    button { margin-top: 10px; background-color: #10b981; padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; }
-    .back-button { background-color: #3b82f6; }
+    input { width: 100%; padding: 8px; border-radius: 5px; border: none; background-color: #1e293b; color: white; margin-bottom: 10px; }
+    button { background-color: #10b981; padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; }
+    #qr-code img { width: 200px; height: auto; }
+    #error { color: red; margin-top: 10px; display: none; }
   </style>
 </head>
 <body>
   <div class="logo">
-    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <h1>Payment Page</h1>
-  <div class="form-container">
-    <div class="form-group">
-      <label for="name">Name:</label>
-      <input type="text" id="name" required />
+  <h1>Payment</h1>
+  <div class="form-group">
+    <label for="name">Name:</label>
+    <input type="text" id="name" required />
+    <label for="email">Email:</label>
+    <input type="email" id="email" required />
+    <label for="phone">Phone Number:</label>
+    <input type="tel" id="phone" required />
+    <label for="proof">Payment Proof (URL or Description):</label>
+    <input type="text" id="proof" required />
+    <label>Price: <span id="price"></span> INR</label>
+    <div id="qr-code">
+      <img src="https://i.postimg.cc/placeholder/qr.png" alt="QR Code" /> <!-- Replace with your QR URL -->
     </div>
-    <div class="form-group">
-      <label for="email">Email:</label>
-      <input type="email" id="email" required />
-    </div>
-    <div class="form-group">
-      <label for="phone">Phone Number:</label>
-      <input type="tel" id="phone" required />
-    </div>
-    <div class="form-group">
-      <label for="price">Price (₹):</label>
-      <input type="text" id="price" readonly />
-    </div>
-    <div id="pay-box">
-      <h3>Pay Here</h3>
-      <img src="https://i.postimg.cc/DZ7VHKf5/Whats-App-Image-2025-04-14-at-10-58-46-PM.jpg" alt="Payment QR Code" /> <!-- Replace with your QR URL -->
-      <p>Scan the QR code to complete your payment. Upload proof below.</p>
-    </div>
-    <div id="upload-box">
-      <label for="screenshot">Upload Payment Proof:</label>
-      <input type="file" id="screenshot" accept="image/*" required />
-      <img id="screenshot-preview" alt="Proof Preview" />
-      <button onclick="submitPayment()">Done</button>
-    </div>
+    <button onclick="submitPayment()">Submit Payment</button>
+    <div id="error"></div>
   </div>
-  <button class="back-button" onclick="window.location.href='index.html'">Back to Presets</button>
 
   <script>
-    const EMAIL_TO = "fnlstudio1@gmail.com";
     const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const urlParams = new URLSearchParams(window.location.search);
-    const price = urlParams.get('price');
 
-    document.getElementById('price').value = price ? `₹${price}` : 'N/A';
-
-    const inputs = [document.getElementById('name'), document.getElementById('email'), document.getElementById('phone'), document.getElementById('price')];
-    inputs.forEach(input => input.addEventListener('input', checkFields));
-
-    function checkFields() {
-      const allFilled = inputs.every(input => input.value.trim() !== '');
-      document.getElementById('pay-box').style.display = allFilled ? 'block' : 'none';
-      document.getElementById('upload-box').style.display = allFilled ? 'block' : 'none';
-    }
-
-    document.getElementById('screenshot').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById('screenshot-preview').src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+    window.onload = function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const price = urlParams.get('price');
+      document.getElementById('price').textContent = price || 'N/A';
+    };
 
     async function submitPayment() {
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const phone = document.getElementById('phone').value;
-      const price = document.getElementById('price').value.replace('₹', '');
-      const screenshot = document.getElementById('screenshot').files[0];
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const proof = document.getElementById('proof').value.trim();
+      const errorDiv = document.getElementById('error');
 
-      if (!screenshot) {
-        alert("Please upload payment proof.");
+      if (!name || !email || !phone || !proof) {
+        errorDiv.textContent = "All fields are required.";
+        errorDiv.style.display = 'block';
         return;
       }
 
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('email', email);
-      formData.append('phone', phone);
-      formData.append('price', price);
-      formData.append('screenshot', screenshot);
-
       try {
-        const emailResponse = await fetch('https://formsubmit.co/ajax/' + EMAIL_TO, {
-          method: 'POST',
-          body: formData
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
         });
-        if (emailResponse.ok) {
-          // Find the preset with matching price
-          const dataResponse = await fetch(API_URL + "/latest", {
-            headers: { "X-Master-Key": MASTER_KEY }
-          });
-          if (!dataResponse.ok) throw new Error("Failed to fetch presets");
-          const data = await dataResponse.json();
-          const preset = data.record.presets.find(p => p.price === price);
-          if (preset && preset.presetFile) {
-            // Trigger download
-            const link = document.createElement('a');
-            link.href = preset.presetFile;
-            link.download = `${preset.name}.zip` || `${preset.name}.gdoc`; // Adjust based on file type
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          } else {
-            alert("Preset file not found. Contact support.");
-          }
-          alert("Details sent to fnlstudio1@gmail.com. Preset download started!");
-          window.location.href = 'index.html';
-        } else {
-          throw new Error("Email failed");
-        }
+        if (!response.ok) throw new Error("Failed to fetch data");
+        const data = await response.json();
+        let paymentDetails = data.record.payment_details || [];
+        paymentDetails.push({ name, email, phone, proof });
+        const updateResponse = await fetch(API_URL, {
+          method: "PUT",
+          headers: {
+            "X-Master-Key": MASTER_KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ ...data.record, payment_details: paymentDetails })
+        });
+        if (!updateResponse.ok) throw new Error("Failed to save payment");
+        alert("Payment submitted successfully! DM @fnl_studio_ with proof.");
+        window.location.href = 'index.html';
       } catch (error) {
-        console.error("Error processing payment:", error);
-        alert("Failed to process payment. Please try again or contact support.");
+        errorDiv.textContent = "Error submitting payment.";
+        errorDiv.style.display = 'block';
+        console.error("Payment error:", error);
       }
     }
   </script>
