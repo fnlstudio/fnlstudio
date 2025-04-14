@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Feedback - FNL Studio</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #0f172a, #1e293b);
+      color: white;
+      text-align: center;
+      padding: 30px;
+    }
+    .logo img { width: 200px; height: auto; margin-top: 40px; }
+    h1 { font-size: 32px; margin: 20px 0; }
+    .form-group { max-width: 500px; margin: 20px auto; text-align: left; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input[readonly] { width: 100%; padding: 8px; border-radius: 5px; border: none; background-color: #1e293b; color: white; }
+    .stars { cursor: pointer; font-size: 24px; }
+    .stars span { color: #ccc; }
+    .stars span.active { color: #ffd700; }
+    textarea { width: 100%; padding: 8px; border-radius: 5px; border: none; background-color: #1e293b; color: white; resize: vertical; }
+    button { background-color: #10b981; padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="https://i.postimg.cc/placeholder/logo.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+  </div>
+  <h1>Add Feedback</h1>
+  <div class="form-group">
+    <label for="name">Name:</label>
+    <input type="text" id="name" readonly />
+    <label>Rate:</label>
+    <div class="stars" id="stars">
+      <span data-value="1">★</span>
+      <span data-value="2">★</span>
+      <span data-value="3">★</span>
+      <span data-value="4">★</span>
+      <span data-value="5">★</span>
+    </div>
+    <label for="comment">Add Your Feedback Here:</label>
+    <textarea id="comment" rows="4" required></textarea>
+    <button onclick="submitFeedback()">Submit</button>
+  </div>
+
+  <script>
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+    // Set name from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get('name');
+    document.getElementById('name').value = decodeURIComponent(name) || 'Anonymous';
+
+    // Star rating
+    let rating = 0;
+    const stars = document.getElementById('stars');
+    stars.addEventListener('click', (e) => {
+      if (e.target.tagName === 'SPAN') {
+        rating = parseInt(e.target.getAttribute('data-value'));
+        updateStars();
+        document.getElementById('comment').focus(); // Auto-focus next field
+      }
+    });
+
+    function updateStars() {
+      const starElements = stars.getElementsByTagName('span');
+      for (let i = 0; i < starElements.length; i++) {
+        starElements[i].classList.toggle('active', i < rating);
+      }
+    }
+
+    async function submitFeedback() {
+      const comment = document.getElementById('comment').value.trim();
+      if (!rating || !comment) {
+        alert("Please rate and provide feedback.");
+        return;
+      }
+
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error("Failed to fetch data");
+        const data = await response.json();
+        const feedbacks = data.record.feedbacks || [];
+        feedbacks.push({
+          name: document.getElementById('name').value,
+          rating: rating,
+          comment: comment,
+          timestamp: new Date().toISOString()
+        });
+
+        const updateResponse = await fetch(API_URL, {
+          method: "PUT",
+          headers: {
+            "X-Master-Key": MASTER_KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ presets: data.record.presets || [], feedbacks })
+        });
+        if (!updateResponse.ok) throw new Error("Failed to save feedback");
+        alert("Feedback submitted successfully!");
+        window.location.href = 'feedback.html';
+      } catch (error) {
+        console.error("Error saving feedback:", error);
+        alert("Failed to submit feedback.");
+      }
+    }
+  </script>
+</body>
+</html>
