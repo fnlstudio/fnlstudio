@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>How to Buy - FNL Studio</title>
+  <title>Payment - FNL Studio</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -14,36 +14,116 @@
     }
     .logo img { width: 200px; height: auto; margin-top: 40px; }
     h1 { font-size: 32px; margin: 20px 0; }
-    .tutorial { max-width: 800px; margin: 0 auto; text-align: left; }
-    .tutorial h2 { font-size: 24px; margin-bottom: 15px; }
-    .tutorial p { font-size: 16px; line-height: 1.6; margin: 10px 0; }
-    .tutorial a { color: #3b82f6; text-decoration: none; }
-    .tutorial a:hover { text-decoration: underline; }
-    .back-button { margin-top: 30px; background-color: #10b981; padding: 12px 25px; border: none; border-radius: 10px; font-size: 16px; color: white; cursor: pointer; }
+    .form-container { max-width: 500px; margin: 0 auto; text-align: left; }
+    .form-group { margin: 15px 0; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, textarea { width: 100%; padding: 8px; border-radius: 5px; border: none; background-color: #1e293b; color: white; }
+    input[readonly] { background-color: #2d3b53; }
+    #pay-box, #upload-box { display: none; margin-top: 20px; }
+    #pay-box img { width: 200px; height: auto; }
+    #screenshot-preview { max-width: 200px; margin-top: 10px; }
+    button { margin-top: 10px; background-color: #10b981; padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; }
+    .back-button { background-color: #3b82f6; }
   </style>
 </head>
 <body>
   <div class="logo">
-    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+    <img src="https://i.postimg.cc/placeholder/logo.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
   </div>
-  <h1>How to Buy</h1>
-  <div class="tutorial">
-    <h2>How to Buy Our Presets</h2>
-    <p>Follow these simple steps to purchase a preset from FNL Studio:</p>
-    <p><strong>Step 1: Take a Screenshot</strong><br>
-       Go to the "Our Presets" section and take a screenshot of the preset you want to buy.</p>
-    <p><strong>Step 2: Message Us on Instagram</strong><br>
-       Send us a message on Instagram at <a href="https://www.instagram.com/fnl_studio_" target="_blank">@fnl_studio_</a> with the following:</p>
-    <ul>
-      <li>Preset Name</li>
-      <li>Price</li>
-      <li>Screenshot of the preset</li>
-    </ul>
-    <p><strong>Step 3: Make Payment</strong><br>
-       We’ll provide payment details via Instagram DM. Follow the instructions to complete the payment.</p>
-    <p><strong>Step 4: Receive the Preset</strong><br>
-       Once payment is confirmed, we’ll send you the .DNG preset file for download.</p>
+  <h1>Payment Page</h1>
+  <div class="form-container">
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" id="name" required />
+    </div>
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" required />
+    </div>
+    <div class="form-group">
+      <label for="phone">Phone Number:</label>
+      <input type="tel" id="phone" required />
+    </div>
+    <div class="form-group">
+      <label for="price">Price (₹):</label>
+      <input type="text" id="price" readonly />
+    </div>
+    <div id="pay-box">
+      <h3>Pay Here</h3>
+      <img src="https://i.postimg.cc/placeholder/qr.png" alt="Payment QR Code" /> <!-- Replace with your QR URL -->
+      <p>Scan the QR code to complete your payment. Upload proof below.</p>
+    </div>
+    <div id="upload-box">
+      <label for="screenshot">Upload Payment Screenshot:</label>
+      <input type="file" id="screenshot" accept="image/*" required />
+      <img id="screenshot-preview" alt="Screenshot Preview" />
+      <button onclick="submitPayment()">Done</button>
+    </div>
   </div>
   <button class="back-button" onclick="window.location.href='index.html'">Back to Presets</button>
+
+  <script>
+    const EMAIL_TO = "fnlstudio1@gmail.com";
+    const urlParams = new URLSearchParams(window.location.search);
+    const price = urlParams.get('price');
+    document.getElementById('price').value = price ? `₹${price}` : 'N/A';
+
+    const inputs = [document.getElementById('name'), document.getElementById('email'), document.getElementById('phone'), document.getElementById('price')];
+    inputs.forEach(input => input.addEventListener('input', checkFields));
+
+    function checkFields() {
+      const allFilled = inputs.every(input => input.value.trim() !== '');
+      document.getElementById('pay-box').style.display = allFilled ? 'block' : 'none';
+    }
+
+    document.getElementById('screenshot').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('screenshot-preview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        document.getElementById('upload-box').style.display = 'block';
+      }
+    });
+
+    async function submitPayment() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const price = document.getElementById('price').value;
+      const screenshot = document.getElementById('screenshot').files[0];
+
+      if (!screenshot) {
+        alert("Please upload a screenshot.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('phone', phone);
+      formData.append('price', price);
+      formData.append('screenshot', screenshot);
+
+      try {
+        // Email via simple form submission (note: requires server-side handling)
+        const emailResponse = await fetch('https://formsubmit.co/ajax/' + EMAIL_TO, {
+          method: 'POST',
+          body: formData
+        });
+        if (emailResponse.ok) {
+          alert("Details sent to fnlstudio1@gmail.com. Redirecting...");
+          window.location.href = 'index.html';
+        } else {
+          throw new Error("Email failed");
+        }
+      } catch (error) {
+        console.error("Error sending email:", error);
+        alert("Failed to send details. Please try again or contact support.");
+      }
+    }
+  </script>
 </body>
 </html>
