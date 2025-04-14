@@ -4,82 +4,104 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FNL STUDIO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #0f172a, #1e293b);
-      color: white;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
       text-align: center;
-      padding: 30px;
-      margin: 0;
-      position: relative;
-    }
-    .logo img { width: 200px; height: auto; margin-top: 10px; }
-    .tagline { font-size: 20px; margin: 10px 0 30px; }
-    #message { margin-top: 10px; font-weight: bold; }
-    .preset-card { background-color: #111827; border-radius: 20px; padding: 10px; margin: 20px auto; width: 90%; max-width: 400px; display: flex; align-items: center; justify-content: space-between; }
-    .preset-card img { border-radius: 12px; width: 100px; height: 100px; object-fit: cover; }
-    .preset-info { flex: 1; text-align: left; margin-left: 15px; }
-    .preset-info h3 { margin: 5px 0; }
-    .preset-info p { margin: 5px 0; }
-    .feedback-section { margin-top: 30px; }
-    .feedback-card { background-color: #111827; border-radius: 10px; padding: 10px; margin: 10px auto; max-width: 400px; text-align: left; }
-    .feedback-card .rating { color: #ffd700; }
-    .read-more { margin-top: 20px; background-color: #ef4444; padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; }
-    .about { margin-top: 50px; border-top: 1px solid #444; padding-top: 30px; font-size: 14px; color: #ccc; max-width: 800px; margin-left: auto; margin-right: auto; }
-    .menu-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 1000;
-    }
-    .menu {
-      position: fixed;
-      top: 0;
-      right: -50%;
-      width: 50%;
-      height: 100%;
-      background-color: #1e293b;
       padding: 20px;
-      transition: right 0.3s ease;
-      z-index: 1000;
-      box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .menu.open { right: 0; }
-    .menu input {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-      border: none;
-      background-color: #111827;
-      color: white;
+    .logo img {
+      width: 150px;
+      height: auto;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
-    .menu button {
-      background-color: #10b981;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      cursor: pointer;
-      width: 100%;
-      margin-bottom: 10px;
+    .tagline { font-size: 1.1em; margin: 10px 0 20px; color: #94a3b8; font-weight: 400; }
+    #message { margin-top: 10px; font-weight: 600; color: #f1f5f9; }
+    .preset-card {
+      background-color: #1e293b;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 12px auto;
+      max-width: 350px;
+      width: 90%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: transform 0.2s;
     }
-    .buy-now {
-      background-color: #ff5722; /* Vibrant orange from logo palette */
-      padding: 10px 20px;
+    .preset-card:hover { transform: translateY(-2px); }
+    .preset-card img { border-radius: 8px; width: 80px; height: 80px; object-fit: cover; }
+    .preset-info { flex: 1; text-align: left; margin-left: 10px; }
+    .preset-info h3 { margin: 5px 0; font-size: 1.1em; color: #f1f5f9; }
+    .preset-info p { margin: 5px 0; color: #94a3b8; font-size: 0.9em; }
+    .feedback-section { margin-top: 20px; }
+    .feedback-card {
+      background-color: #1e293b;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 10px auto;
+      max-width: 350px;
+      width: 90%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: left;
+      transition: transform 0.2s;
+    }
+    .feedback-card:hover { transform: translateY(-2px); }
+    .feedback-card .rating { color: #ffd700; }
+    .read-more {
+      margin-top: 20px;
+      background-color: #ef4444;
+      padding: 8px 16px;
       border: none;
       border-radius: 10px;
       color: white;
       cursor: pointer;
+      font-weight: 600;
       transition: background-color 0.3s, transform 0.2s;
-      font-weight: bold;
+    }
+    .read-more:hover { background-color: #dc2626; transform: translateY(-2px); }
+    .about {
+      margin-top: 30px;
+      border-top: 1px solid #2d3b4e;
+      padding-top: 20px;
+      font-size: 0.85em;
+      color: #94a3b8;
+      max-width: 700px;
+      text-align: center;
+    }
+    .menu-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #e2e8f0;
+      transition: color 0.3s;
+    }
+    .menu-toggle:hover { color: #10b981; }
+    .buy-now {
+      background-color: #ff5722;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s, transform 0.2s;
     }
     .buy-now:hover {
-      background-color: #e64a19; /* Darker shade on hover */
-      transform: scale(1.05);
+      background-color: #e64a19;
+      transform: translateY(-2px);
     }
   </style>
 </head>
@@ -91,23 +113,19 @@
   <div id="message"></div>
   <div id="presetList"></div>
   <div class="feedback-section">
-    <h2>Customer Feedback</h2>
+    <h2 style="font-size: 1.3em; color: #f1f5f9; font-weight: 600;">Customer Feedback</h2>
     <div id="feedbackList"></div>
     <button class="read-more" onclick="window.location.href='feedback.html'">Read More Feedback</button>
   </div>
   <div class="about">
-    <h2>About Us</h2>
-    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
+    <h2 style="font-size: 1.1em; color: #f1f5f9;">About Us</h2>
+    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors.</p>
     <br />
-    <h3>© 2025 FNL Studio. All rights reserved.</h3>
-    <p>All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
-    <p>After buying a preset, follow the payment instructions on the payment page and DM us on Instagram @fnl_studio_ with proof!</p>
+    <h3 style="font-size: 0.9em;">© 2025 FNL Studio. All rights reserved.</h3>
+    <p>All content is protected by copyright laws. Unauthorized use is prohibited.</p>
+    <p>After buying, follow payment instructions and DM @fnl_studio_ with proof!</p>
   </div>
-  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-  <div class="menu" id="sideMenu">
-    <input type="text" id="searchBar" placeholder="Search Presets..." onkeyup="searchPresets()">
-    <button onclick="window.location.href='adminlogin.html'">Collaborators</button>
-  </div>
+  <div class="menu-toggle" onclick="window.location.href='normalmode.html'">⋮</div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
@@ -166,20 +184,6 @@
         });
       } catch (error) {
         console.error("Error loading feedback:", error);
-      }
-    }
-
-    function toggleMenu() {
-      const menu = document.getElementById("sideMenu");
-      menu.classList.toggle("open");
-    }
-
-    function searchPresets() {
-      const query = document.getElementById("searchBar").value.toLowerCase();
-      const presets = document.getElementsByClassName("preset-card");
-      for (let preset of presets) {
-        const name = preset.getElementsByTagName("h3")[0].textContent.toLowerCase();
-        preset.style.display = name.includes(query) ? "flex" : "none";
       }
     }
 
