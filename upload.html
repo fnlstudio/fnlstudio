@@ -3,117 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Upload Preset</title>
+  <title>Upload Preset - FNL Studio</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #0f172a;
+      background-color: #0f172a;
       color: white;
-      padding: 30px;
       text-align: center;
+      padding: 30px;
     }
-    form {
-      background-color: #1e293b;
-      padding: 20px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-      margin: 0 auto;
-    }
-    input[type="text"], input[type="file"] {
-      width: 100%;
+    input, button {
+      display: block;
+      margin: 15px auto;
       padding: 10px;
-      margin: 10px 0 20px;
-      border-radius: 8px;
-      border: none;
-    }
-    .btn {
-      padding: 10px 20px;
-      border: none;
       border-radius: 10px;
+      border: none;
+      width: 80%;
+      max-width: 400px;
       font-size: 16px;
-      cursor: pointer;
-      margin: 10px;
     }
-    .cancel {
-      background-color: #ef4444;
-      color: white;
-    }
-    .submit {
+    button {
       background-color: #10b981;
       color: white;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <h1>Upload New Preset</h1>
+  <h1>Upload Preset</h1>
 
-  <form id="uploadForm">
-    <input type="text" id="presetName" placeholder="Preset Name *" required><br>
-    <input type="text" id="price" placeholder="Price *" required><br>
-    <input type="file" id="thumbnail" accept="image/*" required><br>
+  <input type="text" id="presetName" placeholder="Preset Name *" required />
+  <input type="number" id="presetPrice" placeholder="Price (₹) *" required />
+  <input type="url" id="thumbnailURL" placeholder="Thumbnail URL from postimages.org *" required />
 
-    <button type="button" class="btn cancel" onclick="window.location.href='index.html'">❌ Cancel</button>
-    <button type="submit" class="btn submit">✅ Done</button>
-  </form>
+  <button onclick="uploadPreset()">Save Preset</button>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    // Firebase imports
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+  <script>
+    function uploadPreset() {
+      const name = document.getElementById("presetName").value.trim();
+      const price = document.getElementById("presetPrice").value.trim();
+      const thumbnail = document.getElementById("thumbnailURL").value.trim();
 
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyCQ0cdeCBVCYVfHDgeVPtSDNpyoe0uSBnc",
-      authDomain: "fnl-studio-63eda.firebaseapp.com",
-      projectId: "fnl-studio-63eda",
-      storageBucket: "fnl-studio-63eda.appspot.com",
-      messagingSenderId: "180513254305",
-      appId: "1:180513254305:web:75be8f880613c8630679e0",
-      measurementId: "G-CPG36ETV5K"
-    };
-
-    // Init Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const presetName = document.getElementById('presetName').value.trim();
-      const price = document.getElementById('price').value.trim();
-      const file = document.getElementById('thumbnail').files[0];
-
-      if (!presetName || !price || !file) {
-        alert("All fields are required.");
+      if (!name || !price || !thumbnail) {
+        alert("Please fill in all fields.");
         return;
       }
 
-      try {
-        // Upload to storage
-        const fileRef = ref(storage, `thumbnails/${Date.now()}_${file.name}`);
-        await uploadBytes(fileRef, file);
-        const downloadURL = await getDownloadURL(fileRef);
+      const newPreset = {
+        name: name,
+        price: price,
+        thumbnail: thumbnail
+      };
 
-        // Save to Firestore
-        await addDoc(collection(db, "presets"), {
-          name: presetName,
-          price: price,
-          thumbnail: downloadURL,
-          createdAt: new Date()
-        });
+      const existing = JSON.parse(localStorage.getItem("presets") || "[]");
+      existing.push(newPreset);
+      localStorage.setItem("presets", JSON.stringify(existing));
 
-        alert("Preset uploaded successfully!");
-        window.location.href = "index.html";
-      } catch (error) {
-        console.error("Error uploading preset:", error);
-        alert("Error uploading preset.");
-      }
-    });
+      alert("✅ Preset saved successfully!");
+      location.href = "index.html"; // Redirect to homepage
+    }
   </script>
 
 </body>
