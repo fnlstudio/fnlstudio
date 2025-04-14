@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,9 +12,6 @@
       padding: 30px;
       text-align: center;
     }
-    h1 {
-      color: #3b82f6;
-    }
     form {
       background-color: #1e293b;
       padding: 20px;
@@ -27,14 +23,9 @@
     input[type="text"], input[type="file"] {
       width: 100%;
       padding: 10px;
-      margin-top: 10px;
-      margin-bottom: 20px;
+      margin: 10px 0 20px;
       border-radius: 8px;
       border: none;
-    }
-    .buttons {
-      display: flex;
-      justify-content: space-between;
     }
     .btn {
       padding: 10px 20px;
@@ -42,6 +33,7 @@
       border-radius: 10px;
       font-size: 16px;
       cursor: pointer;
+      margin: 10px;
     }
     .cancel {
       background-color: #ef4444;
@@ -58,50 +50,69 @@
   <h1>Upload New Preset</h1>
 
   <form id="uploadForm">
-    <label>Name of Preset:</label>
-    <input type="text" id="presetName" required><br>
-
-    <label>Add Thumbnail:</label>
+    <input type="text" id="presetName" placeholder="Preset Name *" required><br>
+    <input type="text" id="price" placeholder="Price *" required><br>
     <input type="file" id="thumbnail" accept="image/*" required><br>
 
-    <label>Add Sample Photo:</label>
-    <input type="file" id="sample" accept="image/*" required><br>
-
-    <label>Price:</label>
-    <input type="text" id="price" required><br>
-
-    <div class="buttons">
-      <button type="button" class="btn cancel" onclick="window.location.href='index.html'">❌ Cancel</button>
-      <button type="submit" class="btn submit">✅ Done</button>
-    </div>
+    <button type="button" class="btn cancel" onclick="window.location.href='index.html'">❌ Cancel</button>
+    <button type="submit" class="btn submit">✅ Done</button>
   </form>
 
-  <script>
-    function toBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-    document.getElementById("uploadForm").addEventListener("submit", async function(e) {
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCQ0cdeCBVCYVfHDgeVPtSDNpyoe0uSBnc",
+      authDomain: "fnl-studio-63eda.firebaseapp.com",
+      projectId: "fnl-studio-63eda",
+      storageBucket: "fnl-studio-63eda.appspot.com",
+      messagingSenderId: "180513254305",
+      appId: "1:180513254305:web:75be8f880613c8630679e0",
+      measurementId: "G-CPG36ETV5K"
+    };
+
+    // Init Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = document.getElementById("presetName").value;
-      const price = document.getElementById("price").value;
-      const thumbnailFile = document.getElementById("thumbnail").files[0];
 
-      if (!thumbnailFile) return alert("Please upload a thumbnail.");
+      const presetName = document.getElementById('presetName').value.trim();
+      const price = document.getElementById('price').value.trim();
+      const file = document.getElementById('thumbnail').files[0];
 
-      const thumbnail = await toBase64(thumbnailFile);
+      if (!presetName || !price || !file) {
+        alert("All fields are required.");
+        return;
+      }
 
-      const newPreset = { name, price, thumbnail };
-      const presets = JSON.parse(localStorage.getItem("presets") || "[]");
-      presets.push(newPreset);
-      localStorage.setItem("presets", JSON.stringify(presets));
+      try {
+        // Upload to storage
+        const fileRef = ref(storage, `thumbnails/${Date.now()}_${file.name}`);
+        await uploadBytes(fileRef, file);
+        const downloadURL = await getDownloadURL(fileRef);
 
-      window.location.href = "index.html";
+        // Save to Firestore
+        await addDoc(collection(db, "presets"), {
+          name: presetName,
+          price: price,
+          thumbnail: downloadURL,
+          createdAt: new Date()
+        });
+
+        alert("Preset uploaded successfully!");
+        window.location.href = "index.html";
+      } catch (error) {
+        console.error("Error uploading preset:", error);
+        alert("Error uploading preset.");
+      }
     });
   </script>
 
