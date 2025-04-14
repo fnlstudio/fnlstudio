@@ -24,7 +24,7 @@
       margin-bottom: 15px;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
-    .button-group, .back-button { margin: 15px 0; }
+    .button-group { margin: 15px 0; }
     button {
       background-color: #10b981;
       padding: 8px 16px;
@@ -70,11 +70,11 @@
     .interaction-buttons {
       margin-top: 10px;
       display: flex;
-      gap: 15px; /* Increased gap for better spacing */
+      gap: 15px;
     }
     .interaction-buttons button {
       background-color: #3b82f6;
-      padding: 6px; /* Reduced padding to fit numbers */
+      padding: 6px;
       border: none;
       border-radius: 50%;
       width: 40px;
@@ -86,12 +86,12 @@
       align-items: center;
       justify-content: center;
       transition: background-color 0.3s;
-      position: relative; /* For number positioning */
+      position: relative;
     }
     .interaction-buttons button:hover { background-color: #2563eb; }
     .interaction-buttons button span {
       position: absolute;
-      top: -8px; /* Position number above the circle */
+      top: -8px;
       right: -8px;
       background-color: #ef4444;
       color: white;
@@ -125,13 +125,14 @@
   </div>
   <div class="button-group">
     <button onclick="window.location.href='upload.html'">Add Preset</button>
+    <button onclick="window.location.href='logindetails.html'">Login Details</button>
+    <button onclick="window.location.href='paymentdetails.html'">Payment Details</button>
+    <button onclick="window.location.href='managefeedback.html'">Manage Feedback</button>
   </div>
   <div id="presetList"></div>
   <div id="feedbackList"></div>
   <button class="back-button" onclick="window.location.href='index.html'">Back From Admin</button>
   <div class="menu-toggle" onclick="window.location.href='adminlogin.html'">⋮</div>
-  <div id="loginDetails" style="display:none; max-width: 800px; margin: 15px auto; text-align: left;"></div>
-  <div id="paymentDetails" style="display:none; max-width: 800px; margin: 15px auto; text-align: left;"></div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
@@ -145,8 +146,6 @@
       } else {
         loadPresets();
         loadFeedback();
-        loadLoginDetails();
-        loadPaymentDetails();
       }
     };
 
@@ -364,57 +363,6 @@
       }
     }
 
-    function showSection(section) {
-      document.getElementById("loginDetails").style.display = section === "loginDetails" ? "block" : "none";
-      document.getElementById("paymentDetails").style.display = section === "paymentDetails" ? "block" : "none";
-      document.getElementById("feedbackList").style.display = section === "manageFeedback" ? "block" : "none";
-      if (section === "manageFeedback") loadFeedback();
-      else if (section !== "loginDetails" && section !== "paymentDetails") {
-        document.getElementById("loginDetails").innerHTML = "";
-        document.getElementById("paymentDetails").innerHTML = "";
-      }
-    }
-
-    async function loadLoginDetails() {
-      try {
-        const response = await fetch(API_URL + "/latest", {
-          headers: { "X-Master-Key": MASTER_KEY }
-        });
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const data = await response.json();
-        const loginDetails = data.record.login_details || [];
-        const container = document.getElementById("loginDetails");
-        container.innerHTML = "<h3 style='color:#f1f5f9;'>Login Details</h3>";
-        loginDetails.forEach(detail => {
-          const div = document.createElement("div");
-          div.innerHTML = `<p><strong>Name:</strong> ${detail.name}<br><strong>Reviews:</strong> ${detail.reviews.join(', ') || 'None'}</p>`;
-          container.appendChild(div);
-        });
-      } catch (error) {
-        console.error("Error loading login details:", error);
-      }
-    }
-
-    async function loadPaymentDetails() {
-      try {
-        const response = await fetch(API_URL + "/latest", {
-          headers: { "X-Master-Key": MASTER_KEY }
-        });
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const data = await response.json();
-        const paymentDetails = data.record.payment_details || [];
-        const container = document.getElementById("paymentDetails");
-        container.innerHTML = "<h3 style='color:#f1f5f9;'>Payment Details</h3>";
-        paymentDetails.forEach(detail => {
-          const div = document.createElement("div");
-          div.innerHTML = `<p><strong>Name:</strong> ${detail.name}<br><strong>Email:</strong> ${detail.email}<br><strong>Phone:</strong> ${detail.phone}<br><strong>Proof:</strong> ${detail.proof}</p>`;
-          container.appendChild(div);
-        });
-      } catch (error) {
-        console.error("Error loading payment details:", error);
-      }
-    }
-
     function confirmBuy(price) {
       if (confirm("Are you sure you want to proceed to payment for ₹" + price + "?")) {
         window.location.href = `payment.html?price=${price}`;
@@ -423,3 +371,5 @@
   </script>
 </body>
 </html>
+
+home.hml
