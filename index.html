@@ -12,7 +12,7 @@
       text-align: center;
       padding: 30px;
     }
-    .logo img { width: 200px; height: auto; margin-top: 40px; } /* Adjust width as needed */
+    .logo img { width: 200px; height: auto; margin-top: 40px; }
     .tagline { font-size: 20px; margin: 10px 0 30px; }
     .add-button { margin: 30px 0; background-color: #10b981; padding: 12px 25px; border: none; border-radius: 10px; font-size: 16px; color: white; cursor: pointer; }
     #message { margin-top: 10px; font-weight: bold; }
@@ -42,13 +42,13 @@
   </div>
 
   <script>
-    const BIN_ID = "67fccb0b8960c979a584b5d5"; // Your Bin ID
-    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO"; // Your Master Key
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
     function checkCode(action, index = null) {
       const code = prompt("Enter collaborator code:");
-      if (code === "042404") {
+      if (code === "NEWCODE") { // Replace NEWCODE with your new code (e.g., "studio123")
         if (action === "add") {
           window.location.href = "upload.html";
         } else if (action === "edit" && index !== null) {
@@ -86,7 +86,7 @@
               <p>Price: ₹${preset.price}</p>
               <button onclick="checkCode('edit', ${index})">Edit</button>
               <button onclick="checkCode('delete', ${index})" style="background-color: #ef4444;">Delete</button>
-              <a href="https://www.instagram.com/fnl_studio_" target="_blank">
+              <a href="payment.html">
                 <button style="background-color: #10b981; margin-top: 5px;">Buy Now</button>
               </a>
             </div>
