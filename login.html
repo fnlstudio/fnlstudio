@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - FNL Studio</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #0f172a, #1e293b);
+      color: white;
+      text-align: center;
+      padding: 30px;
+    }
+    .logo img { width: 200px; height: auto; margin-top: 40px; }
+    h1 { font-size: 32px; margin: 20px 0; }
+    .form-group { max-width: 400px; margin: 20px auto; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input { width: 100%; padding: 8px; border-radius: 5px; border: none; background-color: #1e293b; color: white; }
+    button { background-color: #10b981; padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="https://i.postimg.cc/placeholder/logo.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+  </div>
+  <h1>Login</h1>
+  <div class="form-group">
+    <label for="name">Name:</label>
+    <input type="text" id="name" required />
+    <button onclick="submitLogin()">Submit</button>
+  </div>
+
+  <script>
+    function submitLogin() {
+      const name = document.getElementById('name').value.trim();
+      if (name) {
+        window.location.href = `feedback.html?name=${encodeURIComponent(name)}`;
+      } else {
+        alert("Please enter your name.");
+      }
+    }
+  </script>
+</body>
+</html>
