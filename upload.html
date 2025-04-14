@@ -33,6 +33,7 @@
   <h1>Upload Preset</h1>
   <input type="text" id="presetName" placeholder="Preset Name *" required />
   <input type="number" id="presetPrice" placeholder="Price (₹) *" required />
+  <input type="url" id="presetFile" placeholder="Google Docs Link or ZIP File URL *" required />
   <input type="url" id="thumbnailURL" placeholder="Thumbnail URL from postimages.org *" required />
   <button onclick="uploadPreset()">Save Preset</button>
 
@@ -44,9 +45,10 @@
     async function uploadPreset() {
       const name = document.getElementById("presetName").value.trim();
       const price = document.getElementById("presetPrice").value.trim();
+      const presetFile = document.getElementById("presetFile").value.trim();
       const thumbnail = document.getElementById("thumbnailURL").value.trim();
 
-      if (!name || !price || !thumbnail) {
+      if (!name || !price || !presetFile || !thumbnail) {
         alert("Please fill in all fields.");
         return;
       }
@@ -59,7 +61,7 @@
         const data = await response.json();
         const presets = data.record.presets || [];
 
-        const newPreset = { name, price, thumbnail };
+        const newPreset = { name, price, presetFile, thumbnail };
         presets.push(newPreset);
 
         const updateResponse = await fetch(API_URL, {
@@ -68,7 +70,7 @@
             "X-Master-Key": MASTER_KEY,
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ presets })
+          body: JSON.stringify({ presets, feedbacks: data.record.feedbacks || [] })
         });
         if (!updateResponse.ok) throw new Error("Failed to save preset");
 
