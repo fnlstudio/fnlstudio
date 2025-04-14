@@ -57,17 +57,17 @@
   <h1>Upload New Preset</h1>
 
   <form id="uploadForm">
-    <label>Name of Preset:</label><br>
-    <input type="text" name="presetName" required><br>
+    <label>Name of Preset:</label>
+    <input type="text" id="presetName" required><br>
 
-    <label>Add Thumbnail:</label><br>
-    <input type="file" name="thumbnail" accept="image/*" required><br>
+    <label>Add Thumbnail:</label>
+    <input type="file" id="thumbnail" accept="image/*" required><br>
 
-    <label>Add Sample Photo:</label><br>
-    <input type="file" name="sample" accept="image/*" required><br>
+    <label>Add Sample Photo:</label>
+    <input type="file" id="sample" accept="image/*" required><br>
 
-    <label>Price:</label><br>
-    <input type="text" name="price" required><br>
+    <label>Price:</label>
+    <input type="text" id="price" required><br>
 
     <div class="buttons">
       <button type="button" class="btn cancel" onclick="window.location.href='index.html'">❌ Cancel</button>
@@ -76,12 +76,33 @@
   </form>
 
   <script>
-    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    document.getElementById("uploadForm").addEventListener("submit", async function(e) {
       e.preventDefault();
-      alert("Preset uploaded successfully (demo only).");
+      const name = document.getElementById("presetName").value;
+      const price = document.getElementById("price").value;
+      const thumbnailFile = document.getElementById("thumbnail").files[0];
+
+      if (!thumbnailFile) return alert("Please upload a thumbnail.");
+
+      const thumbnail = await toBase64(thumbnailFile);
+
+      const newPreset = { name, price, thumbnail };
+      const presets = JSON.parse(localStorage.getItem("presets") || "[]");
+      presets.push(newPreset);
+      localStorage.setItem("presets", JSON.stringify(presets));
+
       window.location.href = "index.html";
     });
   </script>
 
 </body>
-  </html>
+    </html>
