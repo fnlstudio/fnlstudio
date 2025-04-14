@@ -4,28 +4,96 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Feedback - FNL Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #0f172a, #1e293b);
-      color: white;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
       text-align: center;
-      padding: 30px;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .logo img { width: 200px; height: auto; margin-top: 40px; }
-    h1 { font-size: 32px; margin: 20px 0; }
-    .feedback-list { max-width: 800px; margin: 20px auto; text-align: left; }
-    .feedback-card { background-color: #111827; border-radius: 10px; padding: 10px; margin: 10px 0; position: relative; }
+    .logo img {
+      width: 150px;
+      height: auto;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
+    .feedback-list { max-width: 800px; width: 100%; margin: 15px auto; }
+    .feedback-card {
+      background-color: #1e293b;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 12px 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: left;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .feedback-card:hover { transform: translateY(-2px); }
     .feedback-card .rating { color: #ffd700; }
-    .edit-button, .delete-button { padding: 5px 10px; border: none; border-radius: 5px; color: white; cursor: pointer; margin-left: 5px; }
     .edit-button { background-color: #3b82f6; position: absolute; top: 10px; right: 60px; }
     .delete-button { background-color: #ef4444; position: absolute; top: 10px; right: 10px; }
-    .add-button { position: fixed; bottom: 20px; right: 20px; background-color: #10b981; padding: 10px 20px; border: none; border-radius: 50%; font-size: 24px; color: white; cursor: pointer; }
+    .add-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #10b981;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.5em;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .add-button:hover { background-color: #059669; transform: translateY(-2px); }
+    .interaction-buttons { margin-top: 10px; display: flex; gap: 15px; }
+    .interaction-buttons button {
+      background-color: #3b82f6;
+      padding: 6px;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1em;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s;
+      position: relative;
+    }
+    .interaction-buttons button:hover { background-color: #2563eb; }
+    .interaction-buttons button span {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 0.8em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .admin-reply { font-weight: 600; color: #10b981; }
+    input[type="text"] { padding: 8px; border-radius: 10px; border: none; background-color: #2d3b4e; color: #e2e8f0; margin-top: 10px; }
   </style>
 </head>
 <body>
   <div class="logo">
-    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <h1>Feedback</h1>
   <div class="feedback-list" id="feedbackList"></div>
@@ -56,8 +124,15 @@
           const card = document.createElement("div");
           card.className = "feedback-card";
           card.innerHTML = `
-            <p><strong>${feedback.name}</strong> (${feedback.rating}⭐)</p>
-            <p>${feedback.comment}</p>
+            <div class="feedback-info">
+              <p><strong>${feedback.name}</strong> (${feedback.rating}⭐)</p>
+              <p>${feedback.comment}</p>
+            </div>
+            <div class="interaction-buttons">
+              <button onclick="updateInteraction(${index}, 'like')"><span>${feedback.likes || 0}</span>👍</button>
+              <button onclick="updateInteraction(${index}, 'dislike')"><span>${feedback.dislikes || 0}</span>👎</button>
+              <button onclick="showReplyInput(${index})">💬</button>
+            </div>
           `;
           if (feedback.name === userName) {
             const editButton = document.createElement("button");
@@ -72,10 +147,90 @@
             deleteButton.onclick = () => deleteFeedback(index);
             card.appendChild(deleteButton);
           }
+
+          const replyInput = document.createElement("input");
+          replyInput.type = "text";
+          replyInput.id = `replyInput-${index}`;
+          replyInput.placeholder = "Reply...";
+          replyInput.style.display = "none";
+          replyInput.onkeypress = (e) => { if (e.key === 'Enter') addReply(index, replyInput.value, userName); };
+          card.appendChild(replyInput);
+
+          if (feedback.replies) {
+            feedback.replies.forEach(reply => {
+              const replyDiv = document.createElement("div");
+              replyDiv.className = reply.includes("FNL ADMIN") ? "admin-reply" : "";
+              replyDiv.innerHTML = reply;
+              card.appendChild(replyDiv);
+            });
+          }
           feedbackList.appendChild(card);
         });
       } catch (error) {
         console.error("Error loading feedback:", error);
+      }
+    }
+
+    function showReplyInput(index) {
+      const input = document.getElementById(`replyInput-${index}`);
+      input.style.display = input.style.display === "none" ? "block" : "none";
+      input.focus();
+    }
+
+    async function updateInteraction(index, type) {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error("Failed to fetch feedback");
+        const data = await response.json();
+        const feedbacks = data.record.feedbacks || [];
+        if (index >= 0 && index < feedbacks.length) {
+          feedbacks[index][type + 's'] = (feedbacks[index][type + 's'] || 0) + 1;
+          const updateResponse = await fetch(API_URL, {
+            method: "PUT",
+            headers: {
+              "X-Master-Key": MASTER_KEY,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ presets: data.record.presets || [], feedbacks })
+          });
+          if (!updateResponse.ok) throw new Error("Failed to update interaction");
+          loadFeedback();
+        }
+      } catch (error) {
+        console.error("Error updating interaction:", error);
+      }
+    }
+
+    async function addReply(index, replyText, userName) {
+      if (replyText.trim()) {
+        try {
+          const response = await fetch(API_URL + "/latest", {
+            headers: { "X-Master-Key": MASTER_KEY }
+          });
+          if (!response.ok) throw new Error("Failed to fetch feedback");
+          const data = await response.json();
+          const feedbacks = data.record.feedbacks || [];
+          if (index >= 0 && index < feedbacks.length) {
+            feedbacks[index].replies = feedbacks[index].replies || [];
+            const reply = userName === "FNL ADMIN" ? `<strong>FNL ADMIN</strong>: ${replyText}` : `${userName}: ${replyText}`;
+            feedbacks[index].replies.push(reply);
+            const updateResponse = await fetch(API_URL, {
+              method: "PUT",
+              headers: {
+                "X-Master-Key": MASTER_KEY,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ presets: data.record.presets || [], feedbacks })
+            });
+            if (!updateResponse.ok) throw new Error("Failed to add reply");
+            loadFeedback();
+            document.getElementById(`replyInput-${index}`).style.display = "none";
+          }
+        } catch (error) {
+          console.error("Error adding reply:", error);
+        }
       }
     }
 
@@ -88,25 +243,21 @@
           if (!response.ok) throw new Error("Failed to fetch feedback");
           const data = await response.json();
           const feedbacks = data.record.feedbacks || [];
-          if (index >= 0 && index < feedbacks.length) {
-            feedbacks.splice(index, 1);
-            const updateResponse = await fetch(API_URL, {
-              method: "PUT",
-              headers: {
-                "X-Master-Key": MASTER_KEY,
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({ presets: data.record.presets || [], feedbacks })
-            });
-            if (!updateResponse.ok) throw new Error("Failed to delete feedback");
-            loadFeedback();
-            alert("Feedback deleted successfully!");
-          } else {
-            alert("Invalid feedback index.");
-          }
+          feedbacks.splice(index, 1);
+          const updateResponse = await fetch(API_URL, {
+            method: "PUT",
+            headers: {
+              "X-Master-Key": MASTER_KEY,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ presets: data.record.presets || [], feedbacks })
+          });
+          if (!updateResponse.ok) throw new Error("Failed to delete feedback");
+          loadFeedback();
+          alert("Feedback deleted successfully!");
         } catch (error) {
           console.error("Error deleting feedback:", error);
-          alert("Failed to delete feedback.");
+          alert("Error deleting feedback.");
         }
       }
     }
