@@ -22,24 +22,45 @@
 </head>
 <body>
   <div class="logo">
-    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+    <img src="https://i.postimg.cc/placeholder/logo.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
   </div>
   <h1>Login</h1>
-  <div class="form-group">
+  <div class="form-group" id="loginForm">
     <label for="name">Name:</label>
     <input type="text" id="name" required />
     <button onclick="submitLogin()">Submit</button>
   </div>
+  <div id="loading" style="display: none;">Checking login status...</div>
 
   <script>
-    function submitLogin() {
+    const LOGIN_KEY = "fnlStudioLogin";
+    const LOGIN_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+    // Check if already logged in
+    const storedLogin = localStorage.getItem(LOGIN_KEY);
+    if (storedLogin) {
+      const { name, timestamp } = JSON.parse(storedLogin);
+      if (Date.now() - timestamp < LOGIN_EXPIRY) {
+        window.location.href = `feedback.html?name=${encodeURIComponent(name)}`;
+        return;
+      }
+    }
+
+    async function submitLogin() {
       const name = document.getElementById('name').value.trim();
       if (name) {
+        localStorage.setItem(LOGIN_KEY, JSON.stringify({ name, timestamp: Date.now() }));
         window.location.href = `feedback.html?name=${encodeURIComponent(name)}`;
       } else {
         alert("Please enter your name.");
       }
     }
+
+    // Show loading while checking (optional)
+    document.getElementById('loading').style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('loading').style.display = 'none';
+    }, 500);
   </script>
 </body>
 </html>
