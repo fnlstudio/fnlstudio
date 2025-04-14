@@ -30,17 +30,18 @@
   </style>
 </head>
 <body>
-
   <h1>Upload Preset</h1>
-
   <input type="text" id="presetName" placeholder="Preset Name *" required />
   <input type="number" id="presetPrice" placeholder="Price (₹) *" required />
   <input type="url" id="thumbnailURL" placeholder="Thumbnail URL from postimages.org *" required />
-
   <button onclick="uploadPreset()">Save Preset</button>
 
   <script>
-    function uploadPreset() {
+    const BIN_ID = "your-bin-id"; // Replace with your JSONBin Bin ID
+    const MASTER_KEY = "$2b$10$your-master-key"; // Replace with your JSONBin Master Key
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+    async function uploadPreset() {
       const name = document.getElementById("presetName").value.trim();
       const price = document.getElementById("presetPrice").value.trim();
       const thumbnail = document.getElementById("thumbnailURL").value.trim();
@@ -50,20 +51,34 @@
         return;
       }
 
-      const newPreset = {
-        name: name,
-        price: price,
-        thumbnail: thumbnail
-      };
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error("Failed to fetch presets");
+        const data = await response.json();
+        const presets = data.record.presets || [];
 
-      const existing = JSON.parse(localStorage.getItem("presets") || "[]");
-      existing.push(newPreset);
-      localStorage.setItem("presets", JSON.stringify(existing));
+        const newPreset = { name, price, thumbnail };
+        presets.push(newPreset);
 
-      alert("✅ Preset saved successfully!");
-      location.href = "index.html"; // Redirect to homepage
+        const updateResponse = await fetch(API_URL, {
+          method: "PUT",
+          headers: {
+            "X-Master-Key": MASTER_KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ presets })
+        });
+        if (!updateResponse.ok) throw new Error("Failed to save preset");
+
+        alert("✅ Preset saved successfully!");
+        location.href = "index.html";
+      } catch (error) {
+        console.error("Error saving preset:", error);
+        alert("Error saving preset. Please try again.");
+      }
     }
   </script>
-
 </body>
 </html>
