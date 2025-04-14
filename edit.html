@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Preset - FNL Studio</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f172a;
+      color: white;
+      text-align: center;
+      padding: 30px;
+    }
+    input, button {
+      display: block;
+      margin: 15px auto;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      width: 80%;
+      max-width: 400px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #10b981;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Edit Preset</h1>
+  <input type="text" id="presetName" placeholder="Preset Name *" required />
+  <input type="number" id="presetPrice" placeholder="Price (₹) *" required />
+  <input type="url" id="presetFile" placeholder="Google Docs Link or ZIP File URL *" required />
+  <input type="url" id="thumbnailURL" placeholder="Thumbnail URL from postimages.org *" required />
+  <button onclick="savePreset()">Save Preset</button>
+
+  <script>
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+    // Get preset index from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const index = urlParams.get('index');
+
+    async function loadPreset() {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error("Failed to fetch presets");
+        const data = await response.json();
+        const presets = data.record.presets || [];
+        if (index !== null && index >= 0 && index < presets.length) {
+          const preset = presets[index];
+          document.getElementById('presetName').value = preset.name;
+          document.getElementById('presetPrice').value = preset.price;
+          document.getElementById('presetFile').value = preset.presetFile;
+          document.getElementById('thumbnailURL').value = preset.thumbnail;
+        } else {
+          alert("Invalid preset index.");
+          window.location.href = "index.html";
+        }
+      } catch (error) {
+        console.error("Error loading preset:", error);
+        alert("Error loading preset.");
+      }
+    }
+
+    async function savePreset() {
+      const name = document.getElementById("presetName").value.trim();
+      const price = document.getElementById("presetPrice").value.trim();
+      const presetFile = document.getElementById("presetFile").value.trim();
+      const thumbnail = document.getElementById("thumbnailURL").value.trim();
+
+      if (!name || !price || !presetFile || !thumbnail) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error("Failed to fetch presets");
+        const data = await response.json();
+        const presets = data.record.presets || [];
+
+        if (index !== null && index >= 0 && index < presets.length) {
+          presets[index] = { name, price, presetFile, thumbnail };
+          const updateResponse = await fetch(API_URL, {
+            method: "PUT",
+            headers: {
+              "X-Master-Key": MASTER_KEY,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ presets, feedbacks: data.record.feedbacks || [] })
+          });
+          if (!updateResponse.ok) throw new Error("Failed to save preset");
+          alert("✅ Preset updated successfully!");
+          window.location.href = "index.html";
+        } else {
+          alert("Invalid preset index.");
+        }
+      } catch (error) {
+        console.error("Error saving preset:", error);
+        alert("Error saving preset. Please try again.");
+      }
+    }
+
+    window.onload = loadPreset;
+  </script>
+</body>
+</html>
