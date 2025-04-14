@@ -6,98 +6,34 @@
   <title>FNL STUDIO</title>
   <style>
     body {
-      margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to bottom right, #0f172a, #1e293b);
       color: white;
       text-align: center;
-      padding: 20px;
+      padding: 30px;
     }
-
     .logo {
       font-size: 40px;
       font-weight: bold;
       margin-top: 40px;
     }
-
     .tagline {
       font-size: 20px;
-      margin-top: 10px;
-      margin-bottom: 40px;
+      margin: 10px 0 30px;
     }
-
-    .preset-card {
-      display: flex;
-      background-color: #1e1e2f;
-      border-radius: 20px;
-      overflow: hidden;
-      width: 320px;
-      margin: 0 auto 40px auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
-    }
-
-    .preset-card img {
-      width: 120px;
-      height: 120px;
-      object-fit: cover;
-      cursor: pointer;
-    }
-
-    .preset-info {
-      flex-grow: 1;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .preset-title {
-      font-weight: bold;
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
-
-    .buy-button {
-      background-color: #3b82f6;
-      border: none;
-      color: white;
-      padding: 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      margin-top: 5px;
-    }
-
     .add-button {
       margin: 30px 0;
       background-color: #10b981;
-      padding: 10px 20px;
+      padding: 12px 25px;
       border: none;
       border-radius: 10px;
       font-size: 16px;
       color: white;
       cursor: pointer;
     }
-
     #message {
       margin-top: 10px;
       font-weight: bold;
-    }
-
-    .partners {
-      margin-top: 60px;
-      font-size: 18px;
-    }
-
-    .partners a {
-      display: block;
-      margin-top: 8px;
-      color: #93c5fd;
-      text-decoration: none;
-    }
-
-    .partners a:hover {
-      text-decoration: underline;
     }
   </style>
 </head>
@@ -106,45 +42,20 @@
   <div class="logo">FNL <span style="color:#3b82f6;">STUDIO</span></div>
   <div class="tagline">Capturing Creativity</div>
 
-  <!-- PRESET CARD -->
-  <div class="preset-card">
-    <img src="flower.jpg" alt="Preset Thumbnail" onclick="openBuyPage()">
-    <div class="preset-info">
-      <div class="preset-title">PRESETS</div>
-      <button class="buy-button" onclick="openBuyPage()">Buy</button>
-    </div>
-  </div>
-
-  <!-- ADD PRESET BUTTON -->
-  <button class="add-button" onclick="addPreset()">Add Preset</button>
+  <button class="add-button" onclick="checkCode()">Add Preset</button>
   <div id="message"></div>
 
-  <!-- PARTNERS SECTION -->
-  <div class="partners">
-    <h2>Partners</h2>
-    <a href="https://www.instagram.com/light_editz._?igsh=MXFtMWo4b2YzNnR1aA==" target="_blank">Light Editz</a>
-    <a href="https://www.instagram.com/flash._editz__?igsh=NXZmM3kyZ2ZydHJo" target="_blank">Flash Editz</a>
-  </div>
-
   <script>
-    function openBuyPage() {
-      // Redirect to Instagram DM
-      window.location.href = "https://www.instagram.com/fnl_studio_?igsh=MTQ3eDMwbmdmb3d1dg==";
-    }
-
-    function addPreset() {
+    function checkCode() {
       const code = prompt("Enter collaborator code:");
-      const messageDiv = document.getElementById("message");
-
       if (code === "007") {
-        messageDiv.textContent = "Access granted. You can now add presets.";
-        messageDiv.style.color = "lightgreen";
+        window.location.href = "upload.html";
       } else {
-        messageDiv.textContent = "You are not the collaborator.";
-        messageDiv.style.color = "red";
+        document.getElementById("message").textContent = "You are not the collaborator.";
+        document.getElementById("message").style.color = "red";
       }
     }
   </script>
 
 </body>
-      </html>
+</html>
