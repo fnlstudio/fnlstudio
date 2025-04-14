@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload Preset</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    h1 {
+      color: #3b82f6;
+    }
+    form {
+      background-color: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    input[type="text"], input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: none;
+    }
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+    }
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .cancel {
+      background-color: #ef4444;
+      color: white;
+    }
+    .submit {
+      background-color: #10b981;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Upload New Preset</h1>
+
+  <form id="uploadForm">
+    <label>Name of Preset:</label><br>
+    <input type="text" name="presetName" required><br>
+
+    <label>Add Thumbnail:</label><br>
+    <input type="file" name="thumbnail" accept="image/*" required><br>
+
+    <label>Add Sample Photo:</label><br>
+    <input type="file" name="sample" accept="image/*" required><br>
+
+    <label>Price:</label><br>
+    <input type="text" name="price" required><br>
+
+    <div class="buttons">
+      <button type="button" class="btn cancel" onclick="window.location.href='index.html'">❌ Cancel</button>
+      <button type="submit" class="btn submit">✅ Done</button>
+    </div>
+  </form>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert("Preset uploaded successfully (demo only).");
+      window.location.href = "index.html";
+    });
+  </script>
+
+</body>
+  </html>
