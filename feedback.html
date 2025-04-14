@@ -15,14 +15,15 @@
     .logo img { width: 200px; height: auto; margin-top: 40px; }
     h1 { font-size: 32px; margin: 20px 0; }
     .feedback-list { max-width: 800px; margin: 20px auto; text-align: left; }
-    .feedback-card { background-color: #111827; border-radius: 10px; padding: 10px; margin: 10px 0; }
+    .feedback-card { background-color: #111827; border-radius: 10px; padding: 10px; margin: 10px 0; position: relative; }
     .feedback-card .rating { color: #ffd700; }
+    .edit-button { background-color: #3b82f6; padding: 5px 10px; border: none; border-radius: 5px; color: white; cursor: pointer; position: absolute; top: 10px; right: 10px; }
     .add-button { position: fixed; bottom: 20px; right: 20px; background-color: #10b981; padding: 10px 20px; border: none; border-radius: 50%; font-size: 24px; color: white; cursor: pointer; }
   </style>
 </head>
 <body>
   <div class="logo">
-    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+    <img src="https://i.postimg.cc/placeholder/logo.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
   </div>
   <h1>Feedback</h1>
   <div class="feedback-list" id="feedbackList"></div>
@@ -48,13 +49,21 @@
         const feedbacks = data.record.feedbacks || [];
         const feedbackList = document.getElementById("feedbackList");
         feedbackList.innerHTML = "";
-        feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(feedback => {
+        const userName = getQueryParam('name');
+        feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach((feedback, index) => {
           const card = document.createElement("div");
           card.className = "feedback-card";
           card.innerHTML = `
             <p><strong>${feedback.name}</strong> (${feedback.rating}⭐)</p>
             <p>${feedback.comment}</p>
           `;
+          if (feedback.name === userName) {
+            const editButton = document.createElement("button");
+            editButton.className = "edit-button";
+            editButton.textContent = "Edit";
+            editButton.onclick = () => window.location.href = `addfeedback.html?name=${encodeURIComponent(userName)}&index=${index}`;
+            card.appendChild(editButton);
+          }
           feedbackList.appendChild(card);
         });
       } catch (error) {
