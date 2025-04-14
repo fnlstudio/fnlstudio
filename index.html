@@ -1,124 +1,150 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FNL STUDIO</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #041727, #190720);
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #0f172a, #1e293b);
       color: white;
-    }
-    header {
       text-align: center;
-      padding: 40px 20px 10px;
+      padding: 20px;
     }
-    header img {
-      width: 120px;
+
+    .logo {
+      font-size: 40px;
+      font-weight: bold;
+      margin-top: 40px;
     }
-    h1 {
-      font-size: 2.2em;
-      margin: 0;
-    }
+
     .tagline {
-      font-weight: 300;
+      font-size: 20px;
       margin-top: 10px;
+      margin-bottom: 40px;
     }
-    .presets-section {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
+
     .preset-card {
       display: flex;
-      background: #1c1c2b;
-      border-radius: 15px;
+      background-color: #1e1e2f;
+      border-radius: 20px;
       overflow: hidden;
-      margin-bottom: 25px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      width: 320px;
+      margin: 0 auto 40px auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
     }
+
     .preset-card img {
-      width: 130px;
-      height: 130px;
+      width: 120px;
+      height: 120px;
       object-fit: cover;
+      cursor: pointer;
     }
-    .preset-details {
-      padding: 15px;
+
+    .preset-info {
       flex-grow: 1;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
-    .preset-details h3 {
-      margin: 0 0 10px;
-      font-size: 1.2em;
+
+    .preset-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 8px;
     }
-    .buy-buttons {
-      margin-top: 10px;
-    }
-    .buy-buttons a button {
-      background: #5c27fe;
-      color: white;
+
+    .buy-button {
+      background-color: #3b82f6;
       border: none;
-      padding: 8px 15px;
-      margin-right: 10px;
-      font-size: 0.9em;
+      color: white;
+      padding: 8px;
       border-radius: 8px;
       cursor: pointer;
+      font-weight: bold;
+      margin-top: 5px;
     }
+
     .add-button {
-      text-align: center;
       margin: 30px 0;
-    }
-    .add-button button {
-      background: #5c27fe;
-      color: white;
+      background-color: #10b981;
+      padding: 10px 20px;
       border: none;
-      padding: 12px 25px;
-      font-size: 1em;
       border-radius: 10px;
+      font-size: 16px;
+      color: white;
       cursor: pointer;
     }
+
+    #message {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
     .partners {
-      text-align: center;
-      padding: 50px 20px;
-      background-color: #12121b;
+      margin-top: 60px;
+      font-size: 18px;
     }
-    .partners h2 {
-      margin-bottom: 10px;
-    }
+
     .partners a {
-      color: #5bb3f1;
-      margin: 0 10px;
+      display: block;
+      margin-top: 8px;
+      color: #93c5fd;
       text-decoration: none;
+    }
+
+    .partners a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <header>
-    <img src="your-logo-path.png" alt="FNL STUDIO">
-    <h1>FNL STUDIO</h1>
-    <p class="tagline">Capturing Creativity</p>
-  </header>  <div class="presets-section">
-    <div class="preset-card">
-      <img src="preset1.jpg" alt="Preset 1">
-      <div class="preset-details">
-        <h3>Vibrant Flower</h3>
-        <p>Bright, saturated colors to make flowers pop in your shots.</p>
-        <div class="buy-buttons">
-          <a href="https://www.instagram.com/fnl_studio_/?igsh=MTQ3eDMwbmdmb3d1dg==" target="_blank">
-            <button>Buy from FNL STUDIO</button>
-          </a>
-        </div>
-      </div>
+
+  <div class="logo">FNL <span style="color:#3b82f6;">STUDIO</span></div>
+  <div class="tagline">Capturing Creativity</div>
+
+  <!-- PRESET CARD -->
+  <div class="preset-card">
+    <img src="flower.jpg" alt="Preset Thumbnail" onclick="openBuyPage()">
+    <div class="preset-info">
+      <div class="preset-title">PRESETS</div>
+      <button class="buy-button" onclick="openBuyPage()">Buy</button>
     </div>
-    <!-- Repeat .preset-card for more presets -->
-  </div>  <div class="add-button">
-    <button onclick="alert('Only available to GitHub collaborators.')">+ Add Preset</button>
-  </div>  <div class="partners">
-    <h2>Our Partners</h2>
-    <p>
-      <a href="https://www.instagram.com/fnl_studio_/?igsh=MTQ3eDMwbmdmb3d1dg==" target="_blank">@fnl_studio_</a>
-    </p>
   </div>
+
+  <!-- ADD PRESET BUTTON -->
+  <button class="add-button" onclick="addPreset()">Add Preset</button>
+  <div id="message"></div>
+
+  <!-- PARTNERS SECTION -->
+  <div class="partners">
+    <h2>Partners</h2>
+    <a href="https://www.instagram.com/light_editz._?igsh=MXFtMWo4b2YzNnR1aA==" target="_blank">Light Editz</a>
+    <a href="https://www.instagram.com/flash._editz__?igsh=NXZmM3kyZ2ZydHJo" target="_blank">Flash Editz</a>
+  </div>
+
+  <script>
+    function openBuyPage() {
+      // Redirect to Instagram DM
+      window.location.href = "https://www.instagram.com/fnl_studio_?igsh=MTQ3eDMwbmdmb3d1dg==";
+    }
+
+    function addPreset() {
+      const code = prompt("Enter collaborator code:");
+      const messageDiv = document.getElementById("message");
+
+      if (code === "007") {
+        messageDiv.textContent = "Access granted. You can now add presets.";
+        messageDiv.style.color = "lightgreen";
+      } else {
+        messageDiv.textContent = "You are not the collaborator.";
+        messageDiv.style.color = "red";
+      }
+    }
+  </script>
+
 </body>
-  </html>
+      </html>
