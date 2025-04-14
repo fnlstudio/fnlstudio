@@ -26,7 +26,7 @@
 </head>
 <body>
   <div class="logo">
-    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
+    <img src="https://i.postimg.cc/placeholder/logo.png" alt="FNL Studio Logo" /> <!-- Replace with your logo URL -->
   </div>
   <h1>Add Feedback</h1>
   <div class="form-group">
@@ -50,26 +50,58 @@
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-    // Set name from URL parameter
+    // Get parameters from URL
     const urlParams = new URLSearchParams(window.location.search);
     const name = urlParams.get('name');
+    const index = urlParams.get('index');
+
+    // Prefill name
     document.getElementById('name').value = decodeURIComponent(name) || 'Anonymous';
 
-    // Star rating
+    // Load existing feedback if editing
+    async function loadFeedback() {
+      if (index !== null) {
+        try {
+          const response = await fetch(API_URL + "/latest", {
+            headers: { "X-Master-Key": MASTER_KEY }
+          });
+          if (!response.ok) throw new Error("Failed to fetch feedback");
+          const data = await response.json();
+          const feedbacks = data.record.feedbacks || [];
+          if (index >= 0 && index < feedbacks.length) {
+            const feedback = feedbacks[index];
+            if (feedback.name === decodeURIComponent(name)) {
+              document.getElementById('comment').value = feedback.comment;
+              updateStars(feedback.rating); // Set stars
+            } else {
+              alert("You can only edit your own feedback.");
+              window.location.href = "feedback.html?name=" + encodeURIComponent(name);
+            }
+          } else {
+            alert("Invalid feedback index.");
+            window.location.href = "feedback.html?name=" + encodeURIComponent(name);
+          }
+        } catch (error) {
+          console.error("Error loading feedback:", error);
+          alert("Error loading feedback.");
+        }
+      }
+    }
+
     let rating = 0;
     const stars = document.getElementById('stars');
     stars.addEventListener('click', (e) => {
       if (e.target.tagName === 'SPAN') {
         rating = parseInt(e.target.getAttribute('data-value'));
         updateStars();
-        document.getElementById('comment').focus(); // Auto-focus next field
+        document.getElementById('comment').focus();
       }
     });
 
-    function updateStars() {
+    function updateStars(value = rating) {
       const starElements = stars.getElementsByTagName('span');
       for (let i = 0; i < starElements.length; i++) {
-        starElements[i].classList.toggle('active', i < rating);
+        starElements[i].classList.toggle('active', i < value);
       }
     }
 
@@ -87,12 +119,24 @@
         if (!response.ok) throw new Error("Failed to fetch data");
         const data = await response.json();
         const feedbacks = data.record.feedbacks || [];
-        feedbacks.push({
-          name: document.getElementById('name').value,
-          rating: rating,
-          comment: comment,
-          timestamp: new Date().toISOString()
-        });
+
+        if (index !== null && index >= 0 && index < feedbacks.length) {
+          // Edit existing feedback
+          feedbacks[index] = {
+            name: decodeURIComponent(name),
+            rating: rating,
+            comment: comment,
+            timestamp: new Date().toISOString()
+          };
+        } else {
+          // Add new feedback
+          feedbacks.push({
+            name: decodeURIComponent(name),
+            rating: rating,
+            comment: comment,
+            timestamp: new Date().toISOString()
+          });
+        }
 
         const updateResponse = await fetch(API_URL, {
           method: "PUT",
@@ -103,13 +147,15 @@
           body: JSON.stringify({ presets: data.record.presets || [], feedbacks })
         });
         if (!updateResponse.ok) throw new Error("Failed to save feedback");
-        alert("Feedback submitted successfully!");
-        window.location.href = 'feedback.html';
+        alert("Feedback " + (index !== null ? "updated" : "submitted") + " successfully!");
+        window.location.href = 'feedback.html?name=' + encodeURIComponent(name);
       } catch (error) {
         console.error("Error saving feedback:", error);
         alert("Failed to submit feedback.");
       }
     }
+
+    window.onload = () => { loadFeedback(); };
   </script>
 </body>
 </html>
