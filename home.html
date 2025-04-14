@@ -4,32 +4,119 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Home - FNL Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #0f172a, #1e293b);
-      color: white;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
       text-align: center;
-      padding: 30px;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .logo img { width: 200px; height: auto; margin-top: 10px; }
-    .button-group { margin: 20px 0; }
+    .logo img {
+      width: 150px;
+      height: auto;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+    .button-group, .back-button { margin: 15px 0; }
     button {
       background-color: #10b981;
-      padding: 10px 20px;
+      padding: 8px 16px;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       color: white;
       cursor: pointer;
-      margin: 5px;
+      font-weight: 600;
+      transition: background-color 0.3s, transform 0.2s;
     }
-    #presetList, #feedbackList { max-width: 800px; margin: 20px auto; text-align: left; }
-    .preset-card, .feedback-card { background-color: #111827; border-radius: 10px; padding: 10px; margin: 10px 0; position: relative; }
-    .preset-card img { border-radius: 12px; width: 100px; height: 100px; object-fit: cover; }
-    .preset-info, .feedback-info { margin-left: 15px; }
-    .edit-button, .delete-button { padding: 5px 10px; border: none; border-radius: 5px; color: white; cursor: pointer; margin-left: 5px; }
+    button:hover { background-color: #059669; transform: translateY(-2px); }
+    #presetList, #feedbackList { max-width: 800px; width: 100%; margin: 15px auto; }
+    .preset-card, .feedback-card {
+      background-color: #1e293b;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 12px 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: left;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .preset-card:hover, .feedback-card:hover { transform: translateY(-2px); }
+    .preset-card img { border-radius: 8px; width: 80px; height: 80px; object-fit: cover; }
+    .preset-info, .feedback-info { margin-left: 10px; }
+    .preset-info h3 { margin: 5px 0; font-size: 1.1em; color: #f1f5f9; }
+    .preset-info p { margin: 5px 0; color: #94a3b8; font-size: 0.9em; }
     .edit-button { background-color: #3b82f6; }
     .delete-button { background-color: #ef4444; }
+    .menu-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #e2e8f0;
+      transition: color 0.3s;
+    }
+    .menu-toggle:hover { color: #10b981; }
+    .admin-reply { font-weight: 600; color: #10b981; }
+    .back-button { background-color: #ef4444; }
+    .back-button:hover { background-color: #dc2626; }
+    .interaction-buttons {
+      margin-top: 10px;
+      display: flex;
+      gap: 15px; /* Increased gap for better spacing */
+    }
+    .interaction-buttons button {
+      background-color: #3b82f6;
+      padding: 6px; /* Reduced padding to fit numbers */
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1em;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s;
+      position: relative; /* For number positioning */
+    }
+    .interaction-buttons button:hover { background-color: #2563eb; }
+    .interaction-buttons button span {
+      position: absolute;
+      top: -8px; /* Position number above the circle */
+      right: -8px;
+      background-color: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 0.8em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .buy-now {
+      background-color: #ff5722;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .buy-now:hover {
+      background-color: #e64a19;
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body>
@@ -41,6 +128,10 @@
   </div>
   <div id="presetList"></div>
   <div id="feedbackList"></div>
+  <button class="back-button" onclick="window.location.href='index.html'">Back From Admin</button>
+  <div class="menu-toggle" onclick="window.location.href='adminlogin.html'">⋮</div>
+  <div id="loginDetails" style="display:none; max-width: 800px; margin: 15px auto; text-align: left;"></div>
+  <div id="paymentDetails" style="display:none; max-width: 800px; margin: 15px auto; text-align: left;"></div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
@@ -54,6 +145,8 @@
       } else {
         loadPresets();
         loadFeedback();
+        loadLoginDetails();
+        loadPaymentDetails();
       }
     };
 
@@ -76,6 +169,7 @@
             <div class="preset-info">
               <h3>${preset.name}</h3>
               <p>Price: ₹${preset.price}</p>
+              <button class="buy-now" onclick="confirmBuy('${preset.price}')">Buy Now</button>
             </div>
           `;
           const editButton = document.createElement("button");
@@ -116,16 +210,101 @@
               <p><strong>${feedback.name}</strong> (${feedback.rating}⭐)</p>
               <p>${feedback.comment}</p>
             </div>
+            <div class="interaction-buttons">
+              <button onclick="updateInteraction(${index}, 'like')"><span>${feedback.likes || 0}</span>👍</button>
+              <button onclick="updateInteraction(${index}, 'dislike')"><span>${feedback.dislikes || 0}</span>👎</button>
+              <button onclick="showReplyInput(${index})">💬</button>
+            </div>
           `;
           const deleteButton = document.createElement("button");
           deleteButton.className = "delete-button";
           deleteButton.textContent = "Delete";
           deleteButton.onclick = () => deleteFeedback(index);
           card.appendChild(deleteButton);
+
+          const replyInput = document.createElement("input");
+          replyInput.type = "text";
+          replyInput.id = `replyInput-${index}`;
+          replyInput.placeholder = "Reply as FNL ADMIN...";
+          replyInput.style.display = "none";
+          replyInput.style.marginTop = "10px";
+          replyInput.onkeypress = (e) => { if (e.key === 'Enter') addReply(index, replyInput.value); };
+          card.appendChild(replyInput);
+
+          if (feedback.replies) {
+            feedback.replies.forEach(reply => {
+              const replyDiv = document.createElement("div");
+              replyDiv.className = "admin-reply";
+              replyDiv.innerHTML = reply;
+              card.appendChild(replyDiv);
+            });
+          }
           container.appendChild(card);
         });
       } catch (error) {
         console.error("Error loading feedback:", error);
+      }
+    }
+
+    function showReplyInput(index) {
+      const input = document.getElementById(`replyInput-${index}`);
+      input.style.display = input.style.display === "none" ? "block" : "none";
+      input.focus();
+    }
+
+    async function updateInteraction(index, type) {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error("Failed to fetch feedback");
+        const data = await response.json();
+        const feedbacks = data.record.feedbacks || [];
+        if (index >= 0 && index < feedbacks.length) {
+          feedbacks[index][type + 's'] = (feedbacks[index][type + 's'] || 0) + 1;
+          const updateResponse = await fetch(API_URL, {
+            method: "PUT",
+            headers: {
+              "X-Master-Key": MASTER_KEY,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ presets: data.record.presets || [], feedbacks })
+          });
+          if (!updateResponse.ok) throw new Error("Failed to update interaction");
+          loadFeedback();
+        }
+      } catch (error) {
+        console.error("Error updating interaction:", error);
+      }
+    }
+
+    async function addReply(index, replyText) {
+      if (replyText.trim()) {
+        try {
+          const response = await fetch(API_URL + "/latest", {
+            headers: { "X-Master-Key": MASTER_KEY }
+          });
+          if (!response.ok) throw new Error("Failed to fetch feedback");
+          const data = await response.json();
+          const feedbacks = data.record.feedbacks || [];
+          if (index >= 0 && index < feedbacks.length) {
+            feedbacks[index].replies = feedbacks[index].replies || [];
+            feedbacks[index].replies.push(`<strong>FNL ADMIN</strong>: ${replyText}`);
+            const updateResponse = await fetch(API_URL, {
+              method: "PUT",
+              headers: {
+                "X-Master-Key": MASTER_KEY,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ presets: data.record.presets || [], feedbacks })
+            });
+            if (!updateResponse.ok) throw new Error("Failed to add reply");
+            loadFeedback();
+            document.getElementById(`replyInput-${index}`).style.display = "none";
+          }
+        } catch (error) {
+          console.error("Error adding reply:", error);
+        }
       }
     }
 
@@ -182,6 +361,63 @@
           console.error("Error deleting feedback:", error);
           alert("Error deleting feedback.");
         }
+      }
+    }
+
+    function showSection(section) {
+      document.getElementById("loginDetails").style.display = section === "loginDetails" ? "block" : "none";
+      document.getElementById("paymentDetails").style.display = section === "paymentDetails" ? "block" : "none";
+      document.getElementById("feedbackList").style.display = section === "manageFeedback" ? "block" : "none";
+      if (section === "manageFeedback") loadFeedback();
+      else if (section !== "loginDetails" && section !== "paymentDetails") {
+        document.getElementById("loginDetails").innerHTML = "";
+        document.getElementById("paymentDetails").innerHTML = "";
+      }
+    }
+
+    async function loadLoginDetails() {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error("Failed to fetch data");
+        const data = await response.json();
+        const loginDetails = data.record.login_details || [];
+        const container = document.getElementById("loginDetails");
+        container.innerHTML = "<h3 style='color:#f1f5f9;'>Login Details</h3>";
+        loginDetails.forEach(detail => {
+          const div = document.createElement("div");
+          div.innerHTML = `<p><strong>Name:</strong> ${detail.name}<br><strong>Reviews:</strong> ${detail.reviews.join(', ') || 'None'}</p>`;
+          container.appendChild(div);
+        });
+      } catch (error) {
+        console.error("Error loading login details:", error);
+      }
+    }
+
+    async function loadPaymentDetails() {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error("Failed to fetch data");
+        const data = await response.json();
+        const paymentDetails = data.record.payment_details || [];
+        const container = document.getElementById("paymentDetails");
+        container.innerHTML = "<h3 style='color:#f1f5f9;'>Payment Details</h3>";
+        paymentDetails.forEach(detail => {
+          const div = document.createElement("div");
+          div.innerHTML = `<p><strong>Name:</strong> ${detail.name}<br><strong>Email:</strong> ${detail.email}<br><strong>Phone:</strong> ${detail.phone}<br><strong>Proof:</strong> ${detail.proof}</p>`;
+          container.appendChild(div);
+        });
+      } catch (error) {
+        console.error("Error loading payment details:", error);
+      }
+    }
+
+    function confirmBuy(price) {
+      if (confirm("Are you sure you want to proceed to payment for ₹" + price + "?")) {
+        window.location.href = `payment.html?price=${price}`;
       }
     }
   </script>
