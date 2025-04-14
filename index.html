@@ -35,6 +35,50 @@
       margin-top: 10px;
       font-weight: bold;
     }
+    .preset-card {
+      background-color: #111827;
+      border-radius: 20px;
+      padding: 10px;
+      margin: 20px auto;
+      width: 90%;
+      max-width: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .preset-card img {
+      border-radius: 12px;
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+    }
+    .preset-info {
+      flex: 1;
+      text-align: left;
+      margin-left: 15px;
+    }
+    .preset-info h3 {
+      margin: 5px 0;
+    }
+    .preset-card button {
+      padding: 5px 10px;
+      background-color: #3b82f6;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+    .partners {
+      margin-top: 50px;
+      border-top: 1px solid #444;
+      padding-top: 30px;
+    }
+    .partners a {
+      display: block;
+      color: #3b82f6;
+      margin: 5px 0;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
@@ -44,6 +88,14 @@
 
   <button class="add-button" onclick="checkCode()">Add Preset</button>
   <div id="message"></div>
+
+  <div id="presetList"></div>
+
+  <div class="partners">
+    <h2>Partners</h2>
+    <a href="https://www.instagram.com/light_editz._?igsh=MXFtMWo4b2YzNnR1aA==" target="_blank">Light Editz</a>
+    <a href="https://www.instagram.com/flash._editz__?igsh=NXZmM3kyZ2ZydHJo" target="_blank">Flash Editz</a>
+  </div>
 
   <script>
     function checkCode() {
@@ -55,6 +107,27 @@
         document.getElementById("message").style.color = "red";
       }
     }
+
+    function loadPresets() {
+      const presets = JSON.parse(localStorage.getItem("presets") || "[]");
+      const container = document.getElementById("presetList");
+      container.innerHTML = "";
+      presets.forEach(preset => {
+        const card = document.createElement("div");
+        card.className = "preset-card";
+        card.innerHTML = `
+          <img src="${preset.thumbnail}" alt="Thumbnail">
+          <div class="preset-info">
+            <h3>${preset.name}</h3>
+            <p>Price: ₹${preset.price}</p>
+          </div>
+          <button onclick="window.location.href='https://www.instagram.com/fnl_studio_?igsh=MTQ3eDMwbmdmb3d1dg=='">Buy</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.onload = loadPresets;
   </script>
 
 </body>
