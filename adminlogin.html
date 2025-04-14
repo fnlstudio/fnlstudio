@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login - FNL Studio</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #0f172a, #1e293b);
+      color: white;
+      text-align: center;
+      padding: 30px;
+    }
+    .logo img { width: 200px; height: auto; margin-top: 40px; }
+    h1 { font-size: 32px; margin: 20px 0; }
+    .form-group { max-width: 400px; margin: 20px auto; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input { width: 100%; padding: 8px; border-radius: 5px; border: none; background-color: #1e293b; color: white; }
+    button { background-color: #10b981; padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; }
+    #error { color: red; margin-top: 10px; display: none; }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
+  </div>
+  <h1>Admin Login</h1>
+  <div class="form-group">
+    <label for="adminCode">Admin Code:</label>
+    <input type="password" id="adminCode" required />
+    <button onclick="submitAdminLogin()">Login</button>
+    <div id="error"></div>
+  </div>
+
+  <script>
+    const ADMIN_KEY = "fnlStudioAdmin";
+    const ADMIN_CODE = "042404";
+
+    function submitAdminLogin() {
+      const codeInput = document.getElementById('adminCode');
+      const code = codeInput.value.trim();
+      const errorDiv = document.getElementById('error');
+
+      if (code !== ADMIN_CODE) {
+        errorDiv.textContent = "Invalid Admin Code.";
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      localStorage.setItem(ADMIN_KEY, "true");
+      window.location.href = 'home.html';
+    }
+
+    window.onload = function() {
+      if (localStorage.getItem(ADMIN_KEY) === "true") {
+        window.location.href = 'home.html';
+      }
+    };
+  </script>
+</body>
+</html>
