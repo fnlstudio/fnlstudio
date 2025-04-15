@@ -196,7 +196,7 @@
       <input type="text" id="userCaptcha" placeholder="Enter CAPTCHA" required>
     </div>
     <button id="payButton" onclick="showPaymentOptions()">Pay</button>
-    <button class="download-button" id="downloadButton" onclick="window.location.href='https://drive.google.com/uc?export=download&id=YOUR_FILE_ID'">Download</button> <!-- Replace YOUR_FILE_ID -->
+    <button class="download-button" id="downloadButton" onclick="window.location.href='https://drive.google.com/uc?export=download&id=1X2Y3Z4ABCDEF'">Download</button> <!-- Replace with your file ID -->
   </div>
   <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div id="errorMessage" class="error-message"></div>
@@ -264,7 +264,6 @@
         return;
       }
 
-      // Save login details to JSONBin.io
       saveLoginDetails(name, email, phone);
       paymentOverlay.style.display = "flex";
     }
@@ -277,8 +276,16 @@
       window.location.href = upiLink;
       const startTime = Date.now();
       const checkInterval = setInterval(() => {
-        if (document.hidden || Date.now() - startTime > 3000) {
+        if (document.hidden || Date.now() - startTime > 5000) { // Increased to 5 seconds
           clearInterval(checkInterval);
+          if (!document.hidden) {
+            if (confirm("Did you complete the payment in the UPI app?")) {
+              paymentConfirmed = true;
+            } else {
+              errorMessage.textContent = "Authentication revoked. Please try again.";
+              return;
+            }
+          }
           setTimeout(checkPaymentStatus, 100);
         }
       }, 500);
@@ -294,8 +301,16 @@
         window.location.href = upiLink;
         const startTime = Date.now();
         const checkInterval = setInterval(() => {
-          if (document.hidden || Date.now() - startTime > 3000) {
+          if (document.hidden || Date.now() - startTime > 5000) { // Increased to 5 seconds
             clearInterval(checkInterval);
+            if (!document.hidden) {
+              if (confirm("Did you approve the payment request in the UPI app?")) {
+                paymentConfirmed = true;
+              } else {
+                errorMessage.textContent = "Authentication revoked. Please try again.";
+                return;
+              }
+            }
             setTimeout(checkPaymentStatus, 100);
           }
         }, 500);
@@ -305,13 +320,6 @@
     }
 
     function checkPaymentStatus() {
-      if (document.hidden) {
-        paymentConfirmed = true;
-      } else {
-        errorMessage.textContent = "Authentication revoked. Please try again.";
-        return;
-      }
-
       if (paymentConfirmed) {
         const name = document.getElementById("name").value.trim();
         const email = document.getElementById("email").value.trim();
@@ -320,7 +328,7 @@
         uploadSection.style.display = "block";
         downloadButton.style.display = "block";
         errorMessage.textContent = "Payment confirmed! Upload proof or download your file.";
-        savePaymentDetails(name, email, phone, price); // Save payment details
+        savePaymentDetails(name, email, phone, price);
       }
     }
 
