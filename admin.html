@@ -142,7 +142,7 @@
         presetsSection.innerHTML = presets.map(preset => `
           <div class="preset-item">
             Name: ${preset.name}<br>
-            Price: $${preset.price}<br>
+            Price: ₹${preset.price}<br>
             Download URL: ${preset.download_url}<br>
             Thumbnail URL: ${preset.thumbnail_url}<br>
             <button onclick="window.location.href='edit.html?preset=${encodeURIComponent(JSON.stringify(preset))}'">Edit</button>
