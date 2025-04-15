@@ -93,31 +93,6 @@
     .back-button:hover {
       background: #3a4b5f;
     }
-    .details-section {
-      margin-top: 20px;
-      display: none; /* Hidden by default, shown on desktop */
-    }
-    .details-section h3 {
-      font-size: 1.2em;
-      color: #f1f5f9;
-      margin-bottom: 10px;
-    }
-    .details-section p {
-      font-size: 0.9em;
-      color: #e2e8f0;
-      margin: 5px 0;
-    }
-    /* Show details on desktop, hide on mobile */
-    @media (max-width: 767px) {
-      .details-section {
-        display: none; /* Hidden on mobile */
-      }
-    }
-    @media (min-width: 768px) {
-      .details-section {
-        display: block; /* Shown on desktop */
-      }
-    }
     .footer {
       margin-top: auto;
       padding: 15px;
@@ -149,14 +124,6 @@
     </div>
     <button class="join-button" onclick="join()">Join</button>
     <button class="back-button" onclick="window.location.href='index.html'">Back</button>
-    <div class="details-section">
-      <h3>Login Details</h3>
-      <p>Username: user@example.com</p>
-      <p>Password: ********</p>
-      <h3>Other Details</h3>
-      <p>Membership ID: FNL-12345</p>
-      <p>Expiry Date: 2026-04-15</p>
-    </div>
     <p class="error-message" id="errorMessage"></p>
   </div>
   <div class="footer">
