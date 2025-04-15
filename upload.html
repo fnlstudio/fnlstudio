@@ -93,16 +93,22 @@
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <h1>Upload Preset</h1>
-  <div class="upload-form">
+  <div class="upload-form" id="uploadForm">
     <label for="name">Name:</label>
     <input type="text" id="name" required />
-    <label for="price">Price:</label>
+    <label for="price">Price (₹):</label>
     <input type="number" id="price" step="0.01" required />
     <label for="download_url">Download URL:</label>
     <input type="text" id="download_url" required />
     <label for="thumbnail_url">Thumbnail URL:</label>
     <input type="text" id="thumbnail_url" required />
-    <button class="upload-button" onclick="submitPreset()">Upload</button>
+    <label for="sample1">Sample 1 (optional):</label>
+    <input type="text" id="sample1" />
+    <label for="sample2">Sample 2 (optional):</label>
+    <input type="text" id="sample2" />
+    <label for="sample3">Sample 3 (optional):</label>
+    <input type="text" id="sample3" />
+    <button class="upload-button" onclick="uploadPreset()">Upload</button>
   </div>
   <button class="back-button" onclick="window.location.href='admin.html'">Back</button>
   <div id="errorMessage" class="error-message"></div>
@@ -119,29 +125,34 @@
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const errorMessage = document.getElementById("errorMessage");
 
-    async function submitPreset() {
+    async function uploadPreset() {
       const name = document.getElementById("name").value.trim();
       const price = document.getElementById("price").value.trim();
       const download_url = document.getElementById("download_url").value.trim();
       const thumbnail_url = document.getElementById("thumbnail_url").value.trim();
+      const sample1 = document.getElementById("sample1").value.trim() || null;
+      const sample2 = document.getElementById("sample2").value.trim() || null;
+      const sample3 = document.getElementById("sample3").value.trim() || null;
 
       if (!name || !price || !download_url || !thumbnail_url) {
-        errorMessage.textContent = "All fields are required.";
+        errorMessage.textContent = "Required fields are missing.";
         return;
       }
 
       try {
         const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         const presets = data.record.presets || [];
-        presets.push({ name, price, download_url, thumbnail_url });
-        const updateResponse = await fetch(API_URL, {
+        if (presets.some(p => p.name === name)) {
+          errorMessage.textContent = "Preset name already exists.";
+          return;
+        }
+        presets.push({ name, price, download_url, thumbnail_url, sample1, sample2, sample3 });
+        await fetch(API_URL, {
           method: "PUT",
           headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
           body: JSON.stringify({ ...data.record, presets })
         });
-        if (!updateResponse.ok) throw new Error("Failed to save preset");
         alert("Preset uploaded successfully!");
         window.location.href = "admin.html";
       } catch (error) {
@@ -149,6 +160,13 @@
         errorMessage.textContent = "Error uploading preset: " + error.message;
       }
     }
+
+    window.onload = () => {
+      document.getElementById("uploadForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        uploadPreset();
+      });
+    };
   </script>
 </body>
 </html>
