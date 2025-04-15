@@ -11,152 +11,179 @@
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #e2e8f0;
       text-align: center;
-      padding: 20px;
+      padding: 0;
       margin: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+    }
+    .logo {
+      margin-bottom: 20px;
     }
     .logo img {
-      width: 200px;
+      width: 120px;
       height: auto;
-      margin-bottom: 30px;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
-    h1 {
-      font-size: 1.5em;
-      margin: 15px 0;
-      color: #f1f5f9;
-      font-weight: 600;
-    }
-    .join-form {
+    .join-section {
       background-color: #1e293b;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      max-width: 400px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      max-width: 350px;
       width: 90%;
       text-align: left;
+      border: 1px solid #2d3b4e;
     }
-    .join-form label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
+    .join-section h2 {
+      font-size: 1.5em;
       color: #f1f5f9;
+      margin: 0 0 15px 0;
+      font-weight: 600;
     }
-    .join-form input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: none;
-      border-radius: 10px;
-      background-color: #2d3b4e;
+    .join-details label {
+      display: block;
+      margin: 8px 0 5px;
+      font-size: 0.95em;
       color: #e2e8f0;
-      font-size: 14px;
+    }
+    .join-details input {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+      border: 1px solid #4a5b6f;
+      border-radius: 5px;
+      background: #2d3b4e;
+      color: #e2e8f0;
+      font-size: 0.95em;
+      box-sizing: border-box;
+    }
+    .join-details input:focus {
+      border-color: #10b981;
+      outline: none;
     }
     .join-button {
-      background-color: #10b981;
-      padding: 12px 30px;
+      background: #10b981;
+      padding: 10px;
       border: none;
-      border-radius: 10px;
-      color: white;
+      border-radius: 5px;
+      color: #fff;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 16px;
-      transition: background-color 0.3s, transform 0.2s;
+      font-weight: 500;
+      font-size: 0.95em;
+      margin: 10px 0;
+      width: 100%;
     }
     .join-button:hover {
-      background-color: #059669;
-      transform: translateY(-2px);
+      background: #059669;
     }
     .back-button {
-      background-color: #4a5b6f;
-      padding: 10px 20px;
+      background: #4a5b6f;
+      padding: 10px;
       border: none;
-      border-radius: 10px;
+      border-radius: 5px;
       color: #e2e8f0;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 500;
       margin-top: 10px;
-      transition: background-color 0.3s, transform 0.2s;
+      width: 100%;
     }
     .back-button:hover {
-      background-color: #3a4b5f;
-      transform: translateY(-2px);
+      background: #3a4b5f;
+    }
+    .details-section {
+      margin-top: 20px;
+      display: none; /* Hidden by default, shown on desktop */
+    }
+    .details-section h3 {
+      font-size: 1.2em;
+      color: #f1f5f9;
+      margin-bottom: 10px;
+    }
+    .details-section p {
+      font-size: 0.9em;
+      color: #e2e8f0;
+      margin: 5px 0;
+    }
+    /* Show details on desktop, hide on mobile */
+    @media (max-width: 767px) {
+      .details-section {
+        display: none; /* Hidden on mobile */
+      }
+    }
+    @media (min-width: 768px) {
+      .details-section {
+        display: block; /* Shown on desktop */
+      }
     }
     .footer {
       margin-top: auto;
-      padding: 20px;
-      background-color: #0f172a;
+      padding: 15px;
+      background: #0f172a;
       width: 100%;
       text-align: center;
-      border-top: 1px solid #2d3b4e;
+      color: #e2e8f0;
+      font-size: 0.85em;
     }
-    .error-message { color: #ef4444; margin-top: 10px; }
+    .error-message {
+      color: #ef4444;
+      margin-top: 5px;
+      font-size: 0.85em;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <h1>Join</h1>
-  <div class="join-form" id="joinForm">
-    <label for="name">Name:</label>
-    <input type="text" id="name" required />
-    <label for="email">Email:</label>
-    <input type="email" id="email" required />
+  <div class="join-section">
+    <h2>Join</h2>
+    <div class="join-details">
+      <label>Full Name:</label>
+      <input type="text" id="fullName" placeholder="Enter your full name" required>
+      <label>Email:</label>
+      <input type="email" id="email" placeholder="Enter your email" required>
+    </div>
     <button class="join-button" onclick="join()">Join</button>
+    <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+    <div class="details-section">
+      <h3>Login Details</h3>
+      <p>Username: user@example.com</p>
+      <p>Password: ********</p>
+      <h3>Other Details</h3>
+      <p>Membership ID: FNL-12345</p>
+      <p>Expiry Date: 2026-04-15</p>
+    </div>
+    <p class="error-message" id="errorMessage"></p>
   </div>
-  <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div class="footer">
-    <h3>About Us</h3>
-    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
-    <h3>Copyright ©</h3>
-    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+    <p>© 2025 FNL Studio. All rights reserved.</p>
   </div>
-  <div id="errorMessage" class="error-message"></div>
 
   <script>
-    const BIN_ID = "67fccb0b8960c979a584b5d5";
-    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
-    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const errorMessage = document.getElementById("errorMessage");
+    const fullNameInput = document.getElementById('fullName');
+    const emailInput = document.getElementById('email');
+    const errorMessage = document.getElementById('errorMessage');
 
-    async function join() {
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
+    function join() {
+      const fullName = fullNameInput.value.trim();
+      const email = emailInput.value.trim();
 
-      if (!name || !email) {
-        errorMessage.textContent = "Please fill all fields.";
+      if (!fullName) {
+        errorMessage.textContent = 'Please enter your full name.';
+        return;
+      }
+      if (!email || !/@/.test(email)) {
+        errorMessage.textContent = 'Please enter a valid email.';
         return;
       }
 
-      try {
-        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
-        const data = await response.json();
-        const joinDetails = data.record.join_details || [];
-        joinDetails.push({ name, email, timestamp: new Date().toISOString() });
-        await fetch(API_URL, {
-          method: "PUT",
-          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data.record, join_details: joinDetails })
-        });
-        localStorage.setItem("userName", name); // Store name in localStorage
-        alert("Joined successfully!");
-        window.location.href = "index.html";
-      } catch (error) {
-        console.error("Error joining:", error);
-        errorMessage.textContent = "Error joining: " + error.message;
-      }
+      // Redirect to feedback.html
+      window.location.href = 'feedback.html';
     }
-
-    window.onload = () => {
-      document.getElementById("joinForm").addEventListener("submit", (e) => {
-        e.preventDefault();
-        join();
-      });
-    };
   </script>
 </body>
 </html>
