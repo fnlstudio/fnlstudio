@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin - FNL Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .logo img {
+      width: 150px;
+      height: auto;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
+    .admin-form {
+      background-color: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 90%;
+      text-align: left;
+    }
+    .admin-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    .admin-form input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 10px;
+      background-color: #2d3b4e;
+      color: #e2e8f0;
+    }
+    .admin-button {
+      background-color: #10b981;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 5px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .admin-button:hover { background-color: #059669; transform: translateY(-2px); }
+    .preset-list {
+      text-align: left;
+      margin-top: 20px;
+    }
+    .back-button {
+      background-color: #4a5b6f;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      color: #e2e8f0;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
+    .error-message { color: #ef4444; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
+  </div>
+  <h1>Admin - FNL Studio</h1>
+  <div class="admin-form">
+    <label for="presetUrl">Add/Edit Preset URL (Google Drive):</label>
+    <input type="text" id="presetUrl" placeholder="e.g., https://drive.google.com/file/d/1X2Y3Z4ABCDEF/view">
+    <button class="admin-button" onclick="savePresetUrl()">Save Preset</button>
+  </div>
+  <div class="preset-list" id="presetList"></div>
+  <button class="back-button" onclick="window.location.href='home.html'">Back</button>
+  <div id="errorMessage" class="error-message"></div>
+
+  <script>
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const errorMessage = document.getElementById("errorMessage");
+    const presetList = document.getElementById("presetList");
+
+    async function loadPresets() {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const presets = data.record.presets || [];
+        presetList.innerHTML = presets.map((url, index) => `<p>Preset ${index + 1}: <a href="${url}" target="_blank">${url}</a></p>`).join("");
+      } catch (error) {
+        console.error("Error loading presets:", error);
+        errorMessage.textContent = "Error loading presets: " + error.message;
+      }
+    }
+
+    async function savePresetUrl() {
+      const presetUrl = document.getElementById("presetUrl").value.trim();
+      if (!presetUrl) {
+        errorMessage.textContent = "Please enter a valid URL.";
+        return;
+      }
+
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const presets = data.record.presets || [];
+        presets.push(presetUrl);
+        const updateResponse = await fetch(API_URL, {
+          method: "PUT",
+          headers: {
+            "X-Master-Key": MASTER_KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            presets: presets,
+            feedbacks: data.record.feedbacks || [],
+            login_details: data.record.login_details || [],
+            payment_details: data.record.payment_details || []
+          })
+        });
+        if (!updateResponse.ok) throw new Error("Failed to save preset");
+        errorMessage.textContent = "Preset saved successfully!";
+        document.getElementById("presetUrl").value = ""; // Clear input
+        loadPresets(); // Refresh list
+      } catch (error) {
+        console.error("Error saving preset:", error);
+        errorMessage.textContent = "Error saving preset: " + error.message;
+      }
+    }
+
+    // Load presets on page load
+    window.onload = loadPresets;
+  </script>
+</body>
+</html>
