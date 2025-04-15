@@ -90,13 +90,13 @@
   <div id="errorMessage" class="error-message"></div>
 
   <script>
-    const CORRECT_CODE = "FNL2025"; // Replace with your actual collaborator code
+    const CORRECT_CODE = "042404"; // Replace with your actual collaborator code
     const errorMessage = document.getElementById("errorMessage");
 
     function loginAdmin() {
       const code = document.getElementById("code").value.trim();
       if (code === CORRECT_CODE) {
-        window.location.href = "home.html"; // Redirect to home.html on success
+        window.location.href = "home.html"; // Ensure redirect to home.html
       } else {
         errorMessage.textContent = "Invalid collaborator code. Please try again.";
       }
