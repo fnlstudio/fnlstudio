@@ -5,161 +5,176 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Feedback - FNL Studio</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #e2e8f0;
       text-align: center;
-      padding: 20px;
+      padding: 0;
       margin: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+    }
+    .logo {
+      margin-bottom: 20px;
     }
     .logo img {
-      width: 200px;
+      width: 120px;
       height: auto;
-      margin-bottom: 30px;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-    }
-    h1 {
-      font-size: 1.5em;
-      margin: 15px 0;
-      color: #f1f5f9;
-      font-weight: 600;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
     .feedback-section {
       background-color: #1e293b;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      max-width: 600px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      max-width: 350px;
       width: 90%;
       text-align: left;
+      border: 1px solid #2d3b4e;
     }
-    .feedback-item {
-      background-color: #2d3b4e;
-      padding: 15px;
-      border-radius: 10px;
-      margin: 15px 0;
-      transition: transform 0.3s;
-    }
-    .feedback-item:hover {
-      transform: scale(1.02);
-    }
-    .feedback-item .rating {
-      color: #facc15; /* Gold color for stars */
-      font-size: 1.2em;
-    }
-    .feedback-item .like-btn {
-      background: none;
-      border: none;
-      color: #10b981;
-      cursor: pointer;
+    .feedback-section h2 {
       font-size: 1.5em;
-      margin-left: 10px;
+      color: #f1f5f9;
+      margin: 0 0 15px 0;
+      font-weight: 600;
+    }
+    .rating {
+      margin: 10px 0;
+      font-size: 1.5em;
+      cursor: pointer;
+    }
+    .star {
+      color: #4a5b6f; /* Outline color */
+      margin: 0 5px;
       transition: color 0.3s;
     }
-    .feedback-item .like-btn:hover {
-      color: #059669;
+    .star.filled {
+      color: #10b981; /* Filled color */
     }
-    .add-feedback-btn {
-      background-color: #10b981;
-      padding: 12px 30px;
+    .feedback-details textarea {
+      width: 100%;
+      height: 100px;
+      padding: 8px;
+      margin: 10px 0;
+      border: 1px solid #4a5b6f;
+      border-radius: 5px;
+      background: #2d3b4e;
+      color: #e2e8f0;
+      font-size: 0.95em;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    .feedback-details textarea:focus {
+      border-color: #10b981;
+      outline: none;
+    }
+    .submit-button {
+      background: #10b981;
+      padding: 10px;
       border: none;
-      border-radius: 10px;
-      color: white;
+      border-radius: 5px;
+      color: #fff;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 16px;
-      transition: background-color 0.3s, transform 0.2s;
-      margin-top: 20px;
+      font-weight: 500;
+      font-size: 0.95em;
+      margin: 10px 0;
+      width: 100%;
     }
-    .add-feedback-btn:hover {
-      background-color: #059669;
-      transform: translateY(-2px);
+    .submit-button:hover {
+      background: #059669;
     }
     .back-button {
-      background-color: #4a5b6f;
-      padding: 10px 20px;
+      background: #4a5b6f;
+      padding: 10px;
       border: none;
-      border-radius: 10px;
+      border-radius: 5px;
       color: #e2e8f0;
       cursor: pointer;
-      font-weight: 600;
-      margin-top: 20px;
-      transition: background-color 0.3s, transform 0.2s;
+      font-weight: 500;
+      margin-top: 10px;
+      width: 100%;
     }
     .back-button:hover {
-      background-color: #3a4b5f;
-      transform: translateY(-2px);
+      background: #3a4b5f;
     }
     .footer {
       margin-top: auto;
-      padding: 20px;
-      background-color: #0f172a;
+      padding: 15px;
+      background: #0f172a;
       width: 100%;
       text-align: center;
-      border-top: 1px solid #2d3b4e;
+      color: #e2e8f0;
+      font-size: 0.85em;
     }
-    .error-message { color: #ef4444; margin-top: 10px; }
+    .error-message {
+      color: #ef4444;
+      margin-top: 5px;
+      font-size: 0.85em;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <h1>Feedback</h1>
-  <div class="feedback-section" id="feedbackSection">
-    <!-- Feedback will be populated by JavaScript -->
+  <div class="feedback-section">
+    <h2>Feedback</h2>
+    <div class="rating" id="rating">
+      <span class="star" onclick="rate(1)">&#9733;</span>
+      <span class="star" onclick="rate(2)">&#9733;</span>
+      <span class="star" onclick="rate(3)">&#9733;</span>
+      <span class="star" onclick="rate(4)">&#9733;</span>
+      <span class="star" onclick="rate(5)">&#9733;</span>
+    </div>
+    <div class="feedback-details">
+      <textarea id="feedbackText" placeholder="Enter your feedback here..."></textarea>
+    </div>
+    <button class="submit-button" onclick="submitFeedback()">Submit</button>
+    <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+    <p class="error-message" id="errorMessage"></p>
   </div>
-  <button class="add-feedback-btn" onclick="window.location.href='addfeedback.html'">ADD FEEDBACK</button>
-  <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div class="footer">
-    <h3>About Us</h3>
-    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
-    <h3>Copyright ©</h3>
-    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+    <p>© 2025 FNL Studio. All rights reserved.</p>
   </div>
-  <div id="errorMessage" class="error-message"></div>
 
   <script>
-    const BIN_ID = "67fccb0b8960c979a584b5d5";
-    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
-    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const feedbackSection = document.getElementById("feedbackSection");
+    const stars = document.querySelectorAll('.star');
+    const errorMessage = document.getElementById('errorMessage');
+    let rating = 0;
 
-    async function loadFeedback() {
-      try {
-        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        const feedbacks = data.record.feedbacks || [];
-        feedbackSection.innerHTML = feedbacks.map(feedback => `
-          <div class="feedback-item">
-            <p><strong>${feedback.name}</strong> - <span class="rating">${'🌟'.repeat(feedback.rating || 1)}</span></p>
-            <p>${feedback.caption}</p>
-            <button class="like-btn" onclick="toggleLike(this)"><i class="fas ${feedback.liked ? 'fa-heart' : 'fa-heart-o'}"></i></button>
-          </div>
-        `).join("") || "<p>No feedback available.</p>";
-      } catch (error) {
-        console.error("Error loading feedback:", error);
-        feedbackSection.innerHTML = "<p>Error loading feedback. Contact admin.</p>";
+    function rate(value) {
+      rating = value;
+      stars.forEach((star, index) => {
+        if (index < value) {
+          star.classList.add('filled');
+        } else {
+          star.classList.remove('filled');
+        }
+      });
+    }
+
+    function submitFeedback() {
+      const feedbackText = document.getElementById('feedbackText').value.trim();
+
+      if (rating === 0) {
+        errorMessage.textContent = 'Please select a rating.';
+        return;
       }
-    }
+      if (!feedbackText) {
+        errorMessage.textContent = 'Please enter your feedback.';
+        return;
+      }
 
-    function toggleLike(button) {
-      const feedbackItem = button.parentElement;
-      const icon = button.querySelector("i");
-      icon.classList.toggle("fa-heart");
-      icon.classList.toggle("fa-heart-o");
-      // Note: This only toggles visually; actual like count would need backend update
+      alert(`Feedback submitted! Rating: ${rating} stars, Comment: ${feedbackText}`);
+      // Add your feedback submission logic here (e.g., send to server)
+      window.location.href = 'index.html'; // Redirect after submission
     }
-
-    window.onload = loadFeedback;
   </script>
 </body>
 </html>
