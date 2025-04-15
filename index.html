@@ -25,7 +25,7 @@
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
     h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
-    .menu-button {
+    .menu-button, .read-more {
       background-color: #10b981;
       padding: 10px 20px;
       border: none;
@@ -36,17 +36,90 @@
       margin: 5px;
       transition: background-color 0.3s, transform 0.2s;
     }
-    .menu-button:hover { background-color: #059669; transform: translateY(-2px); }
+    .menu-button:hover, .read-more:hover { background-color: #059669; transform: translateY(-2px); }
+    .menu-dots {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: #e2e8f0;
+    }
+    .feedback-section {
+      margin: 20px 0;
+    }
+    .feedback-item {
+      background-color: #1e293b;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px 0;
+      max-width: 400px;
+      width: 90%;
+    }
+    .presets-section {
+      margin: 20px 0;
+    }
+    .footer {
+      margin-top: auto;
+      padding: 20px;
+      background-color: #0f172a;
+      width: 100%;
+      text-align: center;
+    }
+    .error-message { color: #ef4444; margin-top: 10px; }
   </style>
 </head>
 <body>
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <h1>Welcome to FNL Studio</h1>
-  <button class="menu-button" onclick="window.location.href='menu.html'">Menu</button>
-  <button class="menu-button" onclick="window.location.href='join.html'">Join</button>
-  <button class="menu-button" onclick="window.location.href='adminlogin.html'">Admin</button>
+  <button class="menu-dots" onclick="window.location.href='menu.html'">&#x22EE;</button>
+  <h1>Fully Presets</h1>
+  <div class="feedback-section" id="feedbackSection">
+    <h2>3 Feedback Sorted by Relevance</h2>
+    <!-- Feedback will be populated by JavaScript -->
+  </div>
+  <button class="read-more" onclick="window.location.href='join.html'">Read More Feedback</button>
+  <div class="presets-section">
+    <h2>Our Presets All</h2>
+    <!-- Placeholder for presets (to be expanded) -->
+    <p>Explore our full range of presets!</p>
+  </div>
+  <div class="footer">
+    <h3>About Us</h3>
+    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
+    <h3>Copyright ©</h3>
+    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+  </div>
   <div id="errorMessage" class="error-message"></div>
+
+  <script>
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const feedbackSection = document.getElementById("feedbackSection");
+
+    async function loadFeedback() {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const feedbacks = data.record.feedbacks || [];
+        const recentFeedbacks = feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 3);
+        feedbackSection.innerHTML = `<h2>3 Feedback Sorted by Relevance</h2>` +
+          recentFeedbacks.map(feedback => `<div class="feedback-item">${feedback.text || 'No feedback text'} - ${new Date(feedback.timestamp).toLocaleDateString()}</div>`).join("");
+      } catch (error) {
+        console.error("Error loading feedback:", error);
+        feedbackSection.innerHTML = "<p>Error loading feedback. Contact admin.</p>";
+      }
+    }
+
+    // Load feedback on page load
+    window.onload = loadFeedback;
+  </script>
 </body>
 </html>
