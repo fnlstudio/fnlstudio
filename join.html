@@ -24,7 +24,12 @@
       margin-bottom: 30px;
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
     }
-    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
+    h1 {
+      font-size: 1.5em;
+      margin: 15px 0;
+      color: #f1f5f9;
+      font-weight: 600;
+    }
     .join-form {
       background-color: #1e293b;
       padding: 25px;
@@ -76,7 +81,10 @@
       margin-top: 10px;
       transition: background-color 0.3s, transform 0.2s;
     }
-    .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
+    .back-button:hover {
+      background-color: #3a4b5f;
+      transform: translateY(-2px);
+    }
     .footer {
       margin-top: auto;
       padding: 20px;
@@ -92,24 +100,22 @@
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <h1>Join FNL Studio</h1>
-  <div class="join-form">
+  <h1>Join</h1>
+  <div class="join-form" id="joinForm">
     <label for="name">Name:</label>
     <input type="text" id="name" required />
     <label for="email">Email:</label>
     <input type="email" id="email" required />
-    <label for="phone">Phone Number:</label>
-    <input type="tel" id="phone" required />
-    <button class="join-button" onclick="submitJoinForm()">Join Now</button>
+    <button class="join-button" onclick="join()">Join</button>
   </div>
   <button class="back-button" onclick="window.location.href='index.html'">Back</button>
-  <div id="errorMessage" class="error-message"></div>
   <div class="footer">
     <h3>About Us</h3>
     <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
     <h3>Copyright ©</h3>
     <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
   </div>
+  <div id="errorMessage" class="error-message"></div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
@@ -117,49 +123,40 @@
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const errorMessage = document.getElementById("errorMessage");
 
-    function submitJoinForm() {
+    async function join() {
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
-      const phone = document.getElementById("phone").value.trim();
 
-      if (!name || !email || !phone) {
-        errorMessage.textContent = "All fields are required.";
+      if (!name || !email) {
+        errorMessage.textContent = "Please fill all fields.";
         return;
       }
 
-      saveLoginDetails(name, email, phone);
-    }
-
-    async function saveLoginDetails(name, email, phone) {
       try {
-        const response = await fetch(API_URL + "/latest", {
-          headers: { "X-Master-Key": MASTER_KEY }
-        });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
         const data = await response.json();
-        const loginDetails = data.record.login_details || [];
-        loginDetails.push({ name, email, phone, timestamp: new Date().toISOString() });
-        const updateResponse = await fetch(API_URL, {
+        const joinDetails = data.record.join_details || [];
+        joinDetails.push({ name, email, timestamp: new Date().toISOString() });
+        await fetch(API_URL, {
           method: "PUT",
-          headers: {
-            "X-Master-Key": MASTER_KEY,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            presets: data.record.presets || [],
-            feedbacks: data.record.feedbacks || [],
-            login_details: loginDetails,
-            payment_details: data.record.payment_details || []
-          })
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data.record, join_details: joinDetails })
         });
-        if (!updateResponse.ok) throw new Error("Failed to save login details");
-        alert("Join successful! Redirecting to feedback...");
-        window.location.href = "feedback.html";
+        localStorage.setItem("userName", name); // Store name in localStorage
+        alert("Joined successfully!");
+        window.location.href = "index.html";
       } catch (error) {
-        console.error("Error saving login details:", error);
-        errorMessage.textContent = "Error saving details: " + error.message;
+        console.error("Error joining:", error);
+        errorMessage.textContent = "Error joining: " + error.message;
       }
     }
+
+    window.onload = () => {
+      document.getElementById("joinForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        join();
+      });
+    };
   </script>
 </body>
 </html>
