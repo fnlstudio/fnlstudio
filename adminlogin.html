@@ -96,7 +96,7 @@
     function loginAdmin() {
       const code = document.getElementById("code").value.trim();
       if (code === CORRECT_CODE) {
-        window.location.href = "admin.html"; // Redirect to admin page on success
+        window.location.href = "home.html"; // Redirect to home.html on success
       } else {
         errorMessage.textContent = "Invalid collaborator code. Please try again.";
       }
