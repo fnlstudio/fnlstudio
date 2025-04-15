@@ -264,6 +264,8 @@
         return;
       }
 
+      // Save login details to JSONBin.io
+      saveLoginDetails(name, email, phone);
       paymentOverlay.style.display = "flex";
     }
 
@@ -277,7 +279,7 @@
       const checkInterval = setInterval(() => {
         if (document.hidden || Date.now() - startTime > 3000) {
           clearInterval(checkInterval);
-          setTimeout(checkPaymentStatus, 100); // Slight delay to detect return
+          setTimeout(checkPaymentStatus, 100);
         }
       }, 500);
     }
@@ -294,7 +296,7 @@
         const checkInterval = setInterval(() => {
           if (document.hidden || Date.now() - startTime > 3000) {
             clearInterval(checkInterval);
-            setTimeout(checkPaymentStatus, 100); // Slight delay to detect return
+            setTimeout(checkPaymentStatus, 100);
           }
         }, 500);
       } else {
@@ -304,62 +306,90 @@
 
     function checkPaymentStatus() {
       if (document.hidden) {
-        // User likely completed payment in UPI app
         paymentConfirmed = true;
       } else {
-        // User returned without completing payment
         errorMessage.textContent = "Authentication revoked. Please try again.";
         return;
       }
 
       if (paymentConfirmed) {
-        uploadSection.style.display = "block"; // Show upload option
-        downloadButton.style.display = "block"; // Show download button
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const price = urlParams.get('price') || 'N/A';
+        uploadSection.style.display = "block";
+        downloadButton.style.display = "block";
         errorMessage.textContent = "Payment confirmed! Upload proof or download your file.";
-        // Optionally save to JSONBin.io (uncomment if needed)
-        /*
-        const file = imageUpload.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = async function(e) {
-            const base64Image = e.target.result;
-            try {
-              const response = await fetch(API_URL + "/latest", {
-                headers: { "X-Master-Key": MASTER_KEY }
-              });
-              if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-              const data = await response.json();
-              const paymentDetails = data.record.payment_details || [];
-              paymentDetails.push({
-                price: urlParams.get('price') || 'N/A',
-                name: document.getElementById("name").value.trim(),
-                email: document.getElementById("email").value.trim(),
-                phone: document.getElementById("phone").value.trim(),
-                proof: base64Image,
-                timestamp: new Date().toISOString()
-              });
-              const updateResponse = await fetch(API_URL, {
-                method: "PUT",
-                headers: {
-                  "X-Master-Key": MASTER_KEY,
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                  presets: data.record.presets || [],
-                  feedbacks: data.record.feedbacks || [],
-                  login_details: data.record.login_details || [],
-                  payment_details: paymentDetails
-                })
-              });
-              if (!updateResponse.ok) throw new Error("Failed to save payment");
-            } catch (error) {
-              console.error("Error saving payment:", error);
-              errorMessage.textContent = "Error saving payment: " + error.message;
-            }
-          };
-          reader.readAsDataURL(file);
-        }
-        */
+        savePaymentDetails(name, email, phone, price); // Save payment details
+      }
+    }
+
+    async function saveLoginDetails(name, email, phone) {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const loginDetails = data.record.login_details || [];
+        loginDetails.push({
+          name: name,
+          email: email,
+          phone: phone,
+          timestamp: new Date().toISOString()
+        });
+        const updateResponse = await fetch(API_URL, {
+          method: "PUT",
+          headers: {
+            "X-Master-Key": MASTER_KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            presets: data.record.presets || [],
+            feedbacks: data.record.feedbacks || [],
+            login_details: loginDetails,
+            payment_details: data.record.payment_details || []
+          })
+        });
+        if (!updateResponse.ok) throw new Error("Failed to save login details");
+      } catch (error) {
+        console.error("Error saving login details:", error);
+        errorMessage.textContent = "Error saving login details: " + error.message;
+      }
+    }
+
+    async function savePaymentDetails(name, email, phone, price) {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const paymentDetails = data.record.payment_details || [];
+        paymentDetails.push({
+          price: price,
+          name: name,
+          email: email,
+          phone: phone,
+          timestamp: new Date().toISOString()
+        });
+        const updateResponse = await fetch(API_URL, {
+          method: "PUT",
+          headers: {
+            "X-Master-Key": MASTER_KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            presets: data.record.presets || [],
+            feedbacks: data.record.feedbacks || [],
+            login_details: data.record.login_details || [],
+            payment_details: paymentDetails
+          })
+        });
+        if (!updateResponse.ok) throw new Error("Failed to save payment details");
+      } catch (error) {
+        console.error("Error saving payment details:", error);
+        errorMessage.textContent = "Error saving payment details: " + error.message;
       }
     }
 
