@@ -17,6 +17,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
     }
     .logo img {
       width: 150px;
@@ -53,6 +54,9 @@
     }
     #imageUpload {
       display: none;
+    }
+    .upload-section {
+      display: none; /* Hidden until payment confirmed */
     }
     .upload-button {
       background-color: #10b981;
@@ -99,8 +103,8 @@
       transition: background-color 0.3s, transform 0.2s;
     }
     #payButton:hover { background-color: #059669; transform: translateY(-2px); }
-    .back-button {
-      background-color: #ef4444;
+    .download-button {
+      background-color: #10b981;
       padding: 10px 20px;
       border: none;
       border-radius: 10px;
@@ -109,9 +113,64 @@
       font-weight: 600;
       margin-top: 10px;
       transition: background-color 0.3s, transform 0.2s;
+      display: none; /* Hidden until payment confirmed */
     }
-    .back-button:hover { background-color: #dc2626; transform: translateY(-2px); }
+    .download-button:hover { background-color: #059669; transform: translateY(-2px); }
+    .back-button {
+      background-color: #4a5b6f;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      color: #e2e8f0;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
     .error-message { color: #ef4444; margin-top: 10px; }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .overlay-content {
+      background-color: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 300px;
+      width: 90%;
+    }
+    .overlay-input {
+      width: 80%;
+      padding: 8px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 10px;
+      background-color: #2d3b4e;
+      color: #e2e8f0;
+      font-size: 1em;
+    }
+    .overlay-button {
+      background-color: #10b981;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 10px 5px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .overlay-button:hover { background-color: #059669; transform: translateY(-2px); }
   </style>
 </head>
 <body>
@@ -127,9 +186,7 @@
     <input type="email" id="email" required>
     <label for="phone">Phone Number:</label>
     <input type="tel" id="phone" required>
-    <label for="qrCode">QR Code:</label>
-    <input type="text" id="qrCode" required>
-    <div class="upload-section">
+    <div class="upload-section" id="uploadSection">
       <label for="imageUpload" class="upload-button">Upload Proof</label>
       <input type="file" id="imageUpload" accept="image/*" onchange="previewImage()">
       <img id="imagePreview" alt="Preview of uploaded proof">
@@ -138,10 +195,20 @@
       <p>Captcha: <span id="captchaText"></span></p>
       <input type="text" id="userCaptcha" placeholder="Enter CAPTCHA" required>
     </div>
-    <button id="payButton" onclick="handlePayment()">Pay</button>
+    <button id="payButton" onclick="showPaymentOptions()">Pay</button>
+    <button class="download-button" id="downloadButton" onclick="window.location.href='https://drive.google.com/uc?export=download&id=YOUR_FILE_ID'">Download</button> <!-- Replace YOUR_FILE_ID -->
   </div>
   <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div id="errorMessage" class="error-message"></div>
+
+  <div class="overlay" id="paymentOverlay">
+    <div class="overlay-content">
+      <h2>Payment Options</h2>
+      <button class="overlay-button" onclick="openUPI()">Pay Directly</button>
+      <input type="text" class="overlay-input" id="userUPI" placeholder="Enter your UPI ID (e.g., username@bank)">
+      <button class="overlay-button" onclick="sendUPIRequest()">Send Request</button>
+    </div>
+  </div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
@@ -151,8 +218,12 @@
     document.getElementById("price").textContent = `₹${urlParams.get('price') || 'N/A'}`;
     const imageUpload = document.getElementById("imageUpload");
     const imagePreview = document.getElementById("imagePreview");
+    const uploadSection = document.getElementById("uploadSection");
+    const downloadButton = document.getElementById("downloadButton");
     const errorMessage = document.getElementById("errorMessage");
+    const paymentOverlay = document.getElementById("paymentOverlay");
     let captcha = generateCaptcha();
+    let paymentConfirmed = false;
 
     function generateCaptcha() {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -176,27 +247,13 @@
       }
     }
 
-    function openUPI() {
-      const name = document.getElementById("name").value.trim();
-      const amount = urlParams.get('price') || 'N/A';
-      const upiLink = `upi://pay?pa=9747604405@fam&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=PaymentForFNLStudio`;
-      window.location.href = upiLink;
-      setTimeout(() => {
-        if (document.hidden) return; // App opened successfully
-        alert("No UPI app found. Please install Google Pay or PhonePe.");
-        window.location.href = "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user";
-      }, 1000);
-    }
-
-    async function handlePayment() {
+    function showPaymentOptions() {
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
       const phone = document.getElementById("phone").value.trim();
-      const qrCode = document.getElementById("qrCode").value.trim();
       const userCaptcha = document.getElementById("userCaptcha").value.trim();
-      const file = imageUpload.files[0];
 
-      if (!name || !email || !phone || !qrCode || !file || !userCaptcha) {
+      if (!name || !email || !phone || !userCaptcha) {
         errorMessage.textContent = "All fields are required.";
         return;
       }
@@ -207,55 +264,89 @@
         return;
       }
 
-      // Attempt UPI payment
-      openUPI();
+      paymentOverlay.style.display = "flex";
+    }
 
-      // Optional: Save details to JSONBin.io after payment (uncomment if needed)
-      /*
-      const reader = new FileReader();
-      reader.onload = async function(e) {
-        const base64Image = e.target.result;
-        try {
-          const response = await fetch(API_URL + "/latest", {
-            headers: { "X-Master-Key": MASTER_KEY }
-          });
-          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-          const data = await response.json();
-          const paymentDetails = data.record.payment_details || [];
-          paymentDetails.push({
-            price: urlParams.get('price') || 'N/A',
-            name,
-            email,
-            phone,
-            qrCode,
-            proof: base64Image,
-            timestamp: new Date().toISOString()
-          });
+    function openUPI() {
+      const name = document.getElementById("name").value.trim();
+      const amount = urlParams.get('price') || 'N/A';
+      const upiLink = `upi://pay?pa=9747604405@fam&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=PaymentForFNLStudio`;
+      paymentOverlay.style.display = "none";
+      window.location.href = upiLink;
+      setTimeout(checkPaymentStatus, 2000); // Check status after 2 seconds
+    }
 
-          const updateResponse = await fetch(API_URL, {
-            method: "PUT",
-            headers: {
-              "X-Master-Key": MASTER_KEY,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              presets: data.record.presets || [],
-              feedbacks: data.record.feedbacks || [],
-              login_details: data.record.login_details || [],
-              payment_details: paymentDetails
-            })
-          });
-          if (!updateResponse.ok) throw new Error("Failed to save payment");
+    function sendUPIRequest() {
+      const userUPI = document.getElementById("userUPI").value.trim();
+      if (userUPI) {
+        paymentOverlay.style.display = "none";
+        alert(`Payment request sent to ${userUPI}. Please approve the request in your UPI app.`);
+        // Simulate sending request (real implementation needs server-side UPI API)
+        setTimeout(checkPaymentStatus, 2000); // Check status after 2 seconds
+      } else {
+        alert("Please enter a valid UPI ID.");
+      }
+    }
 
-          alert("Payment submitted successfully! Please DM @fnl_studio_ with your details.");
-          window.location.href = "index.html";
-        } catch (error) {
-          console.error("Error submitting payment:", error);
-          errorMessage.textContent = "Error processing payment: " + error.message;
+    function checkPaymentStatus() {
+      if (document.hidden) {
+        // User likely completed payment in UPI app
+        paymentConfirmed = true;
+      } else {
+        // User returned without completing payment
+        errorMessage.textContent = "Authentication revoked. Please try again.";
+        return;
+      }
+
+      if (paymentConfirmed) {
+        uploadSection.style.display = "block"; // Show upload option
+        downloadButton.style.display = "block"; // Show download button
+        errorMessage.textContent = "Payment confirmed! Upload proof or download your file.";
+        // Optionally save to JSONBin.io (uncomment if needed)
+        /*
+        const file = imageUpload.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = async function(e) {
+            const base64Image = e.target.result;
+            try {
+              const response = await fetch(API_URL + "/latest", {
+                headers: { "X-Master-Key": MASTER_KEY }
+              });
+              if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+              const data = await response.json();
+              const paymentDetails = data.record.payment_details || [];
+              paymentDetails.push({
+                price: urlParams.get('price') || 'N/A',
+                name: document.getElementById("name").value.trim(),
+                email: document.getElementById("email").value.trim(),
+                phone: document.getElementById("phone").value.trim(),
+                proof: base64Image,
+                timestamp: new Date().toISOString()
+              });
+              const updateResponse = await fetch(API_URL, {
+                method: "PUT",
+                headers: {
+                  "X-Master-Key": MASTER_KEY,
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  presets: data.record.presets || [],
+                  feedbacks: data.record.feedbacks || [],
+                  login_details: data.record.login_details || [],
+                  payment_details: paymentDetails
+                })
+              });
+              if (!updateResponse.ok) throw new Error("Failed to save payment");
+            } catch (error) {
+              console.error("Error saving payment:", error);
+              errorMessage.textContent = "Error saving payment: " + error.message;
+            }
+          };
+          reader.readAsDataURL(file);
         }
-      };
-      reader.readAsDataURL(file);
-      */
+        */
+      }
     }
 
     // Generate initial CAPTCHA
