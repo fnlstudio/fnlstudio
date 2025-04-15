@@ -4,22 +4,114 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Payment - FNL Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #0f172a, #1e293b);
-      color: white;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
       text-align: center;
-      padding: 30px;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .logo img { width: 200px; height: auto; margin-top: 40px; }
-    h1 { font-size: 32px; margin: 20px 0; }
-    .form-group { max-width: 500px; margin: 20px auto; text-align: left; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; }
-    input { width: 100%; padding: 8px; border-radius: 5px; border: none; background-color: #1e293b; color: white; margin-bottom: 10px; }
-    button { background-color: #10b981; padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; }
-    #qr-code img { width: 200px; height: auto; }
-    #error { color: red; margin-top: 10px; display: none; }
+    .logo img {
+      width: 150px;
+      height: auto;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
+    .payment-details {
+      background-color: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 90%;
+      text-align: left;
+    }
+    .payment-details label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    .payment-details input[type="text"],
+    .payment-details input[type="email"],
+    .payment-details input[type="tel"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 10px;
+      background-color: #2d3b4e;
+      color: #e2e8f0;
+    }
+    #imageUpload {
+      display: none;
+    }
+    .upload-button {
+      background-color: #10b981;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .upload-button:hover { background-color: #059669; transform: translateY(-2px); }
+    #imagePreview {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 10px;
+      display: none;
+    }
+    .captcha-section {
+      margin: 15px 0;
+    }
+    #captchaText,
+    #userCaptcha {
+      font-size: 1.2em;
+      margin: 5px 0;
+    }
+    #userCaptcha {
+      width: 150px;
+      padding: 8px;
+      border-radius: 10px;
+      border: none;
+      background-color: #2d3b4e;
+      color: #e2e8f0;
+    }
+    #payButton {
+      background-color: #10b981;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    #payButton:hover { background-color: #059669; transform: translateY(-2px); }
+    .back-button {
+      background-color: #ef4444;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .back-button:hover { background-color: #dc2626; transform: translateY(-2px); }
+    .error-message { color: #ef4444; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -27,72 +119,147 @@
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <h1>Payment</h1>
-  <div class="form-group">
+  <div class="payment-details">
+    <p>Price: <span id="price"></span></p>
     <label for="name">Name:</label>
-    <input type="text" id="name" required />
+    <input type="text" id="name" required>
     <label for="email">Email:</label>
-    <input type="email" id="email" required />
+    <input type="email" id="email" required>
     <label for="phone">Phone Number:</label>
-    <input type="tel" id="phone" required />
-    <label for="proof">Payment Proof (URL or Description):</label>
-    <input type="text" id="proof" required />
-    <label>Price: <span id="price"></span> INR</label>
-    <div id="qr-code">
-      <img src="https://i.postimg.cc/DZ7VHKf5/Whats-App-Image-2025-04-14-at-10-58-46-PM.jpg" alt="QR Code" /> <!-- Replace with your QR URL -->
+    <input type="tel" id="phone" required>
+    <label for="qrCode">QR Code:</label>
+    <input type="text" id="qrCode" required>
+    <div class="upload-section">
+      <label for="imageUpload" class="upload-button">Upload Proof</label>
+      <input type="file" id="imageUpload" accept="image/*" onchange="previewImage()">
+      <img id="imagePreview" alt="Preview of uploaded proof">
     </div>
-    <button onclick="submitPayment()">Submit Payment</button>
-    <div id="error"></div>
+    <div class="captcha-section">
+      <p>Captcha: <span id="captchaText"></span></p>
+      <input type="text" id="userCaptcha" placeholder="Enter CAPTCHA" required>
+    </div>
+    <button id="payButton" onclick="handlePayment()">Pay</button>
   </div>
+  <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+  <div id="errorMessage" class="error-message"></div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const urlParams = new URLSearchParams(window.location.search);
+    document.getElementById("price").textContent = `₹${urlParams.get('price') || 'N/A'}`;
+    const imageUpload = document.getElementById("imageUpload");
+    const imagePreview = document.getElementById("imagePreview");
+    const errorMessage = document.getElementById("errorMessage");
+    let captcha = generateCaptcha();
 
-    window.onload = function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const price = urlParams.get('price');
-      document.getElementById('price').textContent = price || 'N/A';
-    };
+    function generateCaptcha() {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      let result = "";
+      for (let i = 0; i < 6; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      document.getElementById("captchaText").textContent = result;
+      return result;
+    }
 
-    async function submitPayment() {
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const proof = document.getElementById('proof').value.trim();
-      const errorDiv = document.getElementById('error');
+    function previewImage() {
+      const file = imageUpload.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          imagePreview.src = e.target.result;
+          imagePreview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      }
+    }
 
-      if (!name || !email || !phone || !proof) {
-        errorDiv.textContent = "All fields are required.";
-        errorDiv.style.display = 'block';
+    function openUPI() {
+      const name = document.getElementById("name").value.trim();
+      const amount = urlParams.get('price') || 'N/A';
+      const upiLink = `upi://pay?pa=9747604405@fam&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=PaymentForFNLStudio`;
+      window.location.href = upiLink;
+      setTimeout(() => {
+        if (document.hidden) return; // App opened successfully
+        alert("No UPI app found. Please install Google Pay or PhonePe.");
+        window.location.href = "https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user";
+      }, 1000);
+    }
+
+    async function handlePayment() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const qrCode = document.getElementById("qrCode").value.trim();
+      const userCaptcha = document.getElementById("userCaptcha").value.trim();
+      const file = imageUpload.files[0];
+
+      if (!name || !email || !phone || !qrCode || !file || !userCaptcha) {
+        errorMessage.textContent = "All fields are required.";
         return;
       }
 
-      try {
-        const response = await fetch(API_URL + "/latest", {
-          headers: { "X-Master-Key": MASTER_KEY }
-        });
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const data = await response.json();
-        let paymentDetails = data.record.payment_details || [];
-        paymentDetails.push({ name, email, phone, proof });
-        const updateResponse = await fetch(API_URL, {
-          method: "PUT",
-          headers: {
-            "X-Master-Key": MASTER_KEY,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ ...data.record, payment_details: paymentDetails })
-        });
-        if (!updateResponse.ok) throw new Error("Failed to save payment");
-        alert("Payment submitted successfully! DM @fnl_studio_ with proof.");
-        window.location.href = 'index.html';
-      } catch (error) {
-        errorDiv.textContent = "Error submitting payment.";
-        errorDiv.style.display = 'block';
-        console.error("Payment error:", error);
+      if (userCaptcha !== captcha) {
+        errorMessage.textContent = "Incorrect CAPTCHA. Try again.";
+        captcha = generateCaptcha();
+        return;
       }
+
+      // Attempt UPI payment
+      openUPI();
+
+      // Optional: Save details to JSONBin.io after payment (uncomment if needed)
+      /*
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        const base64Image = e.target.result;
+        try {
+          const response = await fetch(API_URL + "/latest", {
+            headers: { "X-Master-Key": MASTER_KEY }
+          });
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          const data = await response.json();
+          const paymentDetails = data.record.payment_details || [];
+          paymentDetails.push({
+            price: urlParams.get('price') || 'N/A',
+            name,
+            email,
+            phone,
+            qrCode,
+            proof: base64Image,
+            timestamp: new Date().toISOString()
+          });
+
+          const updateResponse = await fetch(API_URL, {
+            method: "PUT",
+            headers: {
+              "X-Master-Key": MASTER_KEY,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              presets: data.record.presets || [],
+              feedbacks: data.record.feedbacks || [],
+              login_details: data.record.login_details || [],
+              payment_details: paymentDetails
+            })
+          });
+          if (!updateResponse.ok) throw new Error("Failed to save payment");
+
+          alert("Payment submitted successfully! Please DM @fnl_studio_ with your details.");
+          window.location.href = "index.html";
+        } catch (error) {
+          console.error("Error submitting payment:", error);
+          errorMessage.textContent = "Error processing payment: " + error.message;
+        }
+      };
+      reader.readAsDataURL(file);
+      */
     }
+
+    // Generate initial CAPTCHA
+    generateCaptcha();
   </script>
 </body>
 </html>
