@@ -24,53 +24,27 @@
       margin-bottom: 30px;
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
     }
-    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
-    .payment-form {
+    .payment-section {
       background-color: #1e293b;
-      padding: 25px;
+      padding: 20px;
       border-radius: 15px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      max-width: 400px;
+      max-width: 500px;
       width: 90%;
       text-align: left;
     }
-    .payment-form label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #f1f5f9;
+    .payment-details p {
+      margin: 10px 0;
     }
-    .payment-form input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: none;
+    .payment-details strong {
+      color: #10b981;
+    }
+    .upi-qr {
+      margin: 20px 0;
+    }
+    .upi-qr img {
+      max-width: 200px;
       border-radius: 10px;
-      background-color: #2d3b4e;
-      color: #e2e8f0;
-      font-size: 14px;
-    }
-    .payment-form input[readonly] {
-      background-color: #3a4b5f;
-      cursor: not-allowed;
-    }
-    .captcha {
-      margin-bottom: 15px;
-    }
-    .pay-button {
-      background-color: #10b981;
-      padding: 12px 30px;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 16px;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    .pay-button:hover {
-      background-color: #059669;
-      transform: translateY(-2px);
     }
     .back-button {
       background-color: #4a5b6f;
@@ -80,45 +54,11 @@
       color: #e2e8f0;
       cursor: pointer;
       font-weight: 600;
-      margin-top: 10px;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .overlay-content {
-      background-color: #1e293b;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      text-align: center;
-      max-width: 400px;
-      width: 90%;
-    }
-    .download-button {
-      background-color: #10b981;
-      padding: 12px 30px;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 16px;
-      transition: background-color 0.3s, transform 0.2s;
       margin-top: 20px;
+      transition: background-color 0.3s, transform 0.2s;
     }
-    .download-button:hover {
-      background-color: #059669;
+    .back-button:hover {
+      background-color: #3a4b5f;
       transform: translateY(-2px);
     }
     .footer {
@@ -136,116 +76,64 @@
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <h1>Payment</h1>
-  <div class="payment-form" id="paymentForm">
-    <!-- Form will be populated by JavaScript -->
-  </div>
-  <button class="back-button" onclick="window.location.href='index.html'">Back</button>
-  <div id="errorMessage" class="error-message"></div>
-  <div class="overlay" id="overlay">
-    <div class="overlay-content">
-      <h2>Payment Confirmed!</h2>
-      <p>Thank you for your purchase. Click below to download your preset.</p>
-      <button class="download-button" id="downloadButton">Download</button>
+  <div class="payment-section">
+    <h2>Payment for Preset</h2>
+    <div id="paymentDetails" class="payment-details">
+      <!-- Preset details will be populated by JavaScript -->
     </div>
+    <p><strong>UPI ID:</strong> <span id="upiId">YOUR_UPI_ID@fam</span> (Replace with your actual UPI ID)</p>
+    <p><strong>Amount:</strong> <span id="amount"></span></p>
+    <div class="upi-qr">
+      <p>Scan this QR code to pay (optional):</p>
+      <img id="qrCode" src="" alt="UPI QR Code" style="display: none;">
+    </div>
+    <p>Steps to Pay:</p>
+    <ol>
+      <li>Open your UPI app (e.g., Google Pay, PhonePe, Paytm).</li>
+      <li>Enter the UPI ID above and the amount.</li>
+      <li>Confirm the payment with your PIN or biometric.</li>
+      <li>Send a screenshot of the payment to <a href="mailto:support@fnlstudio.com">support@fnlstudio.com</a> for verification.</li>
+    </ol>
+    <p class="error-message" id="errorMessage"></p>
   </div>
+  <button class="back-button" onclick="window.location.href='index.html'">Back to Presets</button>
   <div class="footer">
     <h3>About Us</h3>
-    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
+    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors.</p>
     <h3>Copyright ©</h3>
-    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+    <p>© 2025 FNL Studio. All rights reserved.</p>
   </div>
 
   <script>
-    const BIN_ID = "67fccb0b8960c979a584b5d5";
-    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
-    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const paymentForm = document.getElementById("paymentForm");
-    const errorMessage = document.getElementById("errorMessage");
-    const overlay = document.getElementById("overlay");
-    const downloadButton = document.getElementById("downloadButton");
     const urlParams = new URLSearchParams(window.location.search);
-    const preset = JSON.parse(decodeURIComponent(urlParams.get('preset')));
+    const presetStr = urlParams.get('preset');
+    const paymentDetails = document.getElementById('paymentDetails');
+    const amount = document.getElementById('amount');
+    const qrCode = document.getElementById('qrCode');
+    const errorMessage = document.getElementById('errorMessage');
+    let preset = null;
 
-    let captchaAnswer = Math.floor(Math.random() * 100) + 1;
-    function generateCaptcha() {
-      return `What is ${captchaAnswer} + 2?`;
-    }
-
-    function populateForm() {
-      paymentForm.innerHTML = `
-        <label for="name">Name:</label>
-        <input type="text" id="name" required />
-        <label for="price">Price (₹):</label>
-        <input type="number" id="price" value="${preset.price}" readonly required />
-        <label for="email">Email:</label>
-        <input type="email" id="email" required />
-        <label for="phone">Phone Number:</label>
-        <input type="tel" id="phone" required />
-        <label for="captcha" class="captcha">${generateCaptcha()}</label>
-        <input type="number" id="captcha" required />
-        <button class="pay-button" onclick="initiatePayment()">Pay Now</button>
-      `;
-    }
-
-    function showOverlay() {
-      overlay.style.display = "flex";
-      downloadButton.onclick = () => window.location.href = preset.download_url;
-    }
-
-    function initiatePayment() {
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const captcha = document.getElementById("captcha").value.trim();
-
-      if (!name || !email || !phone || !captcha) {
-        errorMessage.textContent = "All fields are required.";
-        return;
-      }
-      if (parseInt(captcha) !== captchaAnswer + 2) {
-        errorMessage.textContent = "Invalid CAPTCHA. Please try again.";
-        captchaAnswer = Math.floor(Math.random() * 100) + 1;
-        populateForm();
-        return;
-      }
-
-      // Generate a generic UPI intent URL (user must replace with their UPI ID)
-      const upiAmount = preset.price;
-      const upiUrl = `upi://pay?pa=9747604405@fam&pn=FNL Studio&am=${upiAmount}&tn=Payment for ${preset.name}`;
-      // Note: Replace 'YOUR_UPI_ID@fam' with your actual UPI ID for testing.
-      // Users will be prompted to enter their own UPI ID in their app.
-
-      // Save payment details
-      savePaymentDetails(name, email, phone, preset);
-
-      // Redirect to UPI app
-      window.location.href = upiUrl;
-
-      // Simulate payment confirmation after a timeout (30 seconds)
-      setTimeout(() => {
-        showOverlay();
-        alert("Payment assumed successful. Please ensure you completed the UPI transaction.");
-      }, 30000); // 30 seconds timeout
-    }
-
-    async function savePaymentDetails(name, email, phone, preset) {
+    if (presetStr) {
       try {
-        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
-        const data = await response.json();
-        const paymentDetails = data.record.payment_details || [];
-        paymentDetails.push({ name, email, phone, preset: preset.name, price: preset.price, timestamp: new Date().toISOString(), status: "pending" });
-        await fetch(API_URL, {
-          method: "PUT",
-          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data.record, payment_details: paymentDetails })
-        });
-      } catch (error) {
-        console.error("Error saving payment details:", error);
+        preset = JSON.parse(decodeURIComponent(presetStr));
+        paymentDetails.innerHTML = `
+          <p><strong>Name:</strong> ${preset.name}</p>
+          <p><strong>Price:</strong> ₹${preset.price}</p>
+          <p><strong>Download URL:</strong> <a href="${preset.download_url}" target="_blank">${preset.download_url}</a></p>
+        `;
+        amount.textContent = `₹${preset.price}`;
+        // Optional: Add a QR code image if you have one (replace with your QR code URL)
+        // qrCode.src = 'path_to_your_qr_code.png';
+        // qrCode.style.display = 'block';
+      } catch (e) {
+        errorMessage.textContent = 'Error parsing preset data: ' + e.message;
       }
+    } else {
+      paymentDetails.innerHTML = '<p>No preset selected. Go back and select a preset to buy.</p>';
     }
 
-    window.onload = populateForm;
+    // Replace with your actual UPI ID
+    document.getElementById('upiId').textContent = '9747604405@fam'; // Update this!
   </script>
 </body>
 </html>
