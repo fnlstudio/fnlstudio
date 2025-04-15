@@ -17,6 +17,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      overflow-x: hidden;
     }
     .logo img {
       width: 200px;
@@ -114,7 +115,7 @@
       border-radius: 15px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       text-align: center;
-      max-width: 600px;
+      max-width: 600px; /* Medium size */
       width: 90%;
       position: relative;
     }
@@ -122,6 +123,25 @@
       max-width: 100%;
       border-radius: 10px;
       margin: 10px 0;
+      cursor: pointer;
+    }
+    .full-screen-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .full-screen-overlay img {
+      max-height: 90vh;
+      max-width: 90vw;
+      object-fit: contain;
+      cursor: pointer;
     }
     .close-btn {
       position: absolute;
@@ -185,6 +205,10 @@
       <button class="buy-now-btn" id="buyNowBtn">Buy Now</button>
     </div>
   </div>
+  <div class="full-screen-overlay" id="fullScreenOverlay">
+    <button class="close-btn" onclick="closeFullScreen()">×</button>
+    <img id="fullScreenImage" src="" alt="Full Screen Image">
+  </div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
@@ -192,9 +216,13 @@
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const presetsSection = document.getElementById("presetsSection");
     const previewOverlay = document.getElementById("previewOverlay");
+    const fullScreenOverlay = document.getElementById("fullScreenOverlay");
     const overlayName = document.getElementById("overlayName");
     const overlayImages = document.getElementById("overlayImages");
     const buyNowBtn = document.getElementById("buyNowBtn");
+    const fullScreenImage = document.getElementById("fullScreenImage");
+    let currentPreset = null;
+    let currentImageIndex = 0;
 
     async function loadPresets() {
       try {
@@ -223,20 +251,75 @@
     }
 
     function showPreview(presetStr) {
-      const preset = JSON.parse(decodeURIComponent(presetStr));
-      overlayName.textContent = preset.name;
-      overlayImages.innerHTML = `
-        <img src="${preset.thumbnail_url}" alt="${preset.name} Thumbnail">
-        ${preset.sample1 ? `<img src="${preset.sample1}" alt="${preset.name} Sample 1">` : ''}
-        ${preset.sample2 ? `<img src="${preset.sample2}" alt="${preset.name} Sample 2">` : ''}
-        ${preset.sample3 ? `<img src="${preset.sample3}" alt="${preset.name} Sample 3">` : ''}
-      `;
-      buyNowBtn.onclick = () => window.location.href = `payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}`;
+      currentPreset = JSON.parse(decodeURIComponent(presetStr));
+      overlayName.textContent = currentPreset.name;
+      const images = [
+        currentPreset.thumbnail_url,
+        currentPreset.sample1 || '',
+        currentPreset.sample2 || '',
+        currentPreset.sample3 || ''
+      ].filter(img => img); // Filter out empty strings
+      overlayImages.innerHTML = images.map((img, index) => `
+        <img src="${img}" alt="${currentPreset.name} Sample ${index + 1}" onclick="showFullScreen(${index})">
+      `).join("");
+      buyNowBtn.onclick = () => window.location.href = `payment.html?preset=${encodeURIComponent(JSON.stringify(currentPreset))}`;
       previewOverlay.style.display = "flex";
     }
 
     function closeOverlay() {
       previewOverlay.style.display = "none";
+      fullScreenOverlay.style.display = "none";
+    }
+
+    function showFullScreen(index) {
+      currentImageIndex = index;
+      fullScreenImage.src = [
+        currentPreset.thumbnail_url,
+        currentPreset.sample1 || '',
+        currentPreset.sample2 || '',
+        currentPreset.sample3 || ''
+      ].filter(img => img)[currentImageIndex];
+      fullScreenOverlay.style.display = "flex";
+      setupSwipe();
+    }
+
+    function closeFullScreen() {
+      fullScreenOverlay.style.display = "none";
+    }
+
+    function setupSwipe() {
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      fullScreenImage.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+      });
+
+      fullScreenImage.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      });
+
+      function handleSwipe() {
+        const images = [
+          currentPreset.thumbnail_url,
+          currentPreset.sample1 || '',
+          currentPreset.sample2 || '',
+          currentPreset.sample3 || ''
+        ].filter(img => img);
+        if (touchEndX < touchStartX - 50) { // Swipe left
+          if (currentImageIndex < images.length - 1) {
+            currentImageIndex++;
+            fullScreenImage.src = images[currentImageIndex];
+          }
+        }
+        if (touchEndX > touchStartX + 50) { // Swipe right
+          if (currentImageIndex > 0) {
+            currentImageIndex--;
+            fullScreenImage.src = images[currentImageIndex];
+          }
+        }
+      }
     }
 
     window.onload = loadPresets;
