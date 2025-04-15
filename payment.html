@@ -123,7 +123,7 @@
       border-radius: 5px;
       margin-top: 5px;
       display: none;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1));
     }
     .footer {
       margin-top: auto;
@@ -239,18 +239,23 @@
         return;
       }
 
-      const upiId = '9747604405@fam'; // Updated UPI ID
-      const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&am=${preset.price}&tn=${encodeURIComponent(`Payment for ${buyerName}`)}`;
+      const upiId = '9747604405@fam'; // Your updated UPI ID
+      const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&am=${encodeURIComponent(preset.price)}&tn=${encodeURIComponent(`Payment for ${buyerName}`)}`;
       try {
-        window.location.href = upiUrl;
-        alert('Redirecting to UPI app. If it doesn’t open, please copy this URL and paste it into your UPI app: ' + upiUrl);
+        // Attempt to open in a new window/tab
+        const newWindow = window.open(upiUrl, '_blank');
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+          errorMessage.textContent = 'UPI app failed to open automatically. Please copy this URL and paste it into your UPI app: ' + upiUrl;
+          console.error('UPI window failed to open');
+        } else {
+          alert('Redirecting to UPI app. Please complete the payment.');
+        }
       } catch (e) {
         errorMessage.textContent = 'Failed to open UPI app. Please copy this URL and use your UPI app: ' + upiUrl;
         console.error('UPI redirection error:', e);
       }
 
       // Proceed after redirection attempt
-      alert('Please complete the payment in the UPI app. Upload proof after payment.');
       payButton.style.display = 'none';
       uploadProofButton.style.display = 'block';
     }
@@ -269,7 +274,10 @@
             proofPreview.style.display = 'block';
             downloadButton.style.display = 'block';
             uploadProofButton.style.display = 'none';
-            errorMessage.textContent = 'Proof uploaded. Click Download after admin verification (simulated).';
+            // Redirect to feedback.html after uploading proof
+            setTimeout(() => {
+              window.location.href = 'feedback.html';
+            }, 1000); // Delay to show preview briefly
           };
           reader.readAsDataURL(file);
         } else {
