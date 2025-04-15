@@ -57,7 +57,7 @@
       display: none;
     }
     .upload-section {
-      display: none; /* Hidden until payment confirmed */
+      display: none; /* Hidden until payment confirmed and proof upload prompted */
     }
     .upload-button {
       background-color: #10b981;
@@ -114,7 +114,7 @@
       font-weight: 600;
       margin-top: 10px;
       transition: background-color 0.3s, transform 0.2s;
-      display: none; /* Hidden until payment confirmed */
+      display: none; /* Hidden until proof uploaded */
     }
     .download-button:hover { background-color: #059669; transform: translateY(-2px); }
     .back-button {
@@ -130,48 +130,6 @@
     }
     .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
     .error-message { color: #ef4444; margin-top: 10px; }
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    .overlay-content {
-      background-color: #1e293b;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-      max-width: 300px;
-      width: 90%;
-    }
-    .overlay-input {
-      width: 80%;
-      padding: 8px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 10px;
-      background-color: #2d3b4e;
-      color: #e2e8f0;
-      font-size: 1em;
-    }
-    .overlay-button {
-      background-color: #10b981;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      margin: 10px 5px;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    .overlay-button:hover { background-color: #059669; transform: translateY(-2px); }
   </style>
 </head>
 <body>
@@ -200,25 +158,18 @@
       <label for="imageUpload" class="upload-button">Upload Proof</label>
       <input type="file" id="imageUpload" accept="image/*" onchange="previewImage()">
       <img id="imagePreview" alt="Preview of uploaded proof">
+      <label for="presetLink">Preset Upload Link (e.g., Google Drive):</label>
+      <input type="text" id="presetLink" placeholder="Paste your preset link here" required>
     </div>
     <div class="captcha-section">
       <p>Captcha: <span id="captchaText"></span></p>
       <input type="text" id="userCaptcha" placeholder="Enter CAPTCHA" required>
     </div>
     <button id="payButton" onclick="showPaymentOptions()">Pay</button>
-    <button class="download-button" id="downloadButton" onclick="window.location.href='https://drive.google.com/uc?export=download&id=1X2Y3Z4ABCDEF'">Download</button> <!-- Replace with your file ID -->
+    <button class="download-button" id="downloadButton" onclick="openPresetLink()">Download</button>
   </div>
   <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div id="errorMessage" class="error-message"></div>
-
-  <div class="overlay" id="paymentOverlay">
-    <div class="overlay-content">
-      <h2>Payment Options</h2>
-      <button class="overlay-button" onclick="openUPI()">Pay Directly</button>
-      <input type="text" class="overlay-input" id="userUPI" placeholder="Enter your UPI ID (e.g., username@bank)">
-      <button class="overlay-button" onclick="sendUPIRequest()">Send Request</button>
-    </div>
-  </div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
@@ -231,9 +182,9 @@
     const uploadSection = document.getElementById("uploadSection");
     const downloadButton = document.getElementById("downloadButton");
     const errorMessage = document.getElementById("errorMessage");
-    const paymentOverlay = document.getElementById("paymentOverlay");
     let captcha = generateCaptcha();
     let paymentConfirmed = false;
+    let presetLink = "";
 
     function generateCaptcha() {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -276,17 +227,13 @@
       }
 
       saveLoginDetails(name, email, phone);
-      document.getElementById("userUPI").value = upiId; // Pre-fill UPI ID
-      paymentOverlay.style.display = "flex";
+      openUPI(upiId);
     }
 
-    function openUPI() {
+    function openUPI(upiId) {
       const name = document.getElementById("name").value.trim();
       const amount = urlParams.get('price') || 'N/A';
-      const upiId = document.getElementById("upiId").value.trim();
-      const upiApp = document.getElementById("upiApp").value;
-      let upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent('Payment for FNL Studio')}&tr=TR${Date.now()}&mc=1234`;
-      paymentOverlay.style.display = "none";
+      const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent('Payment for FNL Studio')}&tr=TR${Date.now()}&mc=1234`;
       window.location.href = upiLink;
       const startTime = Date.now();
       const checkInterval = setInterval(() => {
@@ -295,6 +242,7 @@
           if (!document.hidden) {
             if (confirm("Did you complete the payment in the UPI app?")) {
               paymentConfirmed = true;
+              promptForProof();
             } else {
               errorMessage.textContent = "Authentication revoked. Please try again.";
               return;
@@ -305,44 +253,28 @@
       }, 500);
     }
 
-    function sendUPIRequest() {
-      const userUPI = document.getElementById("userUPI").value.trim();
-      if (userUPI) {
-        const amount = urlParams.get('price') || 'N/A';
-        const upiLink = `upi://pay?pa=${encodeURIComponent(userUPI)}&pn=${encodeURIComponent('FNL Studio')}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent('Payment Request from FNL Studio')}&tr=TR${Date.now()}&mc=1234`;
-        paymentOverlay.style.display = "none";
-        alert(`Payment request sent to ${userUPI}. Please approve the request in your UPI app.`);
-        window.location.href = upiLink;
-        const startTime = Date.now();
-        const checkInterval = setInterval(() => {
-          if (document.hidden || Date.now() - startTime > 5000) {
-            clearInterval(checkInterval);
-            if (!document.hidden) {
-              if (confirm("Did you approve the payment request in the UPI app?")) {
-                paymentConfirmed = true;
-              } else {
-                errorMessage.textContent = "Authentication revoked. Please try again.";
-                return;
-              }
-            }
-            setTimeout(checkPaymentStatus, 100);
-          }
-        }, 500);
-      } else {
-        alert("Please enter a valid UPI ID.");
-      }
+    function promptForProof() {
+      uploadSection.style.display = "block";
+      errorMessage.textContent = "Please upload proof of payment.";
     }
 
     function checkPaymentStatus() {
       if (paymentConfirmed) {
-        const name = document.getElementById("name").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const phone = document.getElementById("phone").value.trim();
-        const price = urlParams.get('price') || 'N/A';
-        uploadSection.style.display = "block";
-        downloadButton.style.display = "block";
-        errorMessage.textContent = "Payment confirmed! Upload proof or download your file.";
-        savePaymentDetails(name, email, phone, price);
+        savePaymentDetails(
+          document.getElementById("name").value.trim(),
+          document.getElementById("email").value.trim(),
+          document.getElementById("phone").value.trim(),
+          urlParams.get('price') || 'N/A'
+        );
+      }
+    }
+
+    function openPresetLink() {
+      const presetLink = document.getElementById("presetLink").value.trim();
+      if (presetLink) {
+        window.open(presetLink, '_blank');
+      } else {
+        errorMessage.textContent = "Please provide a valid preset link.";
       }
     }
 
@@ -417,6 +349,13 @@
 
     // Generate initial CAPTCHA
     generateCaptcha();
+
+    // Show upload section and download button only after proof upload
+    imageUpload.addEventListener("change", function() {
+      if (imageUpload.files.length > 0 && document.getElementById("presetLink").value.trim()) {
+        downloadButton.style.display = "block";
+      }
+    });
   </script>
 </body>
 </html>
