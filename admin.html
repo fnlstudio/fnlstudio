@@ -39,6 +39,25 @@
       width: 90%;
       text-align: left;
     }
+    .nav-buttons {
+      margin-bottom: 20px;
+    }
+    .nav-buttons a {
+      background-color: #4a5b6f;
+      padding: 10px 20px;
+      margin: 0 10px 10px 0;
+      border: none;
+      border-radius: 10px;
+      color: #e2e8f0;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s, transform 0.2s;
+      display: inline-block;
+    }
+    .nav-buttons a:hover {
+      background-color: #3a4b5f;
+      transform: translateY(-2px);
+    }
     .preset-item {
       background-color: #2d3b4e;
       padding: 15px;
@@ -50,8 +69,8 @@
       justify-content: space-between;
     }
     .preset-item img {
-      max-width: 80px; /* Decreased from 100px */
-      max-height: 80px; /* Decreased from 100px */
+      max-width: 80px;
+      max-height: 80px;
       border-radius: 5px;
       margin-right: 15px;
     }
@@ -62,7 +81,7 @@
     .preset-details a {
       color: #10b981;
       text-decoration: none;
-      word-break: break-all; /* Prevent overflow with long URLs */
+      word-break: break-all;
     }
     .preset-details a:hover {
       text-decoration: underline;
@@ -133,7 +152,7 @@
     .error-message { color: #ef4444; margin-top: 10px; }
     @media (max-width: 768px) {
       .actions {
-        display: none; /* Hide edit/delete on mobile */
+        display: none;
       }
       .preset-item {
         flex-direction: column;
@@ -142,8 +161,7 @@
       .preset-item img {
         margin: 0 auto 15px;
       }
-      /* Do not hide download URL or sample links; hide other navigation if present */
-      .nav-links { /* Assuming these are navigation links to hide */
+      .nav-buttons {
         display: none;
       }
     }
@@ -154,6 +172,11 @@
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <h1>Admin Dashboard</h1>
+  <div class="nav-buttons">
+    <a href="logindetail.html">Login details</a>
+    <a href="paymentdetails.html">Payment details</a>
+    <a href="managefeedback.html">Manage feedback</a>
+  </div>
   <div class="admin-section" id="adminSection">
     <!-- Presets will be populated by JavaScript -->
   </div>
@@ -161,9 +184,9 @@
   <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div class="footer">
     <h3>About Us</h3>
-    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
+    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors.</p>
     <h3>Copyright ©</h3>
-    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+    <p>© 2025 FNL Studio. All rights reserved.</p>
   </div>
   <div id="errorMessage" class="error-message"></div>
 
