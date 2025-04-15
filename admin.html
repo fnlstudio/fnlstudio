@@ -85,7 +85,7 @@
   </div>
   <h1>Admin Dashboard</h1>
   <div class="admin-section">
-    <button onclick="addPreset()">Add Preset</button>
+    <button onclick="window.location.href='upload.html'">Add Preset</button>
     <button onclick="viewLoginDetails()">Login Details</button>
     <button onclick="viewPaymentDetails()">Payment Details</button>
     <button onclick="manageFeedback()">Manage Feedback</button>
@@ -106,23 +106,6 @@
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const detailsSection = document.getElementById("detailsSection");
 
-    async function addPreset() {
-      const url = prompt("Enter preset URL (e.g., Google Drive link):");
-      if (!url) return;
-      try {
-        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
-        const data = await response.json();
-        const presets = data.record.presets || [];
-        presets.push(url);
-        await fetch(API_URL, {
-          method: "PUT",
-          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data.record, presets })
-        });
-        alert("Preset added successfully!");
-      } catch (error) { console.error("Error adding preset:", error); }
-    }
-
     async function viewLoginDetails() {
       try {
         const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
@@ -142,27 +125,7 @@
     }
 
     async function manageFeedback() {
-      try {
-        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
-        const data = await response.json();
-        const feedbacks = data.record.feedbacks || [];
-        detailsSection.innerHTML = feedbacks.map(f => `<div>${f.text} - ${new Date(f.timestamp).toLocaleString()} <button onclick="deleteFeedback('${f.timestamp}')">Delete</button></div>`).join("") || "<div>No feedback to manage.</div>";
-      } catch (error) { console.error("Error loading feedback:", error); }
-    }
-
-    async function deleteFeedback(timestamp) {
-      if (!confirm("Are you sure you want to delete this feedback?")) return;
-      try {
-        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
-        const data = await response.json();
-        const feedbacks = data.record.feedbacks.filter(f => f.timestamp !== timestamp);
-        await fetch(API_URL, {
-          method: "PUT",
-          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data.record, feedbacks })
-        });
-        manageFeedback();
-      } catch (error) { console.error("Error deleting feedback:", error); }
+      window.location.href = "managefeedback.html"; // Redirect to managefeedback.html
     }
   </script>
 </body>
