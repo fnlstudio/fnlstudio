@@ -239,10 +239,17 @@
         return;
       }
 
-      const upiId = '9747604405@fam'; // Replace with your actual UPI ID
-      const upiUrl = `upi://pay?pa=${upiId}&am=${preset.price}&tn=Payment for ${buyerName}`;
-      window.location.href = upiUrl;
+      const upiId = '9747604405@fam'; // Updated UPI ID
+      const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&am=${preset.price}&tn=${encodeURIComponent(`Payment for ${buyerName}`)}`;
+      try {
+        window.location.href = upiUrl;
+        alert('Redirecting to UPI app. If it doesn’t open, please copy this URL and paste it into your UPI app: ' + upiUrl);
+      } catch (e) {
+        errorMessage.textContent = 'Failed to open UPI app. Please copy this URL and use your UPI app: ' + upiUrl;
+        console.error('UPI redirection error:', e);
+      }
 
+      // Proceed after redirection attempt
       alert('Please complete the payment in the UPI app. Upload proof after payment.');
       payButton.style.display = 'none';
       uploadProofButton.style.display = 'block';
