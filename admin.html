@@ -46,6 +46,29 @@
       transition: background-color 0.3s, transform 0.2s;
     }
     .admin-section button:hover { background-color: #059669; transform: translateY(-2px); }
+    .presets-section {
+      margin-top: 20px;
+    }
+    .preset-item {
+      background-color: #2d3b4e;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px 0;
+      text-align: left;
+    }
+    .preset-item button {
+      background-color: #10b981;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      margin-right: 5px;
+      transition: background-color 0.3s;
+    }
+    .preset-item button:hover { background-color: #059669; }
+    .preset-item .delete-btn { background-color: #ef4444; }
+    .preset-item .delete-btn:hover { background-color: #dc2626; }
     .details-section {
       margin-top: 20px;
       text-align: center;
@@ -90,6 +113,9 @@
     <button onclick="viewPaymentDetails()">Payment Details</button>
     <button onclick="manageFeedback()">Manage Feedback</button>
   </div>
+  <div class="presets-section" id="presetsSection">
+    <!-- Presets will be populated by JavaScript -->
+  </div>
   <div class="details-section" id="detailsSection"></div>
   <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div class="footer">
@@ -104,29 +130,56 @@
     const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const presetsSection = document.getElementById("presetsSection");
     const detailsSection = document.getElementById("detailsSection");
 
-    async function viewLoginDetails() {
+    async function loadPresets() {
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const presets = data.record.presets || [];
+        presetsSection.innerHTML = presets.map(preset => `
+          <div class="preset-item">
+            Name: ${preset.name}<br>
+            Price: $${preset.price}<br>
+            Download URL: ${preset.download_url}<br>
+            Thumbnail URL: ${preset.thumbnail_url}<br>
+            <button onclick="window.location.href='edit.html?preset=${encodeURIComponent(JSON.stringify(preset))}'">Edit</button>
+            <button class="delete-btn" onclick="deletePreset('${preset.name}')">Delete</button>
+          </div>
+        `).join("") || "<p>No presets available.</p>";
+      } catch (error) { console.error("Error loading presets:", error); }
+    }
+
+    async function deletePreset(name) {
+      if (!confirm("Are you sure you want to delete this preset?")) return;
       try {
         const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
         const data = await response.json();
-        const loginDetails = data.record.login_details || [];
-        detailsSection.innerHTML = loginDetails.length ? loginDetails.map(d => `<div>Name: ${d.name}, Email: ${d.email}, Phone: ${d.phone}, Time: ${new Date(d.timestamp).toLocaleString()}</div>`).join("") : "<div>No login details available.</div>";
-      } catch (error) { console.error("Error loading login details:", error); }
+        const presets = data.record.presets.filter(p => p.name !== name);
+        await fetch(API_URL, {
+          method: "PUT",
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data.record, presets })
+        });
+        loadPresets();
+      } catch (error) { console.error("Error deleting preset:", error); }
+    }
+
+    async function viewLoginDetails() {
+      window.location.href = "logindetail.html";
     }
 
     async function viewPaymentDetails() {
-      try {
-        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
-        const data = await response.json();
-        const paymentDetails = data.record.payment_details || [];
-        detailsSection.innerHTML = paymentDetails.length ? paymentDetails.map(d => `<div>${JSON.stringify(d)}</div>`).join("") : "<div>No payment details available.</div>";
-      } catch (error) { console.error("Error loading payment details:", error); }
+      window.location.href = "paymentdetails.html";
     }
 
     async function manageFeedback() {
-      window.location.href = "managefeedback.html"; // Redirect to managefeedback.html
+      window.location.href = "managefeedback.html";
     }
+
+    window.onload = loadPresets;
   </script>
 </body>
 </html>
