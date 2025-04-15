@@ -143,7 +143,7 @@
         });
         if (!updateResponse.ok) throw new Error("Failed to save login details");
         alert("Join successful! Redirecting to feedback...");
-        window.location.href = "feedback.html"; // Redirect to feedback.html
+        window.location.href = "feedback.html"; // Redirect to feedback.html after joining
       } catch (error) {
         console.error("Error saving login details:", error);
         errorMessage.textContent = "Error saving details: " + error.message;
