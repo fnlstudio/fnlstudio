@@ -46,6 +46,8 @@
       width: 90%;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       transition: transform 0.3s;
+      text-align: left;
+      position: relative;
     }
     .preset-item:hover {
       transform: scale(1.05);
@@ -57,6 +59,26 @@
     }
     .preset-item a:hover {
       text-decoration: underline;
+    }
+    .preset-item img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+    .buy-button {
+      background-color: #10b981;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .buy-button:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
     }
     .read-more {
       background-color: #10b981;
@@ -88,7 +110,7 @@
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <button class="menu-dots" onclick="window.location.href='menu.html'">⋮</button> <!-- Fixed to menu.html -->
+  <button class="menu-dots" onclick="window.location.href='menu.html'">⋮</button>
   <h1 style="display:none;">FNL Presets</h1>
   <div class="presets-section" id="presetsSection">
     <!-- Presets will be populated by JavaScript -->
@@ -119,7 +141,14 @@
         if (presets.length === 0) {
           presetsSection.innerHTML = "<p>No presets available. Add via admin.</p>";
         } else {
-          presetsSection.innerHTML = presets.map(url => `<div class="preset-item"><a href="${url.download_url}" target="_blank">${url.name}</a><br><img src="${url.thumbnail_url}" alt="${url.name}" style="max-width: 100%; border-radius: 10px;"></div>`).join("");
+          presetsSection.innerHTML = presets.map(preset => `
+            <div class="preset-item" data-id="${preset.name}">
+              <a href="${preset.download_url}" target="_blank">${preset.name}</a><br>
+              Price: $${preset.price}<br>
+              <img src="${preset.thumbnail_url}" alt="${preset.name}" style="max-width: 100%; border-radius: 10px;">
+              <button class="buy-button" onclick="window.location.href='payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}'">Buy</button>
+            </div>
+          `).join("");
         }
       } catch (error) {
         console.error("Error loading presets:", error);
