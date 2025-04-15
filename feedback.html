@@ -38,23 +38,6 @@
     }
     .feedback-card:hover { transform: translateY(-2px); }
     .feedback-card .rating { color: #ffd700; }
-    .edit-button { background-color: #3b82f6; position: absolute; top: 10px; right: 60px; }
-    .delete-button { background-color: #ef4444; position: absolute; top: 10px; right: 10px; }
-    .add-button {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #10b981;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 50%;
-      font-size: 1.5em;
-      color: white;
-      cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    .add-button:hover { background-color: #059669; transform: translateY(-2px); }
     .interaction-buttons { margin-top: 10px; display: flex; gap: 15px; }
     .interaction-buttons button {
       background-color: #3b82f6;
@@ -70,7 +53,6 @@
       align-items: center;
       justify-content: center;
       transition: background-color 0.3s;
-      position: relative;
     }
     .interaction-buttons button:hover { background-color: #2563eb; }
     .interaction-buttons button span {
@@ -89,6 +71,34 @@
     }
     .admin-reply { font-weight: 600; color: #10b981; }
     input[type="text"] { padding: 8px; border-radius: 10px; border: none; background-color: #2d3b4e; color: #e2e8f0; margin-top: 10px; }
+    .edit-button, .delete-button {
+      background-color: #3b82f6;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: background-color 0.3s;
+    }
+    .delete-button { background-color: #ef4444; }
+    .edit-button:hover { background-color: #2563eb; }
+    .delete-button:hover { background-color: #dc2626; }
+    .add-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #10b981;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.5em;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .add-button:hover { background-color: #059669; transform: translateY(-2px); }
   </style>
 </head>
 <body>
@@ -97,17 +107,13 @@
   </div>
   <h1>Feedback</h1>
   <div class="feedback-list" id="feedbackList"></div>
-  <button class="add-button" onclick="window.location.href='addfeedback.html?name=' + encodeURIComponent(getQueryParam('name'))">+</button>
+  <button class="add-button" onclick="window.location.href='addfeedback.html?name=' + encodeURIComponent(localStorage.getItem('userName') || '')">+</button>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-
-    function getQueryParam(name) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(name);
-    }
+    const userName = localStorage.getItem("userName");
 
     async function loadFeedback() {
       try {
@@ -119,7 +125,6 @@
         const feedbacks = data.record.feedbacks || [];
         const feedbackList = document.getElementById("feedbackList");
         feedbackList.innerHTML = "";
-        const userName = getQueryParam('name');
         feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach((feedback, index) => {
           const card = document.createElement("div");
           card.className = "feedback-card";
@@ -129,9 +134,9 @@
               <p>${feedback.comment}</p>
             </div>
             <div class="interaction-buttons">
-              <button onclick="updateInteraction(${index}, 'like')"><span>${feedback.likes || 0}</span>👍</button>
-              <button onclick="updateInteraction(${index}, 'dislike')"><span>${feedback.dislikes || 0}</span>👎</button>
-              <button onclick="showReplyInput(${index})">💬</button>
+              <button onclick="updateInteraction(${index}, 'like', '${feedback.name}')"><span>${feedback.likes || 0}</span>👍</button>
+              <button onclick="updateInteraction(${index}, 'dislike', '${feedback.name}')"><span>${feedback.dislikes || 0}</span>👎</button>
+              <button onclick="showReplyInput(${index}, '${feedback.name}')">💬</button>
             </div>
           `;
           if (feedback.name === userName) {
@@ -171,35 +176,44 @@
       }
     }
 
-    function showReplyInput(index) {
+    function showReplyInput(index, feedbackName) {
       const input = document.getElementById(`replyInput-${index}`);
       input.style.display = input.style.display === "none" ? "block" : "none";
       input.focus();
     }
 
-    async function updateInteraction(index, type) {
-      try {
-        const response = await fetch(API_URL + "/latest", {
-          headers: { "X-Master-Key": MASTER_KEY }
-        });
-        if (!response.ok) throw new Error("Failed to fetch feedback");
-        const data = await response.json();
-        const feedbacks = data.record.feedbacks || [];
-        if (index >= 0 && index < feedbacks.length) {
-          feedbacks[index][type + 's'] = (feedbacks[index][type + 's'] || 0) + 1;
-          const updateResponse = await fetch(API_URL, {
-            method: "PUT",
-            headers: {
-              "X-Master-Key": MASTER_KEY,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ presets: data.record.presets || [], feedbacks })
+    async function updateInteraction(index, type, feedbackName) {
+      const userId = localStorage.getItem("userId") || Math.random().toString(36).substr(2, 9);
+      if (!localStorage.getItem(`interacted_${type}_${index}_${userId}`)) {
+        try {
+          const response = await fetch(API_URL + "/latest", {
+            headers: { "X-Master-Key": MASTER_KEY }
           });
-          if (!updateResponse.ok) throw new Error("Failed to update interaction");
-          loadFeedback();
+          if (!response.ok) throw new Error("Failed to fetch feedback");
+          const data = await response.json();
+          const feedbacks = data.record.feedbacks || [];
+          if (index >= 0 && index < feedbacks.length) {
+            feedbacks[index][type + 's'] = (feedbacks[index][type + 's'] || 0) + 1;
+            const updateResponse = await fetch(API_URL, {
+              method: "PUT",
+              headers: {
+                "X-Master-Key": MASTER_KEY,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                presets: data.record.presets || [],
+                feedbacks,
+                login_details: data.record.login_details || [],
+                payment_details: data.record.payment_details || []
+              })
+            });
+            if (!updateResponse.ok) throw new Error("Failed to update interaction");
+            localStorage.setItem(`interacted_${type}_${index}_${userId}`, true);
+            loadFeedback();
+          }
+        } catch (error) {
+          console.error("Error updating interaction:", error);
         }
-      } catch (error) {
-        console.error("Error updating interaction:", error);
       }
     }
 
@@ -214,7 +228,7 @@
           const feedbacks = data.record.feedbacks || [];
           if (index >= 0 && index < feedbacks.length) {
             feedbacks[index].replies = feedbacks[index].replies || [];
-            const reply = userName === "FNL ADMIN" ? `<strong>FNL ADMIN</strong>: ${replyText}` : `${userName}: ${replyText}`;
+            const reply = userName ? `${userName}: ${replyText}` : `Anonymous: ${replyText}`;
             feedbacks[index].replies.push(reply);
             const updateResponse = await fetch(API_URL, {
               method: "PUT",
@@ -222,7 +236,12 @@
                 "X-Master-Key": MASTER_KEY,
                 "Content-Type": "application/json"
               },
-              body: JSON.stringify({ presets: data.record.presets || [], feedbacks })
+              body: JSON.stringify({
+                presets: data.record.presets || [],
+                feedbacks,
+                login_details: data.record.login_details || [],
+                payment_details: data.record.payment_details || []
+              })
             });
             if (!updateResponse.ok) throw new Error("Failed to add reply");
             loadFeedback();
@@ -250,14 +269,17 @@
               "X-Master-Key": MASTER_KEY,
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({ presets: data.record.presets || [], feedbacks })
+            body: JSON.stringify({
+              presets: data.record.presets || [],
+              feedbacks,
+              login_details: data.record.login_details || [],
+              payment_details: data.record.payment_details || []
+            })
           });
           if (!updateResponse.ok) throw new Error("Failed to delete feedback");
           loadFeedback();
-          alert("Feedback deleted successfully!");
         } catch (error) {
           console.error("Error deleting feedback:", error);
-          alert("Error deleting feedback.");
         }
       }
     }
