@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Login - FNL Studio</title>
+  <title>Join - FNL Studio</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -25,7 +25,7 @@
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
     h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
-    .admin-form {
+    .join-form {
       background-color: #1e293b;
       padding: 20px;
       border-radius: 12px;
@@ -34,13 +34,15 @@
       width: 90%;
       text-align: left;
     }
-    .admin-form label {
+    .join-form label {
       display: block;
       margin-bottom: 5px;
       font-weight: 600;
       color: #f1f5f9;
     }
-    .admin-form input[type="text"] {
+    .join-form input[type="text"],
+    .join-form input[type="email"],
+    .join-form input[type="tel"] {
       width: 100%;
       padding: 8px;
       margin-bottom: 15px;
@@ -49,7 +51,7 @@
       background-color: #2d3b4e;
       color: #e2e8f0;
     }
-    .login-button {
+    .join-button {
       background-color: #10b981;
       padding: 10px 20px;
       border: none;
@@ -60,7 +62,7 @@
       transition: background-color 0.3s, transform 0.2s;
       width: 100%;
     }
-    .login-button:hover { background-color: #059669; transform: translateY(-2px); }
+    .join-button:hover { background-color: #059669; transform: translateY(-2px); }
     .back-button {
       background-color: #4a5b6f;
       padding: 10px 20px;
@@ -80,25 +82,71 @@
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <h1>Admin Login</h1>
-  <div class="admin-form">
-    <label for="code">Collaborator Code:</label>
-    <input type="text" id="code" required>
-    <button class="login-button" onclick="loginAdmin()">Login</button>
+  <h1>Join FNL Studio</h1>
+  <div class="join-form">
+    <label for="name">Name:</label>
+    <input type="text" id="name" required>
+    <label for="email">Email:</label>
+    <input type="email" id="email" required>
+    <label for="phone">Phone Number:</label>
+    <input type="tel" id="phone" required>
+    <button class="join-button" onclick="submitJoinForm()">Join Now</button>
   </div>
   <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div id="errorMessage" class="error-message"></div>
 
   <script>
-    const CORRECT_CODE = "042404"; // Replace with your actual collaborator code
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const errorMessage = document.getElementById("errorMessage");
 
-    function loginAdmin() {
-      const code = document.getElementById("code").value.trim();
-      if (code === CORRECT_CODE) {
-        window.location.href = "home.html"; // Redirect to home.html on success
-      } else {
-        errorMessage.textContent = "Invalid collaborator code. Please try again.";
+    function submitJoinForm() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+
+      if (!name || !email || !phone) {
+        errorMessage.textContent = "All fields are required.";
+        return;
+      }
+
+      saveLoginDetails(name, email, phone);
+    }
+
+    async function saveLoginDetails(name, email, phone) {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const loginDetails = data.record.login_details || [];
+        loginDetails.push({
+          name: name,
+          email: email,
+          phone: phone,
+          timestamp: new Date().toISOString()
+        });
+        const updateResponse = await fetch(API_URL, {
+          method: "PUT",
+          headers: {
+            "X-Master-Key": MASTER_KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            presets: data.record.presets || [],
+            feedbacks: data.record.feedbacks || [],
+            login_details: loginDetails,
+            payment_details: data.record.payment_details || []
+          })
+        });
+        if (!updateResponse.ok) throw new Error("Failed to save login details");
+        alert("Join successful! Redirecting to feedback...");
+        window.location.href = "feedback.html"; // Redirect to feedback.html on success
+      } catch (error) {
+        console.error("Error saving login details:", error);
+        errorMessage.textContent = "Error saving details: " + error.message;
       }
     }
   </script>
