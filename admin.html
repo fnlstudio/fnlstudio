@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard - FNL Studio</title>
+  <title>Admin - FNL Studio</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -11,159 +11,128 @@
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #e2e8f0;
       text-align: center;
-      padding: 20px;
+      padding: 0;
       margin: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+    }
+    .logo {
+      margin-bottom: 20px;
     }
     .logo img {
-      width: 200px;
+      width: 120px;
       height: auto;
-      margin-bottom: 30px;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-    }
-    h1 {
-      font-size: 1.5em;
-      margin: 15px 0;
-      color: #f1f5f9;
-      font-weight: 600;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
     .admin-section {
       background-color: #1e293b;
       padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      max-width: 350px;
       width: 90%;
       text-align: left;
+      border: 1px solid #2d3b4e;
     }
-    .nav-buttons {
-      margin-bottom: 20px;
-    }
-    .nav-buttons a {
-      background-color: #4a5b6f;
-      padding: 10px 20px;
-      margin: 0 10px 10px 0;
-      border: none;
-      border-radius: 10px;
-      color: #e2e8f0;
-      text-decoration: none;
+    .admin-section h2 {
+      font-size: 1.5em;
+      color: #f1f5f9;
+      margin: 0 0 15px 0;
       font-weight: 600;
-      transition: background-color 0.3s, transform 0.2s;
-      display: inline-block;
     }
-    .nav-buttons a:hover {
-      background-color: #3a4b5f;
-      transform: translateY(-2px);
-    }
-    .preset-item {
-      background-color: #2d3b4e;
-      padding: 15px;
-      border-radius: 10px;
-      margin: 15px 0;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .preset-item img {
-      max-width: 80px;
-      max-height: 80px;
+    .admin-actions button {
+      background: #10b981;
+      padding: 10px;
+      border: none;
       border-radius: 5px;
-      margin-right: 15px;
-    }
-    .preset-details {
-      flex-grow: 1;
-      min-width: 0;
-    }
-    .preset-details a {
-      color: #10b981;
-      text-decoration: none;
-      word-break: break-all;
-    }
-    .preset-details a:hover {
-      text-decoration: underline;
-    }
-    .actions {
-      display: flex;
-      gap: 10px;
-    }
-    .edit-btn, .delete-btn {
-      background-color: #10b981;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 10px;
-      color: white;
+      color: #fff;
       cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.3s, transform 0.2s;
+      font-weight: 500;
+      font-size: 0.95em;
+      margin: 10px 0;
+      width: 100%;
     }
-    .edit-btn:hover, .delete-btn:hover {
-      background-color: #059669;
-      transform: translateY(-2px);
-    }
-    .delete-btn {
-      background-color: #ef4444;
-    }
-    .delete-btn:hover {
-      background-color: #dc2626;
-    }
-    .add-preset-btn {
-      background-color: #10b981;
-      padding: 12px 30px;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 16px;
-      margin-top: 20px;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    .add-preset-btn:hover {
-      background-color: #059669;
-      transform: translateY(-2px);
+    .admin-actions button:hover {
+      background: #059669;
     }
     .back-button {
-      background-color: #4a5b6f;
-      padding: 10px 20px;
+      background: #4a5b6f;
+      padding: 10px;
       border: none;
-      border-radius: 10px;
+      border-radius: 5px;
       color: #e2e8f0;
       cursor: pointer;
-      font-weight: 600;
-      margin-top: 20px;
-      transition: background-color 0.3s, transform 0.2s;
+      font-weight: 500;
+      margin-top: 10px;
+      width: 100%;
     }
     .back-button:hover {
-      background-color: #3a4b5f;
-      transform: translateY(-2px);
+      background: #3a4b5f;
+    }
+    .show-details-button {
+      background: #4a5b6f;
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      color: #e2e8f0;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9em;
+      margin: 10px 0;
+      width: 100%;
+      display: none; /* Hidden by default, shown on mobile */
+    }
+    .show-details-button:hover {
+      background: #3a4b5f;
+    }
+    .details-section {
+      margin-top: 20px;
+      display: block; /* Visible by default on desktop */
+    }
+    .details-section h3 {
+      font-size: 1.2em;
+      color: #f1f5f9;
+      margin-bottom: 10px;
+    }
+    .details-section p {
+      font-size: 0.9em;
+      color: #e2e8f0;
+      margin: 5px 0;
+    }
+    /* Media queries for mobile and desktop */
+    @media (max-width: 767px) {
+      .details-section {
+        display: none; /* Hidden on mobile by default */
+      }
+      .show-details-button {
+        display: block; /* Show toggle button on mobile */
+      }
+    }
+    @media (min-width: 768px) {
+      .details-section {
+        display: block; /* Always visible on desktop */
+      }
+      .show-details-button {
+        display: none; /* Hide toggle button on desktop */
+      }
     }
     .footer {
       margin-top: auto;
-      padding: 20px;
-      background-color: #0f172a;
+      padding: 15px;
+      background: #0f172a;
       width: 100%;
       text-align: center;
-      border-top: 1px solid #2d3b4e;
+      color: #e2e8f0;
+      font-size: 0.85em;
     }
-    .error-message { color: #ef4444; margin-top: 10px; }
-    @media (max-width: 768px) {
-      .actions {
-        display: none;
-      }
-      .preset-item {
-        flex-direction: column;
-        text-align: center;
-      }
-      .preset-item img {
-        margin: 0 auto 15px;
-      }
-      .nav-buttons {
-        display: none;
-      }
+    .error-message {
+      color: #ef4444;
+      margin-top: 5px;
+      font-size: 0.85em;
+      text-align: center;
     }
   </style>
 </head>
@@ -171,86 +140,55 @@
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <h1>Admin Dashboard</h1>
-  <div class="nav-buttons">
-    <a href="logindetail.html">Login details</a>
-    <a href="paymentdetails.html">Payment details</a>
-    <a href="managefeedback.html">Manage feedback</a>
+  <div class="admin-section">
+    <h2>Admin Panel</h2>
+    <div class="admin-actions">
+      <button onclick="managePresets()">Manage Presets</button>
+      <button onclick="viewPayments()">View Payments</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+    <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+    <button class="show-details-button" onclick="toggleDetails()">Show Details</button>
+    <div class="details-section" id="detailsSection">
+      <h3>Login Details</h3>
+      <p>Username: admin@example.com</p>
+      <p>Password: ********</p>
+      <h3>Other Details</h3>
+      <p>Total Users: 50</p>
+      <p>Last Login: 2025-04-14</p>
+    </div>
+    <p class="error-message" id="errorMessage"></p>
   </div>
-  <div class="admin-section" id="adminSection">
-    <!-- Presets will be populated by JavaScript -->
-  </div>
-  <button class="add-preset-btn" onclick="window.location.href='upload.html'">Add New Preset</button>
-  <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div class="footer">
-    <h3>About Us</h3>
-    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors.</p>
-    <h3>Copyright ©</h3>
     <p>© 2025 FNL Studio. All rights reserved.</p>
   </div>
-  <div id="errorMessage" class="error-message"></div>
 
   <script>
-    const BIN_ID = "67fccb0b8960c979a584b5d5";
-    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
-    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const adminSection = document.getElementById("adminSection");
-    const errorMessage = document.getElementById("errorMessage");
+    const errorMessage = document.getElementById('errorMessage');
+    const detailsSection = document.getElementById('detailsSection');
+    let detailsVisible = false;
 
-    async function loadPresets() {
-      try {
-        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        const presets = data.record.presets || [];
-        adminSection.innerHTML = presets.map(preset => `
-          <div class="preset-item">
-            <img src="${preset.thumbnail_url}" alt="${preset.name}">
-            <div class="preset-details">
-              <p><strong>Name:</strong> ${preset.name}</p>
-              <p><strong>Price:</strong> ₹${preset.price}</p>
-              <p><strong>Download URL:</strong> <a href="${preset.download_url}" target="_blank">${preset.download_url}</a></p>
-              <p><strong>Sample 1:</strong> <a href="${preset.sample1 || 'N/A'}" target="_blank">${preset.sample1 || 'N/A'}</a></p>
-              <p><strong>Sample 2:</strong> <a href="${preset.sample2 || 'N/A'}" target="_blank">${preset.sample2 || 'N/A'}</a></p>
-              <p><strong>Sample 3:</strong> <a href="${preset.sample3 || 'N/A'}" target="_blank">${preset.sample3 || 'N/A'}</a></p>
-            </div>
-            <div class="actions">
-              <button class="edit-btn" onclick="editPreset('${encodeURIComponent(JSON.stringify(preset))}')">Edit</button>
-              <button class="delete-btn" onclick="deletePreset('${preset.name}')">Delete</button>
-            </div>
-          </div>
-        `).join("") || "<p>No presets available.</p>";
-      } catch (error) {
-        console.error("Error loading presets:", error);
-        adminSection.innerHTML = "<p>Error loading presets. Contact support.</p>";
-      }
+    function managePresets() {
+      alert('Manage Presets functionality (to be implemented)');
+      // Add your preset management logic here
     }
 
-    function editPreset(presetStr) {
-      window.location.href = `edit.html?preset=${presetStr}`;
+    function viewPayments() {
+      alert('View Payments functionality (to be implemented)');
+      // Add your payment viewing logic here
     }
 
-    async function deletePreset(name) {
-      if (confirm(`Are you sure you want to delete preset "${name}"?`)) {
-        try {
-          const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
-          const data = await response.json();
-          const presets = data.record.presets.filter(p => p.name !== name);
-          await fetch(API_URL, {
-            method: "PUT",
-            headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
-            body: JSON.stringify({ ...data.record, presets })
-          });
-          loadPresets();
-          alert("Preset deleted successfully!");
-        } catch (error) {
-          console.error("Error deleting preset:", error);
-          errorMessage.textContent = "Error deleting preset: " + error.message;
-        }
-      }
+    function logout() {
+      alert('Logged out successfully');
+      window.location.href = 'index.html';
     }
 
-    window.onload = loadPresets;
+    function toggleDetails() {
+      detailsVisible = !detailsVisible;
+      detailsSection.style.display = detailsVisible ? 'block' : 'none';
+      const button = document.querySelector('.show-details-button');
+      button.textContent = detailsVisible ? 'Hide Details' : 'Show Details';
+    }
   </script>
 </body>
 </html>
