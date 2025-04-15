@@ -279,9 +279,11 @@
     function sendUPIRequest() {
       const userUPI = document.getElementById("userUPI").value.trim();
       if (userUPI) {
+        const amount = urlParams.get('price') || 'N/A';
+        const upiLink = `upi://pay?pa=${encodeURIComponent(userUPI)}&pn=FNLStudio&am=${amount}&cu=INR&tn=PaymentRequestFromFNLStudio`;
         paymentOverlay.style.display = "none";
         alert(`Payment request sent to ${userUPI}. Please approve the request in your UPI app.`);
-        // Simulate sending request (real implementation needs server-side UPI API)
+        window.location.href = upiLink; // Open UPI app with user's UPI ID
         setTimeout(checkPaymentStatus, 2000); // Check status after 2 seconds
       } else {
         alert("Please enter a valid UPI ID.");
