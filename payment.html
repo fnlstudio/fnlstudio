@@ -11,65 +11,135 @@
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #e2e8f0;
       text-align: center;
-      padding: 20px;
+      padding: 0;
       margin: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+    }
+    .logo {
+      margin-bottom: 20px;
     }
     .logo img {
-      width: 200px;
+      width: 120px;
       height: auto;
-      margin-bottom: 30px;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
     .payment-section {
       background-color: #1e293b;
       padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      max-width: 500px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      max-width: 350px;
       width: 90%;
       text-align: left;
+      border: 1px solid #2d3b4e;
+    }
+    .payment-section h2 {
+      font-size: 1.5em;
+      color: #f1f5f9;
+      margin: 0 0 15px 0;
+      font-weight: 600;
     }
     .payment-details p {
-      margin: 10px 0;
+      margin: 8px 0;
+      font-size: 0.95em;
+      color: #e2e8f0;
     }
     .payment-details strong {
       color: #10b981;
+      font-weight: 500;
     }
-    .upi-qr {
-      margin: 20px 0;
+    .payment-details span, .payment-details input:disabled {
+      display: inline-block;
+      margin-left: 5px;
+      font-weight: 400;
+      background: #2d3b4e;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #4a5b6f;
+      width: calc(100% - 20px); /* Adjust for padding */
     }
-    .upi-qr img {
-      max-width: 200px;
-      border-radius: 10px;
+    .payment-details input {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+      border: 1px solid #4a5b6f;
+      border-radius: 5px;
+      background: #2d3b4e;
+      color: #e2e8f0;
+      font-size: 0.95em;
+      box-sizing: border-box;
+    }
+    .payment-details input:focus {
+      border-color: #10b981;
+      outline: none;
+    }
+    .captcha-text {
+      color: #ef4444;
+      font-size: 0.85em;
+      margin: 5px 0;
+    }
+    .pay-button, .upload-proof-button, .download-button {
+      background: #10b981;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.95em;
+      margin: 5px 0;
+      width: 100%;
+    }
+    .pay-button:hover, .upload-proof-button:hover, .download-button:hover {
+      background: #059669;
+    }
+    .upload-proof-button, .download-button {
+      display: none;
     }
     .back-button {
-      background-color: #4a5b6f;
-      padding: 10px 20px;
+      background: #4a5b6f;
+      padding: 10px;
       border: none;
-      border-radius: 10px;
+      border-radius: 5px;
       color: #e2e8f0;
       cursor: pointer;
-      font-weight: 600;
-      margin-top: 20px;
-      transition: background-color 0.3s, transform 0.2s;
+      font-weight: 500;
+      margin-top: 10px;
+      width: 100%;
     }
     .back-button:hover {
-      background-color: #3a4b5f;
-      transform: translateY(-2px);
+      background: #3a4b5f;
+    }
+    .proof-preview {
+      margin: 10px 0;
+      text-align: center;
+    }
+    .proof-preview img {
+      max-width: 100%;
+      border-radius: 5px;
+      margin-top: 5px;
+      display: none;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     .footer {
       margin-top: auto;
-      padding: 20px;
-      background-color: #0f172a;
+      padding: 15px;
+      background: #0f172a;
       width: 100%;
       text-align: center;
-      border-top: 1px solid #2d3b4e;
+      color: #e2e8f0;
+      font-size: 0.85em;
     }
-    .error-message { color: #ef4444; margin-top: 10px; }
+    .error-message {
+      color: #ef4444;
+      margin-top: 5px;
+      font-size: 0.85em;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -77,63 +147,136 @@
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <div class="payment-section">
-    <h2>Payment for Preset</h2>
-    <div id="paymentDetails" class="payment-details">
-      <!-- Preset details will be populated by JavaScript -->
+    <h2>Payment</h2>
+    <div class="payment-details">
+      <p><strong>Price:</strong> <input type="text" id="price" disabled></p>
+      <label>Name:</label>
+      <input type="text" id="name" placeholder="Enter your name" required>
+      <label>Email:</label>
+      <input type="email" id="email" placeholder="Enter your email" required>
+      <label>Phone Number:</label>
+      <input type="tel" id="phone" placeholder="Enter your phone number" required>
+      <p class="captcha-text" id="captchaText"></p>
+      <input type="text" id="captchaInput" placeholder="Enter captcha">
     </div>
-    <p><strong>UPI ID:</strong> <span id="upiId">YOUR_UPI_ID@fam</span> (Replace with your actual UPI ID)</p>
-    <p><strong>Amount:</strong> <span id="amount"></span></p>
-    <div class="upi-qr">
-      <p>Scan this QR code to pay (optional):</p>
-      <img id="qrCode" src="" alt="UPI QR Code" style="display: none;">
+    <button class="pay-button" id="payButton" onclick="initiatePayment()">Pay</button>
+    <button class="upload-proof-button" id="uploadProofButton" onclick="uploadProof()">Upload Proof</button>
+    <div class="proof-preview" id="proofPreview">
+      <p>Proof Preview:</p>
+      <img id="proofImage" alt="Payment Proof">
     </div>
-    <p>Steps to Pay:</p>
-    <ol>
-      <li>Open your UPI app (e.g., Google Pay, PhonePe, Paytm).</li>
-      <li>Enter the UPI ID above and the amount.</li>
-      <li>Confirm the payment with your PIN or biometric.</li>
-      <li>Send proof of payment to your admin for verification (contact admin for email).</li>
-    </ol>
+    <button class="download-button" id="downloadButton" style="display: none;" onclick="downloadPreset()">Download</button>
     <p class="error-message" id="errorMessage"></p>
   </div>
-  <button class="back-button" onclick="window.location.href='index.html'">Back to Presets</button>
+  <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div class="footer">
-    <h3>About Us</h3>
-    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors.</p>
-    <h3>Copyright ©</h3>
     <p>© 2025 FNL Studio. All rights reserved.</p>
   </div>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const presetStr = urlParams.get('preset');
-    const paymentDetails = document.getElementById('paymentDetails');
-    const amount = document.getElementById('amount');
-    const qrCode = document.getElementById('qrCode');
+    const priceInput = document.getElementById('price');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('phone');
+    const captchaText = document.getElementById('captchaText');
+    const captchaInput = document.getElementById('captchaInput');
+    const payButton = document.getElementById('payButton');
+    const uploadProofButton = document.getElementById('uploadProofButton');
+    const downloadButton = document.getElementById('downloadButton');
+    const proofPreview = document.getElementById('proofPreview');
+    const proofImage = document.getElementById('proofImage');
     const errorMessage = document.getElementById('errorMessage');
     let preset = null;
+
+    // Generate unique captcha code
+    function generateCaptcha() {
+      const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let code = '';
+      for (let i = 0; i < 6; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    }
+    const captchaCode = generateCaptcha();
+    captchaText.textContent = `Type "${captchaCode}" to proceed`;
 
     if (presetStr) {
       try {
         preset = JSON.parse(decodeURIComponent(presetStr));
-        paymentDetails.innerHTML = `
-          <p><strong>Name:</strong> ${preset.name}</p>
-          <p><strong>Price:</strong> ₹${preset.price}</p>
-          <p><strong>Download URL:</strong> <a href="${preset.download_url}" target="_blank">${preset.download_url}</a></p>
-        `;
-        amount.textContent = `₹${preset.price}`;
-        // Optional: Add a QR code image if you have one (replace with your QR code URL)
-        // qrCode.src = 'path_to_your_qr_code.png';
-        // qrCode.style.display = 'block';
+        priceInput.value = `₹${preset.price}`;
+        nameInput.value = preset.name || '';
       } catch (e) {
         errorMessage.textContent = 'Error parsing preset data: ' + e.message;
       }
     } else {
-      paymentDetails.innerHTML = '<p>No preset selected. Go back and select a preset to buy.</p>';
+      errorMessage.textContent = 'No preset selected. Go back and select a preset to buy.';
     }
 
-    // Replace with your actual UPI ID
-    document.getElementById('upiId').textContent = 'YOUR_UPI_ID@fam'; // Update this!
+    function initiatePayment() {
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+      const phone = phoneInput.value.trim();
+      const captcha = captchaInput.value.trim().toUpperCase();
+
+      if (!name) {
+        errorMessage.textContent = 'Please enter your name.';
+        return;
+      }
+      if (!email || !/@/.test(email)) {
+        errorMessage.textContent = 'Please enter a valid email.';
+        return;
+      }
+      if (!phone || !/^\d{10}$/.test(phone)) {
+        errorMessage.textContent = 'Please enter a valid 10-digit phone number.';
+        return;
+      }
+      if (captcha !== captchaCode) {
+        errorMessage.textContent = 'Captcha incorrect. Type the code above.';
+        return;
+      }
+
+      const upiId = 'YOUR_UPI_ID@fam'; // Replace with your actual UPI ID
+      const upiUrl = `upi://pay?pa=${upiId}&am=${preset.price}&tn=Payment for ${name}`;
+      window.location.href = upiUrl;
+
+      alert('Please complete the payment in the UPI app. Upload proof after payment.');
+      payButton.style.display = 'none';
+      uploadProofButton.style.display = 'block';
+    }
+
+    function uploadProof() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            proofImage.src = event.target.result;
+            proofImage.style.display = 'block';
+            proofPreview.style.display = 'block';
+            downloadButton.style.display = 'block';
+            uploadProofButton.style.display = 'none';
+            errorMessage.textContent = 'Proof uploaded. Click Download after admin verification (simulated).';
+          };
+          reader.readAsDataURL(file);
+        } else {
+          errorMessage.textContent = 'Please upload a valid image file.';
+        }
+      };
+      input.click();
+    }
+
+    function downloadPreset() {
+      if (preset && preset.download_url) {
+        window.location.href = preset.download_url;
+      } else {
+        errorMessage.textContent = 'Download URL not available.';
+      }
+    }
   </script>
 </body>
 </html>
