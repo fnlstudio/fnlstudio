@@ -18,7 +18,7 @@
       flex-direction: column;
       align-items: center;
       overflow-x: hidden;
-      touch-action: pan-y; /* Prevent overscroll on swipe */
+      touch-action: pan-y;
     }
     .logo img {
       width: 200px;
@@ -138,11 +138,25 @@
       align-items: center;
       z-index: 2000;
     }
-    .full-screen-overlay img {
-      max-height: 90vh;
-      max-width: 90vw;
+    .full-screen-image-container {
+      position: relative;
+      max-width: 60%; /* Further reduced to 60% */
+      max-height: 60%; /* Further reduced to 60% */
+      overflow: hidden; /* Prevent vertical scrolling */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .full-screen-image-container img {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      margin: 0;
       object-fit: contain;
-      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .full-screen-image-container .zoom-in {
+      transform: scale(1.5);
     }
     .close-btn {
       position: absolute;
@@ -154,9 +168,10 @@
       font-size: 24px;
       cursor: pointer;
       transition: color 0.3s;
+      z-index: 2001;
     }
     .close-btn:hover {
-      color: #ef4444; /* Red on hover for emphasis */
+      color: #ef4444;
     }
     .buy-now-btn {
       background-color: #f97316;
@@ -183,6 +198,10 @@
       border-top: 1px solid #2d3b4e;
     }
     .error-message { color: #ef4444; margin-top: 10px; }
+    .loading {
+      font-size: 1.5em;
+      color: #10b981;
+    }
   </style>
 </head>
 <body>
@@ -212,7 +231,10 @@
   </div>
   <div class="full-screen-overlay" id="fullScreenOverlay">
     <button class="close-btn" onclick="closeFullScreen()">×</button>
-    <img id="fullScreenImage" src="" alt="Full Screen Image">
+    <div class="full-screen-image-container">
+      <img id="fullScreenImage" src="" alt="Full Screen Image">
+      <div id="loading" class="loading" style="display: none;">Loading...</div>
+    </div>
   </div>
 
   <script>
@@ -226,6 +248,7 @@
     const overlayImages = document.getElementById("overlayImages");
     const buyNowBtn = document.getElementById("buyNowBtn");
     const fullScreenImage = document.getElementById("fullScreenImage");
+    const loading = document.getElementById("loading");
     let currentPreset = null;
     let currentImageIndex = 0;
 
@@ -278,8 +301,17 @@
 
     function showFullScreen(index) {
       currentImageIndex = index;
+      loading.style.display = "block";
+      fullScreenImage.classList.remove("zoom-in");
       updateFullScreenImage();
       fullScreenOverlay.style.display = "flex";
+      fullScreenImage.onload = () => {
+        loading.style.display = "none";
+      };
+      fullScreenImage.onerror = () => {
+        loading.style.display = "none";
+        alert("Failed to load image.");
+      };
     }
 
     function closeFullScreen() {
@@ -316,14 +348,24 @@
           currentPreset.sample2 || '',
           currentPreset.sample3 || ''
         ].filter(img => img);
-        if (Math.abs(diffX) > 50) { // Threshold for swipe
-          if (diffX > 0 && currentImageIndex < images.length - 1) { // Swipe left
+        if (Math.abs(diffX) > 50) {
+          if (diffX > 0 && currentImageIndex < images.length - 1) {
             currentImageIndex++;
-          } else if (diffX < 0 && currentImageIndex > 0) { // Swipe right
+          } else if (diffX < 0 && currentImageIndex > 0) {
             currentImageIndex--;
           }
-          updateFullScreenImage();
+          showFullScreen(currentImageIndex);
         }
+      });
+
+      let lastTap = 0;
+      fullScreenImage.addEventListener('click', e => {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 300 && tapLength > 0) {
+          fullScreenImage.classList.toggle("zoom-in");
+        }
+        lastTap = currentTime;
       });
     }
 
@@ -332,10 +374,10 @@
       fullScreenOverlay.addEventListener('click', (e) => {
         if (e.target === fullScreenOverlay) closeFullScreen();
       });
-      setupSwipe();
       previewOverlay.addEventListener('click', (e) => {
         if (e.target === previewOverlay) closeOverlay();
       });
+      setupSwipe();
     };
   </script>
 </body>
