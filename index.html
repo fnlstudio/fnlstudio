@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FNL Studio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -19,12 +19,11 @@
       align-items: center;
     }
     .logo img {
-      width: 150px;
+      width: 200px;
       height: auto;
-      margin-bottom: 15px;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      margin-bottom: 30px;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
     }
-    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
     .menu-dots {
       position: absolute;
       top: 20px;
@@ -35,39 +34,44 @@
       border: none;
       color: #e2e8f0;
     }
-    .menu-button, .read-more {
-      background-color: #10b981;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      margin: 5px;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    .menu-button:hover, .read-more:hover { background-color: #059669; transform: translateY(-2px); }
-    .feedback-section {
-      margin: 20px 0;
-    }
-    .feedback-item {
-      background-color: #1e293b;
-      padding: 10px;
-      border-radius: 10px;
-      margin: 10px 0;
-      max-width: 400px;
-      width: 90%;
-    }
     .presets-section {
       margin: 20px 0;
     }
     .preset-item {
       background-color: #1e293b;
-      padding: 10px;
-      border-radius: 10px;
-      margin: 10px 0;
-      max-width: 400px;
+      padding: 15px;
+      border-radius: 15px;
+      margin: 15px 0;
+      max-width: 500px;
       width: 90%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s;
+    }
+    .preset-item:hover {
+      transform: scale(1.05);
+    }
+    .preset-item a {
+      color: #10b981;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .preset-item a:hover {
+      text-decoration: underline;
+    }
+    .read-more {
+      background-color: #10b981;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .read-more:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
     }
     .footer {
       margin-top: auto;
@@ -75,6 +79,7 @@
       background-color: #0f172a;
       width: 100%;
       text-align: center;
+      border-top: 1px solid #2d3b4e;
     }
     .error-message { color: #ef4444; margin-top: 10px; }
   </style>
@@ -84,15 +89,11 @@
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <button class="menu-dots" onclick="window.location.href='menu.html'">⋮</button>
-  <h1>Fully Presets</h1>
-  <div class="feedback-section" id="feedbackSection">
-    <!-- Feedback will be populated by JavaScript -->
-  </div>
-  <button class="read-more" onclick="window.location.href='join.html'">Read More Feedback</button>
+  <h1 style="display:none;">FNL Presets</h1> <!-- Hidden for design, can be styled later -->
   <div class="presets-section" id="presetsSection">
     <!-- Presets will be populated by JavaScript -->
   </div>
-  <button class="menu-button" onclick="window.location.href='adminlogin.html'">Admin</button>
+  <button class="read-more" onclick="window.location.href='join.html'">Read More Feedback</button>
   <div class="footer">
     <h3>About Us</h3>
     <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
@@ -105,31 +106,7 @@
     const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const feedbackSection = document.getElementById("feedbackSection");
     const presetsSection = document.getElementById("presetsSection");
-
-    async function loadFeedback() {
-      try {
-        const response = await fetch(API_URL + "/latest", {
-          headers: { "X-Master-Key": MASTER_KEY }
-        });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        console.log("Feedback Data:", data); // Debug log
-        const feedbacks = data.record.feedbacks || [];
-        const recentFeedbacks = feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 3);
-        if (recentFeedbacks.length === 0) {
-          feedbackSection.innerHTML = "<p>No feedback available.</p>";
-        } else {
-          feedbackSection.innerHTML = recentFeedbacks.map(feedback => {
-            return `<div class="feedback-item">${feedback.text || 'No feedback text'} - ${new Date(feedback.timestamp).toLocaleDateString()}</div>`;
-          }).join("");
-        }
-      } catch (error) {
-        console.error("Error loading feedback:", error);
-        feedbackSection.innerHTML = "<p>Error loading feedback. Contact admin.</p>";
-      }
-    }
 
     async function loadPresets() {
       try {
@@ -138,12 +115,11 @@
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
-        console.log("Presets Data:", data); // Debug log
         const presets = data.record.presets || [];
         if (presets.length === 0) {
           presetsSection.innerHTML = "<p>No presets available. Add via admin.</p>";
         } else {
-          presetsSection.innerHTML = presets.map(url => `<div class="preset-item"><a href="${url}" target="_blank">${url}</a></div>`).join("");
+          presetsSection.innerHTML = presets.map(url => `<div class="preset-item"><a href="${url}" target="_blank">${url.split('/').pop().replace(/\.view$/, '')}</a></div>`).join("");
         }
       } catch (error) {
         console.error("Error loading presets:", error);
@@ -151,11 +127,7 @@
       }
     }
 
-    // Load content on page load
-    window.onload = () => {
-      loadFeedback();
-      loadPresets();
-    };
+    window.onload = loadPresets;
   </script>
 </body>
 </html>
