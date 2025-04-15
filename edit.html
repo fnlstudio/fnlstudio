@@ -50,10 +50,6 @@
       color: #e2e8f0;
       font-size: 14px;
     }
-    .edit-form input[readonly] {
-      background-color: #3a4b5f;
-      cursor: not-allowed;
-    }
     .save-button {
       background-color: #10b981;
       padding: 12px 30px;
@@ -122,8 +118,8 @@
       editForm.innerHTML = `
         <label for="name">Name:</label>
         <input type="text" id="name" value="${preset.name}" required />
-        <label for="price">Price:</label>
-        <input type="number" id="price" value="${preset.price}" readonly required />
+        <label for="price">Price (₹):</label>
+        <input type="number" id="price" value="${preset.price}" step="0.01" required />
         <label for="download_url">Download URL:</label>
         <input type="text" id="download_url" value="${preset.download_url}" required />
         <label for="thumbnail_url">Thumbnail URL:</label>
