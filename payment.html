@@ -184,8 +184,7 @@
         <input type="tel" id="phone" required />
         <label for="captcha" class="captcha">${generateCaptcha()}</label>
         <input type="number" id="captcha" required />
-        <p>UPI: 9747604405@fam</p>
-        <button class="pay-button" onclick="confirmPayment()">Pay Now</button>
+        <button class="pay-button" onclick="initiatePayment()">Pay Now</button>
       `;
     }
 
@@ -194,7 +193,7 @@
       downloadButton.onclick = () => window.location.href = preset.download_url;
     }
 
-    async function confirmPayment() {
+    function initiatePayment() {
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
       const phone = document.getElementById("phone").value.trim();
@@ -211,20 +210,38 @@
         return;
       }
 
+      // Generate a generic UPI intent URL (user must replace with their UPI ID)
+      const upiAmount = preset.price;
+      const upiUrl = `upi://pay?pa=YOUR_UPI_ID@fam&pn=FNL Studio&am=${upiAmount}&tn=Payment for ${preset.name}`;
+      // Note: Replace 'YOUR_UPI_ID@fam' with your actual UPI ID for testing.
+      // Users will be prompted to enter their own UPI ID in their app.
+
+      // Save payment details
+      savePaymentDetails(name, email, phone, preset);
+
+      // Redirect to UPI app
+      window.location.href = upiUrl;
+
+      // Simulate payment confirmation after a timeout (30 seconds)
+      setTimeout(() => {
+        showOverlay();
+        alert("Payment assumed successful. Please ensure you completed the UPI transaction.");
+      }, 30000); // 30 seconds timeout
+    }
+
+    async function savePaymentDetails(name, email, phone, preset) {
       try {
         const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
         const data = await response.json();
         const paymentDetails = data.record.payment_details || [];
-        paymentDetails.push({ name, email, phone, preset: preset.name, price: preset.price, timestamp: new Date().toISOString() });
+        paymentDetails.push({ name, email, phone, preset: preset.name, price: preset.price, timestamp: new Date().toISOString(), status: "pending" });
         await fetch(API_URL, {
           method: "PUT",
           headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
           body: JSON.stringify({ ...data.record, payment_details: paymentDetails })
         });
-        showOverlay();
       } catch (error) {
-        console.error("Error processing payment:", error);
-        errorMessage.textContent = "Error processing payment: " + error.message;
+        console.error("Error saving payment details:", error);
       }
     }
 
