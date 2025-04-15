@@ -17,6 +17,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: space-between; /* Distribute space evenly */
     }
     .logo img {
       width: 150px;
@@ -24,7 +25,12 @@
       margin-bottom: 15px;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
-    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
+    h1 {
+      font-size: 1.5em;
+      margin: 15px 0;
+      color: #f1f5f9;
+      font-weight: 600;
+    }
     .search-bar {
       width: 80%;
       max-width: 400px;
@@ -35,6 +41,7 @@
       background-color: #2d3b4e;
       color: #e2e8f0;
       font-size: 1em;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     .button {
       background-color: #10b981;
@@ -44,14 +51,35 @@
       color: white;
       cursor: pointer;
       font-weight: 600;
-      margin: 10px 0;
       transition: background-color 0.3s, transform 0.2s;
+      width: 80%;
+      max-width: 200px;
+      margin: 10px auto;
     }
-    .button:hover { background-color: #059669; transform: translateY(-2px); }
+    .button:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
+    }
     .back-button {
-      background-color: #ef4444;
+      background-color: #4a5b6f; /* Subtle gray to match minimalism */
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      color: #e2e8f0;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s, transform 0.2s;
+      width: 80%;
+      max-width: 200px;
+      margin: 10px auto;
     }
-    .back-button:hover { background-color: #dc2626; }
+    .back-button:hover {
+      background-color: #3a4b5f; /* Slightly darker on hover */
+      transform: translateY(-2px);
+    }
+    .admin-button {
+      margin-top: auto; /* Pushes to bottom with flex */
+    }
   </style>
 </head>
 <body>
@@ -60,7 +88,7 @@
   </div>
   <h1>Menu</h1>
   <input type="text" class="search-bar" placeholder="Search...">
-  <button class="button" onclick="window.location.href='adminlogin.html'">Admin</button>
   <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+  <button class="button admin-button" onclick="window.location.href='adminlogin.html'">Admin</button>
 </body>
 </html>
