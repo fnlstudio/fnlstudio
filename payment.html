@@ -140,6 +140,21 @@
       font-size: 0.85em;
       text-align: center;
     }
+    .qr-code-section {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .qr-code-section img {
+      width: 200px;
+      height: auto;
+      border: 1px solid #4a5b6f;
+      border-radius: 5px;
+    }
+    .qr-code-section p {
+      font-size: 0.9em;
+      color: #e2e8f0;
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
@@ -167,6 +182,12 @@
       <img id="proofImage" alt="Payment Proof">
     </div>
     <button class="download-button" id="downloadButton" style="display: none;" onclick="downloadPreset()">Download</button>
+    <!-- Added QR Code Section -->
+    <div class="qr-code-section">
+      <p>Scan the QR code to pay:</p>
+      <img src="https://i.postimg.cc/TYwyC2xf/Whats-App-Image-2025-04-14-at-10-58-46-PM.jpg" alt="Payment QR Code" id="qrCode">
+      <p>Use any UPI app (e.g., Google Pay, PhonePe) to scan and complete payment.</p>
+    </div>
     <p class="error-message" id="errorMessage"></p>
   </div>
   <button class="back-button" onclick="window.location.href='index.html'">Back</button>
