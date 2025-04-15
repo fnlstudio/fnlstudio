@@ -43,7 +43,8 @@
     }
     .payment-details input[type="text"],
     .payment-details input[type="email"],
-    .payment-details input[type="tel"] {
+    .payment-details input[type="tel"],
+    .payment-details select {
       width: 100%;
       padding: 8px;
       margin-bottom: 15px;
@@ -186,6 +187,15 @@
     <input type="email" id="email" required>
     <label for="phone">Phone Number:</label>
     <input type="tel" id="phone" required>
+    <label for="upiApp">Select UPI App:</label>
+    <select id="upiApp">
+      <option value="gpay">Google Pay (GPay)</option>
+      <option value="paytm">Paytm</option>
+      <option value="bank">Bank App (e.g., SBI, HDFC)</option>
+      <option value="fampay">FamPay</option>
+    </select>
+    <label for="upiId">Enter UPI ID (e.g., name@domain):</label>
+    <input type="text" id="upiId" placeholder="e.g., yourname@okhdfcbank or yourname@paytm" required>
     <div class="upload-section" id="uploadSection">
       <label for="imageUpload" class="upload-button">Upload Proof</label>
       <input type="file" id="imageUpload" accept="image/*" onchange="previewImage()">
@@ -252,8 +262,9 @@
       const email = document.getElementById("email").value.trim();
       const phone = document.getElementById("phone").value.trim();
       const userCaptcha = document.getElementById("userCaptcha").value.trim();
+      const upiId = document.getElementById("upiId").value.trim();
 
-      if (!name || !email || !phone || !userCaptcha) {
+      if (!name || !email || !phone || !userCaptcha || !upiId) {
         errorMessage.textContent = "All fields are required.";
         return;
       }
@@ -265,18 +276,21 @@
       }
 
       saveLoginDetails(name, email, phone);
+      document.getElementById("userUPI").value = upiId; // Pre-fill UPI ID
       paymentOverlay.style.display = "flex";
     }
 
     function openUPI() {
       const name = document.getElementById("name").value.trim();
       const amount = urlParams.get('price') || 'N/A';
-      const upiLink = `upi://pay?pa=9747604405@fam&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent('Payment for FNL Studio')}&tr=TR${Date.now()}&mc=1234`;
+      const upiId = document.getElementById("upiId").value.trim();
+      const upiApp = document.getElementById("upiApp").value;
+      let upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent('Payment for FNL Studio')}&tr=TR${Date.now()}&mc=1234`;
       paymentOverlay.style.display = "none";
       window.location.href = upiLink;
       const startTime = Date.now();
       const checkInterval = setInterval(() => {
-        if (document.hidden || Date.now() - startTime > 5000) { // Increased to 5 seconds
+        if (document.hidden || Date.now() - startTime > 5000) {
           clearInterval(checkInterval);
           if (!document.hidden) {
             if (confirm("Did you complete the payment in the UPI app?")) {
@@ -301,7 +315,7 @@
         window.location.href = upiLink;
         const startTime = Date.now();
         const checkInterval = setInterval(() => {
-          if (document.hidden || Date.now() - startTime > 5000) { // Increased to 5 seconds
+          if (document.hidden || Date.now() - startTime > 5000) {
             clearInterval(checkInterval);
             if (!document.hidden) {
               if (confirm("Did you approve the payment request in the UPI app?")) {
