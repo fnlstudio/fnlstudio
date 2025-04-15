@@ -50,8 +50,8 @@
       justify-content: space-between;
     }
     .preset-item img {
-      max-width: 100px;
-      max-height: 100px;
+      max-width: 80px; /* Decreased from 100px */
+      max-height: 80px; /* Decreased from 100px */
       border-radius: 5px;
       margin-right: 15px;
     }
@@ -142,8 +142,9 @@
       .preset-item img {
         margin: 0 auto 15px;
       }
-      .preset-details a {
-        display: none; /* Hide links on mobile */
+      /* Do not hide download URL or sample links; hide other navigation if present */
+      .nav-links { /* Assuming these are navigation links to hide */
+        display: none;
       }
     }
   </style>
