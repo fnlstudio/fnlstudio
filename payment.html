@@ -60,7 +60,7 @@
       padding: 8px;
       border-radius: 5px;
       border: 1px solid #4a5b6f;
-      width: calc(100% - 20px); /* Adjust for padding */
+      width: calc(100% - 20px);
     }
     .payment-details input {
       width: 100%;
@@ -150,8 +150,9 @@
     <h2>Payment</h2>
     <div class="payment-details">
       <p><strong>Price:</strong> <input type="text" id="price" disabled></p>
-      <label>Name:</label>
-      <input type="text" id="name" placeholder="Enter your name" required>
+      <p><strong>Preset Name:</strong> <span id="presetName"></span></p>
+      <label>Buyer's Name:</label>
+      <input type="text" id="buyerName" placeholder="Enter your name" required>
       <label>Email:</label>
       <input type="email" id="email" placeholder="Enter your email" required>
       <label>Phone Number:</label>
@@ -177,7 +178,8 @@
     const urlParams = new URLSearchParams(window.location.search);
     const presetStr = urlParams.get('preset');
     const priceInput = document.getElementById('price');
-    const nameInput = document.getElementById('name');
+    const presetName = document.getElementById('presetName');
+    const buyerNameInput = document.getElementById('buyerName');
     const emailInput = document.getElementById('email');
     const phoneInput = document.getElementById('phone');
     const captchaText = document.getElementById('captchaText');
@@ -206,7 +208,7 @@
       try {
         preset = JSON.parse(decodeURIComponent(presetStr));
         priceInput.value = `₹${preset.price}`;
-        nameInput.value = preset.name || '';
+        presetName.textContent = preset.name || 'Unnamed Preset';
       } catch (e) {
         errorMessage.textContent = 'Error parsing preset data: ' + e.message;
       }
@@ -215,12 +217,12 @@
     }
 
     function initiatePayment() {
-      const name = nameInput.value.trim();
+      const buyerName = buyerNameInput.value.trim();
       const email = emailInput.value.trim();
       const phone = phoneInput.value.trim();
       const captcha = captchaInput.value.trim().toUpperCase();
 
-      if (!name) {
+      if (!buyerName) {
         errorMessage.textContent = 'Please enter your name.';
         return;
       }
@@ -238,7 +240,7 @@
       }
 
       const upiId = '9747604405@fam'; // Replace with your actual UPI ID
-      const upiUrl = `upi://pay?pa=${upiId}&am=${preset.price}&tn=Payment for ${name}`;
+      const upiUrl = `upi://pay?pa=${upiId}&am=${preset.price}&tn=Payment for ${buyerName}`;
       window.location.href = upiUrl;
 
       alert('Please complete the payment in the UPI app. Upload proof after payment.');
