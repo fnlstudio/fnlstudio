@@ -61,6 +61,14 @@
     .presets-section {
       margin: 20px 0;
     }
+    .preset-item {
+      background-color: #1e293b;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px 0;
+      max-width: 400px;
+      width: 90%;
+    }
     .footer {
       margin-top: auto;
       padding: 20px;
@@ -76,7 +84,7 @@
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <button class="menu-dots" onclick="window.location.href='menu.html'">⋮</button>
-  <h1>FNL PRESETS</h1>
+  <h1>Fully Presets</h1>
   <div class="feedback-section" id="feedbackSection">
     <!-- Feedback will be populated by JavaScript -->
   </div>
@@ -106,9 +114,16 @@
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
+        console.log("Feedback Data:", data); // Debug log
         const feedbacks = data.record.feedbacks || [];
         const recentFeedbacks = feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 3);
-        feedbackSection.innerHTML = recentFeedbacks.map(feedback => `<div class="feedback-item">${feedback.text || 'No feedback text'} - ${new Date(feedback.timestamp).toLocaleDateString()}</div>`).join("") || "<p>No feedback available.</p>";
+        if (recentFeedbacks.length === 0) {
+          feedbackSection.innerHTML = "<p>No feedback available.</p>";
+        } else {
+          feedbackSection.innerHTML = recentFeedbacks.map(feedback => {
+            return `<div class="feedback-item">${feedback.text || 'No feedback text'} - ${new Date(feedback.timestamp).toLocaleDateString()}</div>`;
+          }).join("");
+        }
       } catch (error) {
         console.error("Error loading feedback:", error);
         feedbackSection.innerHTML = "<p>Error loading feedback. Contact admin.</p>";
@@ -122,8 +137,13 @@
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
+        console.log("Presets Data:", data); // Debug log
         const presets = data.record.presets || [];
-        presetsSection.innerHTML = presets.map(url => `<div class="preset-item"><a href="${url}" target="_blank">${url}</a></div>`).join("") || "<p>No presets available. Add via admin.</p>";
+        if (presets.length === 0) {
+          presetsSection.innerHTML = "<p>No presets available. Add via admin.</p>";
+        } else {
+          presetsSection.innerHTML = presets.map(url => `<div class="preset-item"><a href="${url}" target="_blank">${url}</a></div>`).join("");
+        }
       } catch (error) {
         console.error("Error loading presets:", error);
         presetsSection.innerHTML = "<p>Error loading presets. Contact admin.</p>";
