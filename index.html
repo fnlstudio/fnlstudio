@@ -88,8 +88,8 @@
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <button class="menu-dots" onclick="window.location.href='menu.html'">⋮</button>
-  <h1 style="display:none;">FNL Presets</h1> <!-- Hidden for design, can be styled later -->
+  <button class="menu-dots" onclick="window.location.href='menu.html'">⋮</button> <!-- Fixed to menu.html -->
+  <h1 style="display:none;">FNL Presets</h1>
   <div class="presets-section" id="presetsSection">
     <!-- Presets will be populated by JavaScript -->
   </div>
@@ -119,7 +119,7 @@
         if (presets.length === 0) {
           presetsSection.innerHTML = "<p>No presets available. Add via admin.</p>";
         } else {
-          presetsSection.innerHTML = presets.map(url => `<div class="preset-item"><a href="${url}" target="_blank">${url.split('/').pop().replace(/\.view$/, '')}</a></div>`).join("");
+          presetsSection.innerHTML = presets.map(url => `<div class="preset-item"><a href="${url.download_url}" target="_blank">${url.name}</a><br><img src="${url.thumbnail_url}" alt="${url.name}" style="max-width: 100%; border-radius: 10px;"></div>`).join("");
         }
       } catch (error) {
         console.error("Error loading presets:", error);
