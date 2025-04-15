@@ -43,8 +43,7 @@
     }
     .payment-details input[type="text"],
     .payment-details input[type="email"],
-    .payment-details input[type="tel"],
-    .payment-details select {
+    .payment-details input[type="tel"] {
       width: 100%;
       padding: 8px;
       margin-bottom: 15px;
@@ -145,21 +144,12 @@
     <input type="email" id="email" required>
     <label for="phone">Phone Number:</label>
     <input type="tel" id="phone" required>
-    <label for="upiApp">Select UPI App:</label>
-    <select id="upiApp">
-      <option value="gpay">Google Pay (GPay)</option>
-      <option value="paytm">Paytm</option>
-      <option value="bank">Bank App (e.g., SBI, HDFC)</option>
-      <option value="fampay">FamPay</option>
-    </select>
     <label for="upiId">Enter UPI ID (e.g., name@domain):</label>
-    <input type="text" id="upiId" placeholder="e.g., yourname@okhdfcbank or yourname@paytm" required>
+    <input type="text" id="upiId" placeholder="e.g., yourname@okhdfcbank" required>
     <div class="upload-section" id="uploadSection">
       <label for="imageUpload" class="upload-button">Upload Proof</label>
       <input type="file" id="imageUpload" accept="image/*" onchange="previewImage()">
       <img id="imagePreview" alt="Preview of uploaded proof">
-      <label for="presetLink">Preset Upload Link (e.g., Google Drive):</label>
-      <input type="text" id="presetLink" placeholder="Paste your preset link here" required>
     </div>
     <div class="captcha-section">
       <p>Captcha: <span id="captchaText"></span></p>
@@ -184,7 +174,7 @@
     const errorMessage = document.getElementById("errorMessage");
     let captcha = generateCaptcha();
     let paymentConfirmed = false;
-    let presetLink = "";
+    let presetUrl = "";
 
     function generateCaptcha() {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -260,6 +250,7 @@
 
     function checkPaymentStatus() {
       if (paymentConfirmed) {
+        fetchPresetUrl(); // Fetch the latest preset URL
         savePaymentDetails(
           document.getElementById("name").value.trim(),
           document.getElementById("email").value.trim(),
@@ -270,11 +261,28 @@
     }
 
     function openPresetLink() {
-      const presetLink = document.getElementById("presetLink").value.trim();
-      if (presetLink) {
-        window.open(presetLink, '_blank');
+      if (presetUrl) {
+        window.open(presetUrl, '_blank');
       } else {
-        errorMessage.textContent = "Please provide a valid preset link.";
+        errorMessage.textContent = "No preset URL available. Contact admin.";
+      }
+    }
+
+    async function fetchPresetUrl() {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const presets = data.record.presets || [];
+        presetUrl = presets.length > 0 ? presets[presets.length - 1] : ""; // Use the latest preset URL
+        if (imageUpload.files.length > 0) {
+          downloadButton.style.display = "block"; // Show download button after proof upload
+        }
+      } catch (error) {
+        console.error("Error fetching preset URL:", error);
+        errorMessage.textContent = "Error fetching preset URL: " + error.message;
       }
     }
 
@@ -347,15 +355,15 @@
       }
     }
 
-    // Generate initial CAPTCHA
-    generateCaptcha();
-
-    // Show upload section and download button only after proof upload
+    // Show download button only after proof upload
     imageUpload.addEventListener("change", function() {
-      if (imageUpload.files.length > 0 && document.getElementById("presetLink").value.trim()) {
+      if (imageUpload.files.length > 0 && presetUrl) {
         downloadButton.style.display = "block";
       }
     });
+
+    // Generate initial CAPTCHA
+    generateCaptcha();
   </script>
 </body>
 </html>
