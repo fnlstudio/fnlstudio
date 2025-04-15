@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Login - FNL Studio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -19,48 +19,52 @@
       align-items: center;
     }
     .logo img {
-      width: 150px;
+      width: 200px;
       height: auto;
-      margin-bottom: 15px;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      margin-bottom: 30px;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
     }
     h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
     .admin-form {
       background-color: #1e293b;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       max-width: 400px;
       width: 90%;
       text-align: left;
     }
     .admin-form label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       font-weight: 600;
       color: #f1f5f9;
     }
-    .admin-form input[type="text"] {
+    .admin-form input {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       margin-bottom: 15px;
       border: none;
       border-radius: 10px;
       background-color: #2d3b4e;
       color: #e2e8f0;
+      font-size: 14px;
     }
     .login-button {
       background-color: #10b981;
-      padding: 10px 20px;
+      padding: 12px 30px;
       border: none;
       border-radius: 10px;
       color: white;
       cursor: pointer;
       font-weight: 600;
+      font-size: 16px;
       transition: background-color 0.3s, transform 0.2s;
-      width: 100%;
     }
-    .login-button:hover { background-color: #059669; transform: translateY(-2px); }
+    .login-button:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
+    }
     .back-button {
       background-color: #4a5b6f;
       padding: 10px 20px;
@@ -73,6 +77,14 @@
       transition: background-color 0.3s, transform 0.2s;
     }
     .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
+    .footer {
+      margin-top: auto;
+      padding: 20px;
+      background-color: #0f172a;
+      width: 100%;
+      text-align: center;
+      border-top: 1px solid #2d3b4e;
+    }
     .error-message { color: #ef4444; margin-top: 10px; }
   </style>
 </head>
@@ -83,29 +95,34 @@
   <h1>Admin Login</h1>
   <div class="admin-form">
     <label for="code">Collaborator Code:</label>
-    <input type="text" id="code" required>
+    <input type="text" id="code" required />
     <button class="login-button" onclick="loginAdmin()">Login</button>
   </div>
   <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div id="errorMessage" class="error-message"></div>
+  <div class="footer">
+    <h3>About Us</h3>
+    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
+    <h3>Copyright ©</h3>
+    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+  </div>
 
   <script>
-    const CORRECT_CODE = "FNL2025"; // Replace with your actual collaborator code if different
+    const CORRECT_CODE = "042404";
     const errorMessage = document.getElementById("errorMessage");
 
     function loginAdmin() {
       const code = document.getElementById("code").value.trim();
-      console.log("Entered code:", code); // Debug log
+      console.log("Entered code:", code);
       if (code === CORRECT_CODE) {
-        console.log("Code matched, redirecting to home.html");
-        window.location.href = "home.html"; // Explicit redirect
+        console.log("Code matched, redirecting to admin.html");
+        window.location.href = "admin.html";
       } else {
         console.log("Code mismatch");
         errorMessage.textContent = "Invalid collaborator code. Please try again.";
       }
     }
 
-    // Prevent form resubmission on page reload
     if (window.history.replaceState) {
       window.history.replaceState(null, null, window.location.href);
     }
