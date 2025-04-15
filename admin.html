@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - FNL Studio</title>
+  <title>Admin Dashboard - FNL Studio</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -24,64 +24,92 @@
       margin-bottom: 30px;
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
     }
-    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
+    h1 {
+      font-size: 1.5em;
+      margin: 15px 0;
+      color: #f1f5f9;
+      font-weight: 600;
+    }
     .admin-section {
       background-color: #1e293b;
-      padding: 25px;
+      padding: 20px;
       border-radius: 15px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      max-width: 600px;
+      max-width: 100%;
       width: 90%;
       text-align: left;
     }
-    .admin-section button {
+    .preset-item {
+      background-color: #2d3b4e;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 15px 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .preset-item img {
+      max-width: 100px;
+      max-height: 100px;
+      border-radius: 5px;
+      margin-right: 15px;
+    }
+    .preset-details {
+      flex-grow: 1;
+      min-width: 0;
+    }
+    .preset-details a {
+      color: #10b981;
+      text-decoration: none;
+      word-break: break-all; /* Prevent overflow with long URLs */
+    }
+    .preset-details a:hover {
+      text-decoration: underline;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+    .edit-btn, .delete-btn {
       background-color: #10b981;
-      padding: 12px 20px;
+      padding: 8px 15px;
       border: none;
       border-radius: 10px;
       color: white;
       cursor: pointer;
       font-weight: 600;
-      margin: 10px 5px;
       transition: background-color 0.3s, transform 0.2s;
     }
-    .admin-section button:hover { background-color: #059669; transform: translateY(-2px); }
-    .presets-section {
-      margin-top: 20px;
+    .edit-btn:hover, .delete-btn:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
     }
-    .preset-item {
-      background-color: #2d3b4e;
-      padding: 10px;
-      border-radius: 10px;
-      margin: 10px 0;
-      text-align: left;
+    .delete-btn {
+      background-color: #ef4444;
     }
-    .preset-item button {
+    .delete-btn:hover {
+      background-color: #dc2626;
+    }
+    .add-preset-btn {
       background-color: #10b981;
-      padding: 5px 10px;
+      padding: 12px 30px;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       color: white;
       cursor: pointer;
-      margin-right: 5px;
-      transition: background-color 0.3s;
-    }
-    .preset-item button:hover { background-color: #059669; }
-    .preset-item .delete-btn { background-color: #ef4444; }
-    .preset-item .delete-btn:hover { background-color: #dc2626; }
-    .details-section {
+      font-weight: 600;
+      font-size: 16px;
       margin-top: 20px;
-      text-align: center;
+      transition: background-color 0.3s, transform 0.2s;
     }
-    .details-section div {
-      background-color: #2d3b4e;
-      padding: 10px;
-      border-radius: 10px;
-      margin: 10px 0;
+    .add-preset-btn:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
     }
     .back-button {
       background-color: #4a5b6f;
-      padding: 12px 30px;
+      padding: 10px 20px;
       border: none;
       border-radius: 10px;
       color: #e2e8f0;
@@ -90,7 +118,10 @@
       margin-top: 20px;
       transition: background-color 0.3s, transform 0.2s;
     }
-    .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
+    .back-button:hover {
+      background-color: #3a4b5f;
+      transform: translateY(-2px);
+    }
     .footer {
       margin-top: auto;
       padding: 20px;
@@ -100,6 +131,21 @@
       border-top: 1px solid #2d3b4e;
     }
     .error-message { color: #ef4444; margin-top: 10px; }
+    @media (max-width: 768px) {
+      .actions {
+        display: none; /* Hide edit/delete on mobile */
+      }
+      .preset-item {
+        flex-direction: column;
+        text-align: center;
+      }
+      .preset-item img {
+        margin: 0 auto 15px;
+      }
+      .preset-details a {
+        display: none; /* Hide links on mobile */
+      }
+    }
   </style>
 </head>
 <body>
@@ -107,16 +153,10 @@
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <h1>Admin Dashboard</h1>
-  <div class="admin-section">
-    <button onclick="window.location.href='upload.html'">Add Preset</button>
-    <button onclick="viewLoginDetails()">Login Details</button>
-    <button onclick="viewPaymentDetails()">Payment Details</button>
-    <button onclick="manageFeedback()">Manage Feedback</button>
-  </div>
-  <div class="presets-section" id="presetsSection">
+  <div class="admin-section" id="adminSection">
     <!-- Presets will be populated by JavaScript -->
   </div>
-  <div class="details-section" id="detailsSection"></div>
+  <button class="add-preset-btn" onclick="window.location.href='upload.html'">Add New Preset</button>
   <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div class="footer">
     <h3>About Us</h3>
@@ -130,8 +170,8 @@
     const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const presetsSection = document.getElementById("presetsSection");
-    const detailsSection = document.getElementById("detailsSection");
+    const adminSection = document.getElementById("adminSection");
+    const errorMessage = document.getElementById("errorMessage");
 
     async function loadPresets() {
       try {
@@ -139,44 +179,51 @@
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         const presets = data.record.presets || [];
-        presetsSection.innerHTML = presets.map(preset => `
+        adminSection.innerHTML = presets.map(preset => `
           <div class="preset-item">
-            Name: ${preset.name}<br>
-            Price: ₹${preset.price}<br>
-            Download URL: ${preset.download_url}<br>
-            Thumbnail URL: ${preset.thumbnail_url}<br>
-            <button onclick="window.location.href='edit.html?preset=${encodeURIComponent(JSON.stringify(preset))}'">Edit</button>
-            <button class="delete-btn" onclick="deletePreset('${preset.name}')">Delete</button>
+            <img src="${preset.thumbnail_url}" alt="${preset.name}">
+            <div class="preset-details">
+              <p><strong>Name:</strong> ${preset.name}</p>
+              <p><strong>Price:</strong> ₹${preset.price}</p>
+              <p><strong>Download URL:</strong> <a href="${preset.download_url}" target="_blank">${preset.download_url}</a></p>
+              <p><strong>Sample 1:</strong> <a href="${preset.sample1 || 'N/A'}" target="_blank">${preset.sample1 || 'N/A'}</a></p>
+              <p><strong>Sample 2:</strong> <a href="${preset.sample2 || 'N/A'}" target="_blank">${preset.sample2 || 'N/A'}</a></p>
+              <p><strong>Sample 3:</strong> <a href="${preset.sample3 || 'N/A'}" target="_blank">${preset.sample3 || 'N/A'}</a></p>
+            </div>
+            <div class="actions">
+              <button class="edit-btn" onclick="editPreset('${encodeURIComponent(JSON.stringify(preset))}')">Edit</button>
+              <button class="delete-btn" onclick="deletePreset('${preset.name}')">Delete</button>
+            </div>
           </div>
         `).join("") || "<p>No presets available.</p>";
-      } catch (error) { console.error("Error loading presets:", error); }
+      } catch (error) {
+        console.error("Error loading presets:", error);
+        adminSection.innerHTML = "<p>Error loading presets. Contact support.</p>";
+      }
+    }
+
+    function editPreset(presetStr) {
+      window.location.href = `edit.html?preset=${presetStr}`;
     }
 
     async function deletePreset(name) {
-      if (!confirm("Are you sure you want to delete this preset?")) return;
-      try {
-        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
-        const data = await response.json();
-        const presets = data.record.presets.filter(p => p.name !== name);
-        await fetch(API_URL, {
-          method: "PUT",
-          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data.record, presets })
-        });
-        loadPresets();
-      } catch (error) { console.error("Error deleting preset:", error); }
-    }
-
-    async function viewLoginDetails() {
-      window.location.href = "logindetail.html";
-    }
-
-    async function viewPaymentDetails() {
-      window.location.href = "paymentdetails.html";
-    }
-
-    async function manageFeedback() {
-      window.location.href = "managefeedback.html";
+      if (confirm(`Are you sure you want to delete preset "${name}"?`)) {
+        try {
+          const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+          const data = await response.json();
+          const presets = data.record.presets.filter(p => p.name !== name);
+          await fetch(API_URL, {
+            method: "PUT",
+            headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+            body: JSON.stringify({ ...data.record, presets })
+          });
+          loadPresets();
+          alert("Preset deleted successfully!");
+        } catch (error) {
+          console.error("Error deleting preset:", error);
+          errorMessage.textContent = "Error deleting preset: " + error.message;
+        }
+      }
     }
 
     window.onload = loadPresets;
