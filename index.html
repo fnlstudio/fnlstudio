@@ -18,6 +18,7 @@
       flex-direction: column;
       align-items: center;
       overflow-x: hidden;
+      touch-action: pan-y; /* Prevent overscroll on swipe */
     }
     .logo img {
       width: 200px;
@@ -115,7 +116,7 @@
       border-radius: 15px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       text-align: center;
-      max-width: 600px; /* Medium size */
+      max-width: 600px;
       width: 90%;
       position: relative;
     }
@@ -152,9 +153,13 @@
       color: #e2e8f0;
       font-size: 24px;
       cursor: pointer;
+      transition: color 0.3s;
+    }
+    .close-btn:hover {
+      color: #ef4444; /* Red on hover for emphasis */
     }
     .buy-now-btn {
-      background-color: #f97316; /* Orange color */
+      background-color: #f97316;
       padding: 12px 30px;
       border: none;
       border-radius: 10px;
@@ -258,7 +263,7 @@
         currentPreset.sample1 || '',
         currentPreset.sample2 || '',
         currentPreset.sample3 || ''
-      ].filter(img => img); // Filter out empty strings
+      ].filter(img => img);
       overlayImages.innerHTML = images.map((img, index) => `
         <img src="${img}" alt="${currentPreset.name} Sample ${index + 1}" onclick="showFullScreen(${index})">
       `).join("");
@@ -273,56 +278,65 @@
 
     function showFullScreen(index) {
       currentImageIndex = index;
-      fullScreenImage.src = [
-        currentPreset.thumbnail_url,
-        currentPreset.sample1 || '',
-        currentPreset.sample2 || '',
-        currentPreset.sample3 || ''
-      ].filter(img => img)[currentImageIndex];
+      updateFullScreenImage();
       fullScreenOverlay.style.display = "flex";
-      setupSwipe();
     }
 
     function closeFullScreen() {
       fullScreenOverlay.style.display = "none";
     }
 
+    function updateFullScreenImage() {
+      const images = [
+        currentPreset.thumbnail_url,
+        currentPreset.sample1 || '',
+        currentPreset.sample2 || '',
+        currentPreset.sample3 || ''
+      ].filter(img => img);
+      fullScreenImage.src = images[currentImageIndex] || images[0];
+    }
+
     function setupSwipe() {
       let touchStartX = 0;
       let touchEndX = 0;
 
-      fullScreenImage.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
+      fullScreenOverlay.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
       });
 
-      fullScreenImage.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
+      fullScreenOverlay.addEventListener('touchmove', e => {
+        touchEndX = e.touches[0].clientX;
       });
 
-      function handleSwipe() {
+      fullScreenOverlay.addEventListener('touchend', e => {
+        const diffX = touchStartX - touchEndX;
         const images = [
           currentPreset.thumbnail_url,
           currentPreset.sample1 || '',
           currentPreset.sample2 || '',
           currentPreset.sample3 || ''
         ].filter(img => img);
-        if (touchEndX < touchStartX - 50) { // Swipe left
-          if (currentImageIndex < images.length - 1) {
+        if (Math.abs(diffX) > 50) { // Threshold for swipe
+          if (diffX > 0 && currentImageIndex < images.length - 1) { // Swipe left
             currentImageIndex++;
-            fullScreenImage.src = images[currentImageIndex];
-          }
-        }
-        if (touchEndX > touchStartX + 50) { // Swipe right
-          if (currentImageIndex > 0) {
+          } else if (diffX < 0 && currentImageIndex > 0) { // Swipe right
             currentImageIndex--;
-            fullScreenImage.src = images[currentImageIndex];
           }
+          updateFullScreenImage();
         }
-      }
+      });
     }
 
-    window.onload = loadPresets;
+    window.onload = () => {
+      loadPresets();
+      fullScreenOverlay.addEventListener('click', (e) => {
+        if (e.target === fullScreenOverlay) closeFullScreen();
+      });
+      setupSwipe();
+      previewOverlay.addEventListener('click', (e) => {
+        if (e.target === previewOverlay) closeOverlay();
+      });
+    };
   </script>
 </body>
 </html>
