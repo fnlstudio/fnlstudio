@@ -45,7 +45,6 @@
       font-weight: 600;
       color: #f1f5f9;
     }
-    .feedback-form input,
     .feedback-form textarea {
       width: 100%;
       padding: 10px;
@@ -63,12 +62,14 @@
       cursor: pointer;
     }
     .star-rating span {
-      color: #facc15; /* Gold color for stars */
-      transition: color 0.3s;
+      transition: transform 0.3s, color 0.3s;
     }
-    .star-rating span:hover,
-    .star-rating span.active {
-      color: #f59e0b; /* Darker gold for active/hover */
+    .star-rating span.filled {
+      color: #f59e0b; /* Filled gold */
+      transform: scale(1.2); /* Blow up effect */
+    }
+    .star-rating span.outline {
+      color: #4b5e6d; /* Outline color */
     }
     .submit-button {
       background-color: #10b981;
@@ -117,15 +118,13 @@
   </div>
   <h1>Add Feedback</h1>
   <div class="feedback-form" id="feedbackForm">
-    <label for="name">Name:</label>
-    <input type="text" id="name" required />
     <label>Rating:</label>
     <div class="star-rating" id="starRating">
-      <span onclick="setRating(1)" onmouseover="highlightStars(1)" onmouseout="resetStars()">🌟</span>
-      <span onclick="setRating(2)" onmouseover="highlightStars(2)" onmouseout="resetStars()">🌟</span>
-      <span onclick="setRating(3)" onmouseover="highlightStars(3)" onmouseout="resetStars()">🌟</span>
-      <span onclick="setRating(4)" onmouseover="highlightStars(4)" onmouseout="resetStars()">🌟</span>
-      <span onclick="setRating(5)" onmouseover="highlightStars(5)" onmouseout="resetStars()">🌟</span>
+      <span onclick="setRating(1)">🌟</span>
+      <span onclick="setRating(2)">🌟</span>
+      <span onclick="setRating(3)">🌟</span>
+      <span onclick="setRating(4)">🌟</span>
+      <span onclick="setRating(5)">🌟</span>
     </div>
     <label for="caption">Feedback Caption:</label>
     <textarea id="caption" rows="4" required></textarea>
@@ -146,30 +145,27 @@
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const errorMessage = document.getElementById("errorMessage");
     let rating = 0;
+    const userName = localStorage.getItem("userName") || "Anonymous"; // Assuming name is stored in localStorage from join.html
 
     function setRating(value) {
       rating = value;
-      highlightStars(value);
+      const stars = document.getElementById("starRating").getElementsByTagName("span");
+      for (let i = 0; i < stars.length; i++) {
+        stars[i].classList.remove("filled", "outline");
+        if (i < value) {
+          stars[i].classList.add("filled");
+        } else {
+          stars[i].classList.add("outline");
+        }
+      }
       document.getElementById("caption").focus(); // Jump to caption input
     }
 
-    function highlightStars(value) {
-      const stars = document.getElementById("starRating").getElementsByTagName("span");
-      for (let i = 0; i < stars.length; i++) {
-        stars[i].classList.toggle("active", i < value);
-      }
-    }
-
-    function resetStars() {
-      if (rating > 0) highlightStars(rating);
-    }
-
     async function submitFeedback() {
-      const name = document.getElementById("name").value.trim();
       const caption = document.getElementById("caption").value.trim();
 
-      if (!name || !caption || rating === 0) {
-        errorMessage.textContent = "Please fill all fields and select a rating.";
+      if (!caption || rating === 0) {
+        errorMessage.textContent = "Please select a rating and provide a caption.";
         return;
       }
 
@@ -177,7 +173,7 @@
         const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
         const data = await response.json();
         const feedbacks = data.record.feedbacks || [];
-        feedbacks.push({ name, rating, caption, liked: false });
+        feedbacks.push({ name: userName, rating, caption, liked: false });
         await fetch(API_URL, {
           method: "PUT",
           headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
