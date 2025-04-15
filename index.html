@@ -25,18 +25,6 @@
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
     h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
-    .menu-button, .read-more {
-      background-color: #10b981;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      margin: 5px;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    .menu-button:hover, .read-more:hover { background-color: #059669; transform: translateY(-2px); }
     .menu-dots {
       position: absolute;
       top: 20px;
@@ -47,6 +35,18 @@
       border: none;
       color: #e2e8f0;
     }
+    .read-more {
+      background-color: #10b981;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 5px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .read-more:hover { background-color: #059669; transform: translateY(-2px); }
     .feedback-section {
       margin: 20px 0;
     }
@@ -75,17 +75,14 @@
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <button class="menu-dots" onclick="window.location.href='menu.html'">&#x22EE;</button>
+  <button class="menu-dots" onclick="window.location.href='menu.html'">⋮</button>
   <h1>Fully Presets</h1>
   <div class="feedback-section" id="feedbackSection">
-    <h2>3 Feedback Sorted by Relevance</h2>
     <!-- Feedback will be populated by JavaScript -->
   </div>
   <button class="read-more" onclick="window.location.href='join.html'">Read More Feedback</button>
-  <div class="presets-section">
-    <h2>Our Presets All</h2>
-    <!-- Placeholder for presets (to be expanded) -->
-    <p>Explore our full range of presets!</p>
+  <div class="presets-section" id="presetsSection">
+    <!-- Presets will be populated by JavaScript -->
   </div>
   <div class="footer">
     <h3>About Us</h3>
@@ -100,6 +97,7 @@
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const feedbackSection = document.getElementById("feedbackSection");
+    const presetsSection = document.getElementById("presetsSection");
 
     async function loadFeedback() {
       try {
@@ -110,16 +108,33 @@
         const data = await response.json();
         const feedbacks = data.record.feedbacks || [];
         const recentFeedbacks = feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 3);
-        feedbackSection.innerHTML = `<h2>3 Feedback Sorted by Relevance</h2>` +
-          recentFeedbacks.map(feedback => `<div class="feedback-item">${feedback.text || 'No feedback text'} - ${new Date(feedback.timestamp).toLocaleDateString()}</div>`).join("");
+        feedbackSection.innerHTML = recentFeedbacks.map(feedback => `<div class="feedback-item">${feedback.text || 'No feedback text'} - ${new Date(feedback.timestamp).toLocaleDateString()}</div>`).join("") || "<p>No feedback available.</p>";
       } catch (error) {
         console.error("Error loading feedback:", error);
         feedbackSection.innerHTML = "<p>Error loading feedback. Contact admin.</p>";
       }
     }
 
-    // Load feedback on page load
-    window.onload = loadFeedback;
+    async function loadPresets() {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const presets = data.record.presets || [];
+        presetsSection.innerHTML = presets.map(url => `<div class="preset-item"><a href="${url}" target="_blank">${url}</a></div>`).join("") || "<p>No presets available. Add via admin.</p>";
+      } catch (error) {
+        console.error("Error loading presets:", error);
+        presetsSection.innerHTML = "<p>Error loading presets. Contact admin.</p>";
+      }
+    }
+
+    // Load content on page load
+    window.onload = () => {
+      loadFeedback();
+      loadPresets();
+    };
   </script>
 </body>
 </html>
