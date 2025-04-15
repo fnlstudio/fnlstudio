@@ -24,211 +24,29 @@
       margin-bottom: 15px;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
-    .tagline { font-size: 1.1em; margin: 10px 0 20px; color: #94a3b8; font-weight: 400; }
-    #presetList { max-width: 800px; width: 100%; margin: 15px auto; }
-    .preset-card {
-      background-color: #1e293b;
-      border-radius: 12px;
-      padding: 12px;
-      margin: 12px 0;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: transform 0.2s;
-    }
-    .preset-card:hover { transform: translateY(-2px); }
-    .preset-card img { border-radius: 8px; width: 80px; height: 80px; object-fit: cover; }
-    .preset-info { flex: 1; text-align: left; margin-left: 10px; }
-    .preset-info h3 { margin: 5px 0; font-size: 1.1em; color: #f1f5f9; }
-    .preset-info p { margin: 5px 0; color: #94a3b8; font-size: 0.9em; }
-    .feedback-section { margin-top: 20px; }
-    .feedback-card {
-      background-color: #1e293b;
-      border-radius: 12px;
-      padding: 12px;
-      margin: 10px auto;
-      max-width: 350px;
-      width: 90%;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      text-align: left;
-      transition: transform 0.2s;
-    }
-    .feedback-card:hover { transform: translateY(-2px); }
-    .feedback-card .rating { color: #ffd700; }
-    .read-more {
-      margin-top: 20px;
-      background-color: #ef4444;
-      padding: 8px 16px;
+    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
+    .menu-button {
+      background-color: #10b981;
+      padding: 10px 20px;
       border: none;
       border-radius: 10px;
       color: white;
       cursor: pointer;
       font-weight: 600;
+      margin: 5px;
       transition: background-color 0.3s, transform 0.2s;
     }
-    .read-more:hover { background-color: #dc2626; transform: translateY(-2px); }
-    .about {
-      margin-top: 30px;
-      border-top: 1px solid #2d3b4e;
-      padding-top: 20px;
-      font-size: 0.85em;
-      color: #94a3b8;
-      max-width: 700px;
-      text-align: center;
-    }
-    .back-button {
-      margin-top: 20px;
-      background-color: #ef4444;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    .back-button:hover { background-color: #dc2626; transform: translateY(-2px); }
-    .buy-now {
-      background-color: #ff5722;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    .buy-now:hover {
-      background-color: #e64a19;
-      transform: translateY(-2px);
-    }
-    .error-message { color: #ef4444; margin-top: 10px; }
-    .menu-toggle {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      font-size: 1.5em;
-      cursor: pointer;
-      color: #e2e8f0;
-      transition: color 0.3s;
-    }
-    .menu-toggle:hover { color: #10b981; }
+    .menu-button:hover { background-color: #059669; transform: translateY(-2px); }
   </style>
 </head>
 <body>
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <div class="tagline">Capturing Creativity</div>
-  <div id="presetList"></div>
-  <div class="feedback-section">
-    <h2 style="font-size: 1.3em; color: #f1f5f9; font-weight: 600;">Customer Feedback</h2>
-    <div id="feedbackList"></div>
-    <button class="read-more" onclick="window.location.href='join.html'">Read More Feedback</button>
-  </div>
-  <div class="about">
-    <h2 style="font-size: 1.1em; color: #f1f5f9;">About Us</h2>
-    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors.</p>
-    <br />
-    <h3 style="font-size: 0.9em;">© 2025 FNL Studio. All rights reserved.</h3>
-    <p>All content is protected by copyright laws. Unauthorized use is prohibited.</p>
-    <p>After buying, follow payment instructions and DM @fnl_studio_ with proof!</p>
-  </div>
-  <button class="back-button" onclick="window.location.href='index.html'">Back to Home</button>
+  <h1>Welcome to FNL Studio</h1>
+  <button class="menu-button" onclick="window.location.href='menu.html'">Menu</button>
+  <button class="menu-button" onclick="window.location.href='join.html'">Join</button>
+  <button class="menu-button" onclick="window.location.href='adminlogin.html'">Admin</button>
   <div id="errorMessage" class="error-message"></div>
-  <div class="menu-toggle" onclick="window.location.href='menu.html'">⋮</div>
-
-  <script>
-    const BIN_ID = "67fccb0b8960c979a584b5d5";
-    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
-    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const presetList = document.getElementById("presetList");
-    const feedbackList = document.getElementById("feedbackList");
-    const errorMessage = document.getElementById("errorMessage");
-
-    if (!presetList || !feedbackList || !errorMessage) {
-      console.error("DOM elements not found");
-      document.body.innerHTML = "<h2>Error: Page failed to load properly.</h2>";
-      throw new Error("DOM elements missing");
-    }
-
-    async function loadPresets() {
-      try {
-        const response = await fetch(API_URL + "/latest", {
-          headers: { "X-Master-Key": MASTER_KEY }
-        });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        const presets = data.record.presets || [];
-        presetList.innerHTML = "";
-
-        if (presets.length === 0) {
-          presetList.innerHTML = "<p>No presets available.</p>";
-          return;
-        }
-
-        presets.forEach((preset) => {
-          const card = document.createElement("div");
-          card.className = "preset-card";
-          card.innerHTML = `
-            <img src="${preset.thumbnail}" alt="Thumbnail">
-            <div class="preset-info">
-              <h3>${preset.name}</h3>
-              <p>Price: ₹${preset.price}</p>
-              <button class="buy-now" onclick="confirmBuy('${preset.price}')">Buy Now</button>
-            </div>
-          `;
-          presetList.appendChild(card);
-        });
-      } catch (error) {
-        console.error("Error loading presets:", error);
-        presetList.innerHTML = "<p>Failed to load presets. Check connection or data.</p>";
-        errorMessage.textContent = "Error loading presets: " + error.message;
-      }
-    }
-
-    async function loadFeedback() {
-      try {
-        const response = await fetch(API_URL + "/latest", {
-          headers: { "X-Master-Key": MASTER_KEY }
-        });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        const feedbacks = data.record.feedbacks || [];
-        feedbackList.innerHTML = "";
-
-        if (feedbacks.length === 0) {
-          feedbackList.innerHTML = "<p>No feedback available.</p>";
-          return;
-        }
-
-        feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 3).forEach(feedback => {
-          const card = document.createElement("div");
-          card.className = "feedback-card";
-          card.innerHTML = `
-            <p><strong>${feedback.name}</strong> (${feedback.rating}⭐)</p>
-            <p>${feedback.comment}</p>
-          `;
-          feedbackList.appendChild(card);
-        });
-      } catch (error) {
-        console.error("Error loading feedback:", error);
-        feedbackList.innerHTML = "<p>Failed to load feedback. Check connection or data.</p>";
-        errorMessage.textContent = "Error loading feedback: " + error.message;
-      }
-    }
-
-    function confirmBuy(price) {
-      if (confirm("Are you sure you want to proceed to payment for ₹" + price + "?")) {
-        window.location.href = `payment.html?price=${price}`;
-      }
-    }
-
-    window.onload = () => {
-      loadPresets();
-      loadFeedback();
-    };
-  </script>
 </body>
 </html>
