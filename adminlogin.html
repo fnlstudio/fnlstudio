@@ -90,16 +90,24 @@
   <div id="errorMessage" class="error-message"></div>
 
   <script>
-    const CORRECT_CODE = "042404"; // Replace with your actual collaborator code
+    const CORRECT_CODE = "FNL2025"; // Replace with your actual collaborator code if different
     const errorMessage = document.getElementById("errorMessage");
 
     function loginAdmin() {
       const code = document.getElementById("code").value.trim();
+      console.log("Entered code:", code); // Debug log
       if (code === CORRECT_CODE) {
-        window.location.href = "home.html"; // Ensure redirect to home.html
+        console.log("Code matched, redirecting to home.html");
+        window.location.href = "home.html"; // Explicit redirect
       } else {
+        console.log("Code mismatch");
         errorMessage.textContent = "Invalid collaborator code. Please try again.";
       }
+    }
+
+    // Prevent form resubmission on page reload
+    if (window.history.replaceState) {
+      window.history.replaceState(null, null, window.location.href);
     }
   </script>
 </body>
