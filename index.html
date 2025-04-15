@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Menu - FNL Studio</title>
+  <title>FNL Studio</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -25,17 +25,17 @@
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
     h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
-    .search-bar {
-      width: 80%;
-      max-width: 400px;
-      padding: 8px;
-      margin-bottom: 15px;
+    .menu-dots {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
       border: none;
-      border-radius: 10px;
-      background-color: #2d3b4e;
       color: #e2e8f0;
     }
-    .menu-button {
+    .menu-button, .read-more {
       background-color: #10b981;
       padding: 10px 20px;
       border: none;
@@ -46,7 +46,18 @@
       margin: 5px;
       transition: background-color 0.3s, transform 0.2s;
     }
-    .menu-button:hover { background-color: #059669; transform: translateY(-2px); }
+    .menu-button:hover, .read-more:hover { background-color: #059669; transform: translateY(-2px); }
+    .feedback-section {
+      margin: 20px 0;
+    }
+    .feedback-item {
+      background-color: #1e293b;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px 0;
+      max-width: 400px;
+      width: 90%;
+    }
     .presets-section {
       margin: 20px 0;
     }
@@ -58,18 +69,6 @@
       max-width: 400px;
       width: 90%;
     }
-    .back-button {
-      background-color: #4a5b6f;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      color: #e2e8f0;
-      cursor: pointer;
-      font-weight: 600;
-      margin-top: 10px;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
     .footer {
       margin-top: auto;
       padding: 20px;
@@ -84,13 +83,15 @@
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <h1>Menu</h1>
-  <input type="text" class="search-bar" id="searchBar" placeholder="Search presets...">
-  <button class="menu-button" onclick="window.location.href='index.html'">Home</button>
+  <button class="menu-dots" onclick="window.location.href='menu.html'">⋮</button>
+  <h1>Fully Presets</h1>
+  <div class="feedback-section" id="feedbackSection">
+    <!-- Feedback will be populated by JavaScript -->
+  </div>
+  <button class="read-more" onclick="window.location.href='join.html'">Read More Feedback</button>
   <div class="presets-section" id="presetsSection">
     <!-- Presets will be populated by JavaScript -->
   </div>
-  <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <button class="menu-button" onclick="window.location.href='adminlogin.html'">Admin</button>
   <div class="footer">
     <h3>About Us</h3>
@@ -104,8 +105,31 @@
     const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const feedbackSection = document.getElementById("feedbackSection");
     const presetsSection = document.getElementById("presetsSection");
-    const searchBar = document.getElementById("searchBar");
+
+    async function loadFeedback() {
+      try {
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        console.log("Feedback Data:", data); // Debug log
+        const feedbacks = data.record.feedbacks || [];
+        const recentFeedbacks = feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 3);
+        if (recentFeedbacks.length === 0) {
+          feedbackSection.innerHTML = "<p>No feedback available.</p>";
+        } else {
+          feedbackSection.innerHTML = recentFeedbacks.map(feedback => {
+            return `<div class="feedback-item">${feedback.text || 'No feedback text'} - ${new Date(feedback.timestamp).toLocaleDateString()}</div>`;
+          }).join("");
+        }
+      } catch (error) {
+        console.error("Error loading feedback:", error);
+        feedbackSection.innerHTML = "<p>Error loading feedback. Contact admin.</p>";
+      }
+    }
 
     async function loadPresets() {
       try {
@@ -127,19 +151,11 @@
       }
     }
 
-    searchBar.addEventListener("input", function() {
-      const searchTerm = searchBar.value.toLowerCase();
-      loadPresets().then(() => {
-        const presetItems = presetsSection.getElementsByClassName("preset-item");
-        for (let item of presetItems) {
-          const url = item.textContent.toLowerCase();
-          item.style.display = url.includes(searchTerm) ? "block" : "none";
-        }
-      });
-    });
-
-    // Load presets on page load
-    window.onload = loadPresets;
+    // Load content on page load
+    window.onload = () => {
+      loadFeedback();
+      loadPresets();
+    };
   </script>
 </body>
 </html>
