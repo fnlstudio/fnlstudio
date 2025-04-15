@@ -270,21 +270,33 @@
     function openUPI() {
       const name = document.getElementById("name").value.trim();
       const amount = urlParams.get('price') || 'N/A';
-      const upiLink = `upi://pay?pa=9747604405@fam&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=PaymentForFNLStudio`;
+      const upiLink = `upi://pay?pa=9747604405@fam&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent('Payment for FNL Studio')}&tr=TR${Date.now()}&mc=1234`;
       paymentOverlay.style.display = "none";
       window.location.href = upiLink;
-      setTimeout(checkPaymentStatus, 2000); // Check status after 2 seconds
+      const startTime = Date.now();
+      const checkInterval = setInterval(() => {
+        if (document.hidden || Date.now() - startTime > 3000) {
+          clearInterval(checkInterval);
+          setTimeout(checkPaymentStatus, 100); // Slight delay to detect return
+        }
+      }, 500);
     }
 
     function sendUPIRequest() {
       const userUPI = document.getElementById("userUPI").value.trim();
       if (userUPI) {
         const amount = urlParams.get('price') || 'N/A';
-        const upiLink = `upi://pay?pa=${encodeURIComponent(userUPI)}&pn=FNLStudio&am=${amount}&cu=INR&tn=PaymentRequestFromFNLStudio`;
+        const upiLink = `upi://pay?pa=${encodeURIComponent(userUPI)}&pn=${encodeURIComponent('FNL Studio')}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent('Payment Request from FNL Studio')}&tr=TR${Date.now()}&mc=1234`;
         paymentOverlay.style.display = "none";
         alert(`Payment request sent to ${userUPI}. Please approve the request in your UPI app.`);
-        window.location.href = upiLink; // Open UPI app with user's UPI ID
-        setTimeout(checkPaymentStatus, 2000); // Check status after 2 seconds
+        window.location.href = upiLink;
+        const startTime = Date.now();
+        const checkInterval = setInterval(() => {
+          if (document.hidden || Date.now() - startTime > 3000) {
+            clearInterval(checkInterval);
+            setTimeout(checkPaymentStatus, 100); // Slight delay to detect return
+          }
+        }, 500);
       } else {
         alert("Please enter a valid UPI ID.");
       }
