@@ -25,80 +25,37 @@
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
     h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
-    .feedback-list { max-width: 800px; width: 100%; margin: 15px auto; }
-    .feedback-card {
+    .feedback-section {
+      margin: 20px 0;
+    }
+    .feedback-item {
       background-color: #1e293b;
-      border-radius: 12px;
-      padding: 12px;
-      margin: 12px 0;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      text-align: left;
-      position: relative;
-      transition: transform 0.2s;
-    }
-    .feedback-card:hover { transform: translateY(-2px); }
-    .feedback-card .rating { color: #ffd700; }
-    .interaction-buttons { margin-top: 10px; display: flex; gap: 15px; }
-    .interaction-buttons button {
-      background-color: #3b82f6;
-      padding: 6px;
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      font-size: 1em;
-      color: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background-color 0.3s;
-    }
-    .interaction-buttons button:hover { background-color: #2563eb; }
-    .interaction-buttons button span {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      background-color: #ef4444;
-      color: white;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      font-size: 0.8em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .admin-reply { font-weight: 600; color: #10b981; }
-    input[type="text"] { padding: 8px; border-radius: 10px; border: none; background-color: #2d3b4e; color: #e2e8f0; margin-top: 10px; }
-    .edit-button, .delete-button {
-      background-color: #3b82f6;
-      padding: 6px 12px;
-      border: none;
+      padding: 10px;
       border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      margin-left: 10px;
-      transition: background-color 0.3s;
+      margin: 10px 0;
+      max-width: 400px;
+      width: 90%;
     }
-    .delete-button { background-color: #ef4444; }
-    .edit-button:hover { background-color: #2563eb; }
-    .delete-button:hover { background-color: #dc2626; }
-    .add-button {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #10b981;
+    .back-button {
+      background-color: #4a5b6f;
       padding: 10px 20px;
       border: none;
-      border-radius: 50%;
-      font-size: 1.5em;
-      color: white;
+      border-radius: 10px;
+      color: #e2e8f0;
       cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      font-weight: 600;
+      margin-top: 10px;
       transition: background-color 0.3s, transform 0.2s;
     }
-    .add-button:hover { background-color: #059669; transform: translateY(-2px); }
+    .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
+    .footer {
+      margin-top: auto;
+      padding: 20px;
+      background-color: #0f172a;
+      width: 100%;
+      text-align: center;
+    }
+    .error-message { color: #ef4444; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -106,184 +63,47 @@
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <h1>Feedback</h1>
-  <div class="feedback-list" id="feedbackList"></div>
-  <button class="add-button" onclick="window.location.href='addfeedback.html?name=' + encodeURIComponent(localStorage.getItem('userName') || '')">+</button>
+  <div class="feedback-section" id="feedbackSection">
+    <!-- Feedback will be populated by JavaScript -->
+  </div>
+  <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+  <div class="footer">
+    <h3>About Us</h3>
+    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
+    <h3>Copyright ©</h3>
+    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+  </div>
+  <div id="errorMessage" class="error-message"></div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const userName = localStorage.getItem("userName");
+    const feedbackSection = document.getElementById("feedbackSection");
 
     async function loadFeedback() {
       try {
         const response = await fetch(API_URL + "/latest", {
           headers: { "X-Master-Key": MASTER_KEY }
         });
-        if (!response.ok) throw new Error("Failed to fetch feedback");
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
+        console.log("Feedback Data:", data); // Debug log
         const feedbacks = data.record.feedbacks || [];
-        const feedbackList = document.getElementById("feedbackList");
-        feedbackList.innerHTML = "";
-        feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach((feedback, index) => {
-          const card = document.createElement("div");
-          card.className = "feedback-card";
-          card.innerHTML = `
-            <div class="feedback-info">
-              <p><strong>${feedback.name}</strong> (${feedback.rating}⭐)</p>
-              <p>${feedback.comment}</p>
-            </div>
-            <div class="interaction-buttons">
-              <button onclick="updateInteraction(${index}, 'like', '${feedback.name}')"><span>${feedback.likes || 0}</span>👍</button>
-              <button onclick="updateInteraction(${index}, 'dislike', '${feedback.name}')"><span>${feedback.dislikes || 0}</span>👎</button>
-              <button onclick="showReplyInput(${index}, '${feedback.name}')">💬</button>
-            </div>
-          `;
-          if (feedback.name === userName) {
-            const editButton = document.createElement("button");
-            editButton.className = "edit-button";
-            editButton.textContent = "Edit";
-            editButton.onclick = () => window.location.href = `addfeedback.html?name=${encodeURIComponent(userName)}&index=${index}`;
-            card.appendChild(editButton);
-
-            const deleteButton = document.createElement("button");
-            deleteButton.className = "delete-button";
-            deleteButton.textContent = "Delete";
-            deleteButton.onclick = () => deleteFeedback(index);
-            card.appendChild(deleteButton);
-          }
-
-          const replyInput = document.createElement("input");
-          replyInput.type = "text";
-          replyInput.id = `replyInput-${index}`;
-          replyInput.placeholder = "Reply...";
-          replyInput.style.display = "none";
-          replyInput.onkeypress = (e) => { if (e.key === 'Enter') addReply(index, replyInput.value, userName); };
-          card.appendChild(replyInput);
-
-          if (feedback.replies) {
-            feedback.replies.forEach(reply => {
-              const replyDiv = document.createElement("div");
-              replyDiv.className = reply.includes("FNL ADMIN") ? "admin-reply" : "";
-              replyDiv.innerHTML = reply;
-              card.appendChild(replyDiv);
-            });
-          }
-          feedbackList.appendChild(card);
-        });
+        if (feedbacks.length === 0) {
+          feedbackSection.innerHTML = "<p>No feedback available.</p>";
+        } else {
+          feedbackSection.innerHTML = feedbacks.map(feedback => {
+            return `<div class="feedback-item">${feedback.text || 'No feedback text'} - ${new Date(feedback.timestamp).toLocaleDateString()}</div>`;
+          }).join("");
+        }
       } catch (error) {
         console.error("Error loading feedback:", error);
+        feedbackSection.innerHTML = "<p>Error loading feedback. Contact admin.</p>";
       }
     }
 
-    function showReplyInput(index, feedbackName) {
-      const input = document.getElementById(`replyInput-${index}`);
-      input.style.display = input.style.display === "none" ? "block" : "none";
-      input.focus();
-    }
-
-    async function updateInteraction(index, type, feedbackName) {
-      const userId = localStorage.getItem("userId") || Math.random().toString(36).substr(2, 9);
-      if (!localStorage.getItem(`interacted_${type}_${index}_${userId}`)) {
-        try {
-          const response = await fetch(API_URL + "/latest", {
-            headers: { "X-Master-Key": MASTER_KEY }
-          });
-          if (!response.ok) throw new Error("Failed to fetch feedback");
-          const data = await response.json();
-          const feedbacks = data.record.feedbacks || [];
-          if (index >= 0 && index < feedbacks.length) {
-            feedbacks[index][type + 's'] = (feedbacks[index][type + 's'] || 0) + 1;
-            const updateResponse = await fetch(API_URL, {
-              method: "PUT",
-              headers: {
-                "X-Master-Key": MASTER_KEY,
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                presets: data.record.presets || [],
-                feedbacks,
-                login_details: data.record.login_details || [],
-                payment_details: data.record.payment_details || []
-              })
-            });
-            if (!updateResponse.ok) throw new Error("Failed to update interaction");
-            localStorage.setItem(`interacted_${type}_${index}_${userId}`, true);
-            loadFeedback();
-          }
-        } catch (error) {
-          console.error("Error updating interaction:", error);
-        }
-      }
-    }
-
-    async function addReply(index, replyText, userName) {
-      if (replyText.trim()) {
-        try {
-          const response = await fetch(API_URL + "/latest", {
-            headers: { "X-Master-Key": MASTER_KEY }
-          });
-          if (!response.ok) throw new Error("Failed to fetch feedback");
-          const data = await response.json();
-          const feedbacks = data.record.feedbacks || [];
-          if (index >= 0 && index < feedbacks.length) {
-            feedbacks[index].replies = feedbacks[index].replies || [];
-            const reply = userName ? `${userName}: ${replyText}` : `Anonymous: ${replyText}`;
-            feedbacks[index].replies.push(reply);
-            const updateResponse = await fetch(API_URL, {
-              method: "PUT",
-              headers: {
-                "X-Master-Key": MASTER_KEY,
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                presets: data.record.presets || [],
-                feedbacks,
-                login_details: data.record.login_details || [],
-                payment_details: data.record.payment_details || []
-              })
-            });
-            if (!updateResponse.ok) throw new Error("Failed to add reply");
-            loadFeedback();
-            document.getElementById(`replyInput-${index}`).style.display = "none";
-          }
-        } catch (error) {
-          console.error("Error adding reply:", error);
-        }
-      }
-    }
-
-    async function deleteFeedback(index) {
-      if (confirm("Are you sure you want to delete this feedback?")) {
-        try {
-          const response = await fetch(API_URL + "/latest", {
-            headers: { "X-Master-Key": MASTER_KEY }
-          });
-          if (!response.ok) throw new Error("Failed to fetch feedback");
-          const data = await response.json();
-          const feedbacks = data.record.feedbacks || [];
-          feedbacks.splice(index, 1);
-          const updateResponse = await fetch(API_URL, {
-            method: "PUT",
-            headers: {
-              "X-Master-Key": MASTER_KEY,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              presets: data.record.presets || [],
-              feedbacks,
-              login_details: data.record.login_details || [],
-              payment_details: data.record.payment_details || []
-            })
-          });
-          if (!updateResponse.ok) throw new Error("Failed to delete feedback");
-          loadFeedback();
-        } catch (error) {
-          console.error("Error deleting feedback:", error);
-        }
-      }
-    }
-
+    // Load feedback on page load
     window.onload = loadFeedback;
   </script>
 </body>
