@@ -35,18 +35,6 @@
       background-color: #2d3b4e;
       color: #e2e8f0;
     }
-    .sort-button {
-      background-color: #10b981;
-      padding: 5px 10px;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      margin-left: 10px;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-    .sort-button:hover { background-color: #059669; transform: translateY(-2px); }
     .presets-section {
       margin: 20px 0;
     }
@@ -86,8 +74,8 @@
   </div>
   <h1>Menu</h1>
   <input type="text" class="search-bar" id="searchBar" placeholder="Search presets...">
-  <button class="sort-button" id="sortButton">↕</button>
   <div class="presets-section" id="presetsSection">
+    <h2>Our Presets All</h2>
     <!-- Presets will be populated by JavaScript -->
   </div>
   <button class="back-button" onclick="window.location.href='index.html'">Back</button>
@@ -105,8 +93,6 @@
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const presetsSection = document.getElementById("presetsSection");
     const searchBar = document.getElementById("searchBar");
-    const sortButton = document.getElementById("sortButton");
-    let isAscending = true;
 
     async function loadPresets() {
       try {
@@ -115,26 +101,14 @@
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
-        let presets = data.record.presets || [];
-        presets = sortPresets(presets);
-        presetsSection.innerHTML = presets.map(url => `<div class="preset-item"><a href="${url}" target="_blank">${url}</a></div>`).join("");
+        const presets = data.record.presets || [];
+        presetsSection.innerHTML = `<h2>Our Presets All</h2>` +
+          presets.map(url => `<div class="preset-item"><a href="${url}" target="_blank">${url}</a></div>`).join("");
       } catch (error) {
         console.error("Error loading presets:", error);
         presetsSection.innerHTML = "<p>Error loading presets. Contact admin.</p>";
       }
     }
-
-    function sortPresets(presets) {
-      return [...presets].sort((a, b) => {
-        if (isAscending) return a.localeCompare(b);
-        return b.localeCompare(a);
-      });
-    }
-
-    sortButton.addEventListener("click", () => {
-      isAscending = !isAscending;
-      loadPresets();
-    });
 
     searchBar.addEventListener("input", function() {
       const searchTerm = searchBar.value.toLowerCase();
