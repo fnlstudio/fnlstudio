@@ -124,6 +124,12 @@
         <input type="text" id="download_url" value="${preset.download_url}" required />
         <label for="thumbnail_url">Thumbnail URL:</label>
         <input type="text" id="thumbnail_url" value="${preset.thumbnail_url}" required />
+        <label for="sample1">Sample 1 (optional):</label>
+        <input type="text" id="sample1" value="${preset.sample1 || ''}" />
+        <label for="sample2">Sample 2 (optional):</label>
+        <input type="text" id="sample2" value="${preset.sample2 || ''}" />
+        <label for="sample3">Sample 3 (optional):</label>
+        <input type="text" id="sample3" value="${preset.sample3 || ''}" />
         <button class="save-button" onclick="savePreset()">Save</button>
       `;
     }
@@ -133,9 +139,12 @@
       const price = document.getElementById("price").value.trim();
       const download_url = document.getElementById("download_url").value.trim();
       const thumbnail_url = document.getElementById("thumbnail_url").value.trim();
+      const sample1 = document.getElementById("sample1").value.trim() || null;
+      const sample2 = document.getElementById("sample2").value.trim() || null;
+      const sample3 = document.getElementById("sample3").value.trim() || null;
 
       if (!name || !price || !download_url || !thumbnail_url) {
-        errorMessage.textContent = "All fields are required.";
+        errorMessage.textContent = "Required fields are missing.";
         return;
       }
 
@@ -144,7 +153,7 @@
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         const presets = data.record.presets.map(p => 
-          p.name === preset.name ? { name, price, download_url, thumbnail_url } : p
+          p.name === preset.name ? { name, price, download_url, thumbnail_url, sample1, sample2, sample3 } : p
         );
         const updateResponse = await fetch(API_URL, {
           method: "PUT",
