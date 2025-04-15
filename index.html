@@ -64,6 +64,7 @@
       max-width: 100%;
       border-radius: 10px;
       margin-top: 10px;
+      cursor: pointer;
     }
     .buy-button {
       background-color: #10b981;
@@ -95,6 +96,59 @@
       background-color: #059669;
       transform: translateY(-2px);
     }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .overlay-content {
+      background-color: #1e293b;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+      position: relative;
+    }
+    .overlay-content img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: #e2e8f0;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .buy-now-btn {
+      background-color: #f97316; /* Orange color */
+      padding: 12px 30px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      transition: background-color 0.3s, transform 0.2s;
+      margin-top: 15px;
+    }
+    .buy-now-btn:hover {
+      background-color: #ea580c;
+      transform: translateY(-2px);
+    }
     .footer {
       margin-top: auto;
       padding: 20px;
@@ -123,12 +177,24 @@
     <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
   </div>
   <div id="errorMessage" class="error-message"></div>
+  <div class="overlay" id="previewOverlay">
+    <div class="overlay-content">
+      <button class="close-btn" onclick="closeOverlay()">×</button>
+      <h2 id="overlayName"></h2>
+      <div id="overlayImages"></div>
+      <button class="buy-now-btn" id="buyNowBtn">Buy Now</button>
+    </div>
+  </div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const presetsSection = document.getElementById("presetsSection");
+    const previewOverlay = document.getElementById("previewOverlay");
+    const overlayName = document.getElementById("overlayName");
+    const overlayImages = document.getElementById("overlayImages");
+    const buyNowBtn = document.getElementById("buyNowBtn");
 
     async function loadPresets() {
       try {
@@ -143,9 +209,9 @@
         } else {
           presetsSection.innerHTML = presets.map(preset => `
             <div class="preset-item" data-id="${preset.name}">
-              <a href="${preset.download_url}" target="_blank">${preset.name}</a><br>
+              <a href="${preset.download_url}" target="_blank" style="display:none;">${preset.name}</a><br>
               Price: ₹${preset.price}<br>
-              <img src="${preset.thumbnail_url}" alt="${preset.name}" style="max-width: 100%; border-radius: 10px;">
+              <img src="${preset.thumbnail_url}" alt="${preset.name}" onclick="showPreview('${encodeURIComponent(JSON.stringify(preset))}')" style="max-width: 100%; border-radius: 10px;">
               <button class="buy-button" onclick="window.location.href='payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}'">Buy</button>
             </div>
           `).join("");
@@ -154,6 +220,23 @@
         console.error("Error loading presets:", error);
         presetsSection.innerHTML = "<p>Error loading presets. Contact admin.</p>";
       }
+    }
+
+    function showPreview(presetStr) {
+      const preset = JSON.parse(decodeURIComponent(presetStr));
+      overlayName.textContent = preset.name;
+      overlayImages.innerHTML = `
+        <img src="${preset.thumbnail_url}" alt="${preset.name} Thumbnail">
+        ${preset.sample1 ? `<img src="${preset.sample1}" alt="${preset.name} Sample 1">` : ''}
+        ${preset.sample2 ? `<img src="${preset.sample2}" alt="${preset.name} Sample 2">` : ''}
+        ${preset.sample3 ? `<img src="${preset.sample3}" alt="${preset.name} Sample 3">` : ''}
+      `;
+      buyNowBtn.onclick = () => window.location.href = `payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}`;
+      previewOverlay.style.display = "flex";
+    }
+
+    function closeOverlay() {
+      previewOverlay.style.display = "none";
     }
 
     window.onload = loadPresets;
