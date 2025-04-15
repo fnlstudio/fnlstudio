@@ -2,26 +2,113 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Add Feedback - FNL Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #0f172a, #1e293b);
-      color: white;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
       text-align: center;
-      padding: 30px;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .logo img { width: 200px; height: auto; margin-top: 40px; }
-    h1 { font-size: 32px; margin: 20px 0; }
-    .form-group { max-width: 500px; margin: 20px auto; text-align: left; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; }
-    input[readonly] { width: 100%; padding: 8px; border-radius: 5px; border: none; background-color: #1e293b; color: white; }
-    .stars { cursor: pointer; font-size: 24px; }
-    .stars span { color: #ccc; }
-    .stars span.active { color: #ffd700; }
-    textarea { width: 100%; padding: 8px; border-radius: 5px; border: none; background-color: #1e293b; color: white; resize: vertical; }
-    button { background-color: #10b981; padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; }
+    .logo img {
+      width: 200px;
+      height: auto;
+      margin-bottom: 30px;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    }
+    h1 {
+      font-size: 1.5em;
+      margin: 15px 0;
+      color: #f1f5f9;
+      font-weight: 600;
+    }
+    .feedback-form {
+      background-color: #1e293b;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 90%;
+      text-align: left;
+    }
+    .feedback-form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    .feedback-form input,
+    .feedback-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 10px;
+      background-color: #2d3b4e;
+      color: #e2e8f0;
+      font-size: 14px;
+      resize: vertical;
+    }
+    .star-rating {
+      font-size: 2em;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+    .star-rating span {
+      color: #facc15; /* Gold color for stars */
+      transition: color 0.3s;
+    }
+    .star-rating span:hover,
+    .star-rating span.active {
+      color: #f59e0b; /* Darker gold for active/hover */
+    }
+    .submit-button {
+      background-color: #10b981;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .submit-button:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
+    }
+    .back-button {
+      background-color: #4a5b6f;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      color: #e2e8f0;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .back-button:hover {
+      background-color: #3a4b5f;
+      transform: translateY(-2px);
+    }
+    .footer {
+      margin-top: auto;
+      padding: 20px;
+      background-color: #0f172a;
+      width: 100%;
+      text-align: center;
+      border-top: 1px solid #2d3b4e;
+    }
+    .error-message { color: #ef4444; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -29,137 +116,87 @@
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <h1>Add Feedback</h1>
-  <div class="form-group">
+  <div class="feedback-form" id="feedbackForm">
     <label for="name">Name:</label>
-    <input type="text" id="name" readonly />
-    <label>Rate:</label>
-    <div class="stars" id="stars">
-      <span data-value="1">★</span>
-      <span data-value="2">★</span>
-      <span data-value="3">★</span>
-      <span data-value="4">★</span>
-      <span data-value="5">★</span>
+    <input type="text" id="name" required />
+    <label>Rating:</label>
+    <div class="star-rating" id="starRating">
+      <span onclick="setRating(1)" onmouseover="highlightStars(1)" onmouseout="resetStars()">🌟</span>
+      <span onclick="setRating(2)" onmouseover="highlightStars(2)" onmouseout="resetStars()">🌟</span>
+      <span onclick="setRating(3)" onmouseover="highlightStars(3)" onmouseout="resetStars()">🌟</span>
+      <span onclick="setRating(4)" onmouseover="highlightStars(4)" onmouseout="resetStars()">🌟</span>
+      <span onclick="setRating(5)" onmouseover="highlightStars(5)" onmouseout="resetStars()">🌟</span>
     </div>
-    <label for="comment">Add Your Feedback Here:</label>
-    <textarea id="comment" rows="4" required></textarea>
-    <button onclick="submitFeedback()">Submit</button>
+    <label for="caption">Feedback Caption:</label>
+    <textarea id="caption" rows="4" required></textarea>
+    <button class="submit-button" onclick="submitFeedback()">Submit</button>
   </div>
+  <button class="back-button" onclick="window.location.href='feedback.html'">Back</button>
+  <div class="footer">
+    <h3>About Us</h3>
+    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
+    <h3>Copyright ©</h3>
+    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+  </div>
+  <div id="errorMessage" class="error-message"></div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const errorMessage = document.getElementById("errorMessage");
+    let rating = 0;
 
-    // Get parameters from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const name = urlParams.get('name');
-    const index = urlParams.get('index');
+    function setRating(value) {
+      rating = value;
+      highlightStars(value);
+      document.getElementById("caption").focus(); // Jump to caption input
+    }
 
-    // Prefill name
-    document.getElementById('name').value = decodeURIComponent(name) || 'Anonymous';
-
-    // Load existing feedback if editing
-    async function loadFeedback() {
-      if (index !== null) {
-        try {
-          const response = await fetch(API_URL + "/latest", {
-            headers: { "X-Master-Key": MASTER_KEY }
-          });
-          if (!response.ok) throw new Error("Failed to fetch feedback");
-          const data = await response.json();
-          const feedbacks = data.record.feedbacks || [];
-          if (index >= 0 && index < feedbacks.length) {
-            const feedback = feedbacks[index];
-            if (feedback.name === decodeURIComponent(name)) {
-              document.getElementById('comment').value = feedback.comment;
-              updateStars(feedback.rating);
-            } else {
-              alert("You can only edit your own feedback.");
-              window.location.href = "feedback.html?name=" + encodeURIComponent(name);
-            }
-          } else {
-            alert("Invalid feedback index.");
-            window.location.href = "feedback.html?name=" + encodeURIComponent(name);
-          }
-        } catch (error) {
-          console.error("Error loading feedback:", error);
-          alert("Error loading feedback.");
-        }
+    function highlightStars(value) {
+      const stars = document.getElementById("starRating").getElementsByTagName("span");
+      for (let i = 0; i < stars.length; i++) {
+        stars[i].classList.toggle("active", i < value);
       }
     }
 
-    let rating = 0;
-    const stars = document.getElementById('stars');
-    stars.addEventListener('click', (e) => {
-      if (e.target.tagName === 'SPAN') {
-        rating = parseInt(e.target.getAttribute('data-value'));
-        updateStars();
-        document.getElementById('comment').focus();
-      }
-    });
-
-    function updateStars(value = rating) {
-      const starElements = stars.getElementsByTagName('span');
-      for (let i = 0; i < starElements.length; i++) {
-        starElements[i].classList.toggle('active', i < value);
-      }
+    function resetStars() {
+      if (rating > 0) highlightStars(rating);
     }
 
     async function submitFeedback() {
-      const comment = document.getElementById('comment').value.trim();
-      if (!rating || !comment) {
-        alert("Please rate and provide feedback.");
+      const name = document.getElementById("name").value.trim();
+      const caption = document.getElementById("caption").value.trim();
+
+      if (!name || !caption || rating === 0) {
+        errorMessage.textContent = "Please fill all fields and select a rating.";
         return;
       }
 
       try {
-        const response = await fetch(API_URL + "/latest", {
-          headers: { "X-Master-Key": MASTER_KEY }
-        });
-        if (!response.ok) throw new Error("Failed to fetch data");
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
         const data = await response.json();
         const feedbacks = data.record.feedbacks || [];
-        let loginDetails = data.record.login_details || [];
-
-        const feedback = {
-          name: decodeURIComponent(name),
-          rating: rating,
-          comment: comment,
-          timestamp: new Date().toISOString(),
-          likes: 0,
-          dislikes: 0,
-          replies: []
-        };
-
-        if (index !== null && index >= 0 && index < feedbacks.length) {
-          feedbacks[index] = feedback;
-          const existingDetail = loginDetails.find(d => d.name === decodeURIComponent(name));
-          if (existingDetail) existingDetail.reviews = feedbacks.filter(f => f.name === decodeURIComponent(name)).map(f => f.comment);
-        } else {
-          feedbacks.push(feedback);
-          const existingDetail = loginDetails.find(d => d.name === decodeURIComponent(name));
-          if (existingDetail) existingDetail.reviews.push(comment);
-          else loginDetails.push({ name: decodeURIComponent(name), reviews: [comment] });
-        }
-
-        const updateResponse = await fetch(API_URL, {
+        feedbacks.push({ name, rating, caption, liked: false });
+        await fetch(API_URL, {
           method: "PUT",
-          headers: {
-            "X-Master-Key": MASTER_KEY,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ presets: data.record.presets || [], feedbacks, login_details: loginDetails })
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data.record, feedbacks })
         });
-        if (!updateResponse.ok) throw new Error("Failed to save feedback");
-        alert("Feedback " + (index !== null ? "updated" : "submitted") + " successfully!");
-        window.location.href = 'feedback.html?name=' + encodeURIComponent(name);
+        alert("Feedback submitted successfully!");
+        window.location.href = "feedback.html";
       } catch (error) {
-        console.error("Error saving feedback:", error);
-        alert("Failed to submit feedback.");
+        console.error("Error submitting feedback:", error);
+        errorMessage.textContent = "Error submitting feedback: " + error.message;
       }
     }
 
-    window.onload = () => { loadFeedback(); };
+    window.onload = () => {
+      document.getElementById("feedbackForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        submitFeedback();
+      });
+    };
   </script>
 </body>
 </html>
