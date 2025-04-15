@@ -144,7 +144,7 @@
           presetsSection.innerHTML = presets.map(preset => `
             <div class="preset-item" data-id="${preset.name}">
               <a href="${preset.download_url}" target="_blank">${preset.name}</a><br>
-              Price: $${preset.price}<br>
+              Price: ₹${preset.price}<br>
               <img src="${preset.thumbnail_url}" alt="${preset.name}" style="max-width: 100%; border-radius: 10px;">
               <button class="buy-button" onclick="window.location.href='payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}'">Buy</button>
             </div>
