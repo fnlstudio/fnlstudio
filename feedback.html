@@ -117,6 +117,64 @@
       font-size: 0.85em;
       text-align: center;
     }
+    .add-feedback-btn {
+      background: #10b981;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.95em;
+      margin: 10px 0;
+      width: 100%;
+    }
+    .add-feedback-btn:hover {
+      background: #059669;
+    }
+    .feedback-item {
+      margin: 10px 0;
+      padding: 10px;
+      border-bottom: 1px solid #4a5b6f;
+    }
+    .feedback-item .actions {
+      margin-top: 5px;
+    }
+    .feedback-item .action-btn {
+      background: none;
+      border: none;
+      color: #10b981;
+      cursor: pointer;
+      margin-right: 10px;
+      font-size: 0.9em;
+    }
+    .feedback-item .action-btn:hover {
+      color: #059669;
+    }
+    .edit-form {
+      display: none;
+    }
+    .edit-form textarea {
+      width: 100%;
+      padding: 5px;
+      margin: 5px 0;
+      border: 1px solid #4a5b6f;
+      border-radius: 5px;
+      background: #2d3b4e;
+      color: #e2e8f0;
+    }
+    .edit-form button {
+      background: #10b981;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    .edit-form button:hover {
+      background: #059669;
+    }
   </style>
 </head>
 <body>
@@ -137,6 +195,8 @@
     </div>
     <button class="submit-button" onclick="submitFeedback()">Submit</button>
     <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+    <button class="add-feedback-btn" onclick="window.location.href='addfeedback.html'">[ADD FEEDBACK]</button>
+    <div id="feedbackList"></div>
     <p class="error-message" id="errorMessage"></p>
   </div>
   <div class="footer">
@@ -144,9 +204,14 @@
   </div>
 
   <script>
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const stars = document.querySelectorAll('.star');
     const errorMessage = document.getElementById('errorMessage');
+    const feedbackList = document.getElementById('feedbackList');
     let rating = 0;
+    const userName = localStorage.getItem('userName') || 'Anonymous'; // Assuming from join.html
 
     function rate(value) {
       rating = value;
@@ -159,7 +224,7 @@
       });
     }
 
-    function submitFeedback() {
+    async function submitFeedback() {
       const feedbackText = document.getElementById('feedbackText').value.trim();
 
       if (rating === 0) {
@@ -171,10 +236,151 @@
         return;
       }
 
-      alert(`Feedback submitted! Rating: ${rating} stars, Comment: ${feedbackText}`);
-      // Add your feedback submission logic here (e.g., send to server)
-      window.location.href = 'index.html'; // Redirect after submission
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        const data = await response.json();
+        const feedbacks = data.record.feedbacks || [];
+        feedbacks.push({ id: Date.now(), name: userName, rating, caption: feedbackText, likes: 0, dislikes: 0, replies: [] });
+        await fetch(API_URL, {
+          method: "PUT",
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data.record, feedbacks })
+        });
+        alert('Feedback submitted!');
+        loadFeedbacks();
+        document.getElementById('feedbackText').value = '';
+        rating = 0;
+        stars.forEach(star => star.classList.remove('filled'));
+      } catch (error) {
+        console.error("Error submitting feedback:", error);
+        errorMessage.textContent = "Error: " + error.message;
+      }
     }
+
+    async function loadFeedbacks() {
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        const data = await response.json();
+        const feedbacks = data.record.feedbacks || [];
+        feedbackList.innerHTML = feedbacks.map(feedback => `
+          <div class="feedback-item" data-id="${feedback.id}">
+            <strong>${feedback.name}</strong>: ${feedback.caption} (Rating: ${feedback.rating}⭐)
+            <div class="actions">
+              ${feedback.name === userName ? `
+                <button class="action-btn" onclick="editFeedback(${feedback.id})">Edit</button>
+                <button class="action-btn" onclick="deleteFeedback(${feedback.id})">Delete</button>
+              ` : ''}
+              <button class="action-btn" onclick="toggleLike(${feedback.id}, true)">👍 ${feedback.likes}</button>
+              <button class="action-btn" onclick="toggleLike(${feedback.id}, false)">👎 ${feedback.dislikes}</button>
+              <button class="action-btn" onclick="addReply(${feedback.id})">💬</button>
+            </div>
+            <div class="edit-form" id="edit-form-${feedback.id}">
+              <textarea id="edit-text-${feedback.id}">${feedback.caption}</textarea>
+              <button onclick="saveEdit(${feedback.id})">Save</button>
+              <button onclick="cancelEdit(${feedback.id})">Cancel</button>
+            </div>
+            ${feedback.replies.map(reply => `<p><em>${reply.name}: ${reply.text}</em></p>`).join('')}
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error("Error loading feedbacks:", error);
+        feedbackList.innerHTML = '<p>Error loading feedbacks.</p>';
+      }
+    }
+
+    async function editFeedback(id) {
+      const form = document.getElementById(`edit-form-${id}`);
+      form.style.display = 'block';
+    }
+
+    async function saveEdit(id) {
+      const newCaption = document.getElementById(`edit-text-${id}`).value.trim();
+      if (!newCaption) return;
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        const data = await response.json();
+        const feedbacks = data.record.feedbacks || [];
+        const feedback = feedbacks.find(f => f.id === id);
+        if (feedback && feedback.name === userName) {
+          feedback.caption = newCaption;
+          await fetch(API_URL, {
+            method: "PUT",
+            headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+            body: JSON.stringify({ ...data.record, feedbacks })
+          });
+          loadFeedbacks();
+        }
+      } catch (error) {
+        console.error("Error saving edit:", error);
+      }
+    }
+
+    function cancelEdit(id) {
+      document.getElementById(`edit-form-${id}`).style.display = 'none';
+    }
+
+    async function deleteFeedback(id) {
+      if (!confirm('Are you sure?')) return;
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        const data = await response.json();
+        const feedbacks = data.record.feedbacks || [];
+        const newFeedbacks = feedbacks.filter(f => f.id !== id);
+        await fetch(API_URL, {
+          method: "PUT",
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data.record, feedbacks: newFeedbacks })
+        });
+        loadFeedbacks();
+      } catch (error) {
+        console.error("Error deleting feedback:", error);
+      }
+    }
+
+    async function toggleLike(id, isLike) {
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        const data = await response.json();
+        const feedbacks = data.record.feedbacks || [];
+        const feedback = feedbacks.find(f => f.id === id);
+        if (isLike) feedback.likes = (feedback.likes || 0) + 1;
+        else feedback.dislikes = (feedback.dislikes || 0) + 1;
+        await fetch(API_URL, {
+          method: "PUT",
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data.record, feedbacks })
+        });
+        loadFeedbacks();
+      } catch (error) {
+        console.error("Error toggling like/dislike:", error);
+      }
+    }
+
+    async function addReply(id) {
+      const replyText = prompt('Enter your reply:');
+      if (!replyText) return;
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        const data = await response.json();
+        const feedbacks = data.record.feedbacks || [];
+        const feedback = feedbacks.find(f => f.id === id);
+        feedback.replies = feedback.replies || [];
+        feedback.replies.push({ name: userName, text: replyText });
+        await fetch(API_URL, {
+          method: "PUT",
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data.record, feedbacks })
+        });
+        loadFeedbacks();
+      } catch (error) {
+        console.error("Error adding reply:", error);
+      }
+    }
+
+    window.onload = () => {
+      loadFeedbacks();
+    };
   </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931313f96f6ced80',t:'MTc0NDgwMDE2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+</DOCUMENT>
