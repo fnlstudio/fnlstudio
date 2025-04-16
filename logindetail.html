@@ -120,11 +120,7 @@
 
   <script>
     const loginDetailsDiv = document.getElementById('loginDetails');
-    // Sample login details (replace with dynamic data or backend)
-    let logins = [
-      { id: 1, username: 'user1', password: 'pass123', date: '2025-04-15' },
-      { id: 2, username: 'user2', password: 'pass456', date: '2025-04-14' }
-    ];
+    let logins = [];
 
     function displayLogins() {
       loginDetailsDiv.innerHTML = '';
@@ -151,6 +147,10 @@
       alert('All logins cleared.');
     }
 
+    // Placeholder for fetching real login data (e.g., from localStorage or API)
+    // Uncomment and adjust if integrating with admin data
+    // const savedLogins = JSON.parse(localStorage.getItem('logins') || '[]');
+    // logins = savedLogins;
     displayLogins();
   </script>
 </body>
