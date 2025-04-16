@@ -179,7 +179,7 @@
       <textarea id="caption" placeholder="Enter your feedback here..." rows="4" required></textarea>
     </div>
     <button class="submit-button" onclick="submitFeedback()">Submit</button>
-    <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+    <button class="back-button" onclick="window.location.href='feedback.html'">Back</button>
     <div id="feedbackList"></div>
     <p class="error-message" id="errorMessage"></p>
   </div>
@@ -195,7 +195,7 @@
     const errorMessage = document.getElementById('errorMessage');
     const feedbackList = document.getElementById('feedbackList');
     let rating = 0;
-    const userName = localStorage.getItem('userName') || 'Anonymous'; // Assuming from join.html
+    const userName = localStorage.getItem('userName') || 'Anonymous';
 
     function rate(value) {
       rating = value;
@@ -224,13 +224,15 @@
         const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
         const data = await response.json();
         const feedbacks = data.record.feedbacks || [];
-        feedbacks.push({ id: Date.now(), name: userName, rating, caption: caption, likes: 0, dislikes: 0, replies: [] });
+        const newFeedback = { id: Date.now(), name: userName, rating, caption, likes: 0, dislikes: 0, replies: [] };
+        feedbacks.push(newFeedback);
         await fetch(API_URL, {
           method: "PUT",
           headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
           body: JSON.stringify({ ...data.record, feedbacks })
         });
-        window.location.href = "feedback.html"; // Redirect after submission
+        localStorage.setItem('newFeedback', JSON.stringify(newFeedback));
+        window.location.href = "feedback.html";
       } catch (error) {
         console.error("Error submitting feedback:", error);
         errorMessage.textContent = "Error: " + error.message;
