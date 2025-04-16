@@ -276,7 +276,12 @@
         console.error('UPI redirection error:', e);
       }
 
-      // Proceed after redirection attempt
+      // Store payment details
+      const payment = { id: Date.now(), presetName: preset.name, price: `₹${preset.price}`, buyerName, email, phone, date: new Date().toISOString() };
+      let payments = JSON.parse(localStorage.getItem('payments') || '[]');
+      payments.push(payment);
+      localStorage.setItem('payments', JSON.stringify(payments));
+
       payButton.style.display = 'none';
       uploadProofButton.style.display = 'block';
     }
@@ -294,7 +299,7 @@
             proofImage.style.display = 'block';
             proofPreview.style.display = 'block';
             uploadProofButton.style.display = 'none';
-            downloadButton.style.display = 'block'; // Enable download button
+            downloadButton.style.display = 'block';
           };
           reader.readAsDataURL(file);
         } else {
@@ -309,6 +314,16 @@
         window.location.href = preset.download_url;
       } else {
         errorMessage.textContent = 'Download URL not available.';
+      }
+      // Store proof image URL with the payment
+      const proofUrl = proofImage.src;
+      if (proofUrl) {
+        let payments = JSON.parse(localStorage.getItem('payments') || '[]');
+        const latestPayment = payments[payments.length - 1];
+        if (latestPayment) {
+          latestPayment.proofUrl = proofUrl;
+          localStorage.setItem('payments', JSON.stringify(payments));
+        }
       }
     }
   </script>
