@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -50,9 +50,6 @@
       transition: transform 0.3s;
       text-align: left;
       position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
     .preset-item:hover {
       transform: scale(1.05);
@@ -71,10 +68,6 @@
       margin-top: 10px;
       cursor: pointer;
     }
-    .preset-info {
-      text-align: center;
-      margin-top: 10px;
-    }
     .buy-button {
       background-color: #f97316; /* Changed to orange */
       padding: 8px 15px;
@@ -85,7 +78,6 @@
       font-weight: 600;
       margin-top: 10px;
       transition: background-color 0.3s, transform 0.2s;
-      width: 100px;
     }
     .buy-button:hover {
       background-color: #ea580c;
@@ -284,10 +276,8 @@
         } else {
           presetsSection.innerHTML = presets.map(preset => `
             <div class="preset-item" data-id="${preset.name}">
-              <div class="preset-info">
-                <strong>${preset.name}</strong><br>
-                Price: ₹${preset.price}
-              </div>
+              <a href="${preset.download_url}" target="_blank" style="display:none;">${preset.name}</a><br>
+              Price: ₹${preset.price}<br>
               <img src="${preset.thumbnail_url}" alt="${preset.name}" onclick="showPreview('${encodeURIComponent(JSON.stringify(preset))}')" style="max-width: 100%; border-radius: 10px; max-height: 200px; object-fit: cover;">
               <button class="buy-button" onclick="window.location.href='payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}'">Buy</button>
             </div>
@@ -357,7 +347,7 @@
       ].filter(img => img);
       fullScreenImage.src = images[currentImageIndex] || images[0];
       fullScreenImage.style.maxHeight = "80vh";
-      fullScreenImage.style.object-fit = "contain";
+      fullScreenImage.style.objectFit = "contain";
     }
 
     function setupSwipe() {
