@@ -6,6 +6,7 @@
   <title>Join - FNL Studio</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
+    /* Assuming similar styling to other pages */
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -27,7 +28,7 @@
       height: auto;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
-    .join-section {
+    .form-section {
       background-color: #1e293b;
       padding: 20px;
       border-radius: 10px;
@@ -37,34 +38,28 @@
       text-align: left;
       border: 1px solid #2d3b4e;
     }
-    .join-section h2 {
+    .form-section h2 {
       font-size: 1.5em;
       color: #f1f5f9;
       margin: 0 0 15px 0;
       font-weight: 600;
     }
-    .join-details label {
+    .form-section label {
       display: block;
-      margin: 8px 0 5px;
-      font-size: 0.95em;
-      color: #e2e8f0;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #f1f5f9;
     }
-    .join-details input {
+    .form-section input {
       width: 100%;
-      padding: 8px;
-      margin: 5px 0;
-      border: 1px solid #4a5b6f;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: none;
       border-radius: 5px;
       background: #2d3b4e;
       color: #e2e8f0;
-      font-size: 0.95em;
-      box-sizing: border-box;
     }
-    .join-details input:focus {
-      border-color: #10b981;
-      outline: none;
-    }
-    .join-button {
+    .form-section button {
       background: #10b981;
       padding: 10px;
       border: none;
@@ -72,26 +67,10 @@
       color: #fff;
       cursor: pointer;
       font-weight: 500;
-      font-size: 0.95em;
-      margin: 10px 0;
       width: 100%;
     }
-    .join-button:hover {
+    .form-section button:hover {
       background: #059669;
-    }
-    .back-button {
-      background: #4a5b6f;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      color: #e2e8f0;
-      cursor: pointer;
-      font-weight: 500;
-      margin-top: 10px;
-      width: 100%;
-    }
-    .back-button:hover {
-      background: #3a4b5f;
     }
     .footer {
       margin-top: auto;
@@ -102,54 +81,40 @@
       color: #e2e8f0;
       font-size: 0.85em;
     }
-    .error-message {
-      color: #ef4444;
-      margin-top: 5px;
-      font-size: 0.85em;
-      text-align: center;
-    }
   </style>
 </head>
 <body>
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <div class="join-section">
+  <div class="form-section">
     <h2>Join</h2>
-    <div class="join-details">
-      <label>Full Name:</label>
-      <input type="text" id="fullName" placeholder="Enter your full name" required>
-      <label>Email:</label>
-      <input type="email" id="email" placeholder="Enter your email" required>
-    </div>
-    <button class="join-button" onclick="join()">Join</button>
-    <button class="back-button" onclick="window.location.href='index.html'">Back</button>
-    <p class="error-message" id="errorMessage"></p>
+    <label for="username">Username:</label>
+    <input type="text" id="username" required />
+    <label for="password">Password:</label>
+    <input type="password" id="password" required />
+    <button onclick="submitLogin()">Submit</button>
   </div>
   <div class="footer">
     <p>© 2025 FNL Studio. All rights reserved.</p>
   </div>
 
   <script>
-    const fullNameInput = document.getElementById('fullName');
-    const emailInput = document.getElementById('email');
-    const errorMessage = document.getElementById('errorMessage');
+    function submitLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
 
-    function join() {
-      const fullName = fullNameInput.value.trim();
-      const email = emailInput.value.trim();
-
-      if (!fullName) {
-        errorMessage.textContent = 'Please enter your full name.';
-        return;
-      }
-      if (!email || !/@/.test(email)) {
-        errorMessage.textContent = 'Please enter a valid email.';
+      if (!username || !password) {
+        alert('Please fill in all fields.');
         return;
       }
 
-      // Redirect to feedback.html
-      window.location.href = 'feedback.html';
+      const login = { id: Date.now(), username, password, date: new Date().toISOString() };
+      let logins = JSON.parse(localStorage.getItem('logins') || '[]');
+      logins.push(login);
+      localStorage.setItem('logins', JSON.stringify(logins));
+      alert('Login saved successfully.');
+      window.location.href = 'logindetail.html';
     }
   </script>
 </body>
