@@ -11,108 +11,121 @@
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #e2e8f0;
       text-align: center;
-      padding: 0;
+      padding: 20px;
       margin: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-    }
-    .logo {
-      margin-bottom: 20px;
     }
     .logo img {
-      width: 120px;
+      width: 200px;
       height: auto;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+      margin-bottom: 30px;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
     }
-    .form-section {
-      background-color: #1e293b;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      max-width: 350px;
-      width: 90%;
-      text-align: left;
-      border: 1px solid #2d3b4e;
-    }
-    .form-section h2 {
+    h1 {
       font-size: 1.5em;
+      margin: 15px 0;
       color: #f1f5f9;
-      margin: 0 0 15px 0;
       font-weight: 600;
     }
-    .form-section label {
+    .join-form {
+      background-color: #1e293b;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 90%;
+      text-align: left;
+    }
+    .join-form label {
       display: block;
       margin-bottom: 8px;
       font-weight: 600;
       color: #f1f5f9;
     }
-    .form-section input {
+    .join-form input {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
       border: none;
-      border-radius: 5px;
-      background: #2d3b4e;
+      border-radius: 10px;
+      background-color: #2d3b4e;
       color: #e2e8f0;
+      font-size: 14px;
     }
-    .form-section button {
-      background: #10b981;
-      padding: 10px;
+    .login-button {
+      background-color: #10b981;
+      padding: 12px 30px;
       border: none;
-      border-radius: 5px;
-      color: #fff;
+      border-radius: 10px;
+      color: white;
       cursor: pointer;
-      font-weight: 500;
-      width: 100%;
+      font-weight: 600;
+      font-size: 16px;
+      transition: background-color 0.3s, transform 0.2s;
     }
-    .form-section button:hover {
-      background: #059669;
+    .login-button:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
+    }
+    .back-button {
+      background-color: #4a5b6f;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      color: #e2e8f0;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .back-button:hover {
+      background-color: #3a4b5f;
+      transform: translateY(-2px);
     }
     .footer {
       margin-top: auto;
-      padding: 15px;
-      background: #0f172a;
+      padding: 20px;
+      background-color: #0f172a;
       width: 100%;
       text-align: center;
-      color: #e2e8f0;
-      font-size: 0.85em;
+      border-top: 1px solid #2d3b4e;
     }
+    .error-message { color: #ef4444; margin-top: 10px; }
   </style>
 </head>
 <body>
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <div class="form-section">
-    <h2>Join</h2>
-    <label>Name:</label>
-    <input type="text" id="name" placeholder="Enter your name" required />
-    <label>Phone number or Email:</label>
-    <input type="text" id="phoneEmail" placeholder="Enter phone or email" required />
-    <button onclick="submitLogin()">Submit</button>
+  <h1>Join FNL Studio</h1>
+  <div class="join-form">
+    <label for="name">Name:</label>
+    <input type="text" id="name" required>
+    <label for="contact">Email or Phone Number:</label>
+    <input type="text" id="contact" required>
+    <button class="login-button" onclick="login()">Login</button>
   </div>
+  <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div class="footer">
-    <p>© 2025 FNL Studio. All rights reserved.</p>
+    <h3>About Us</h3>
+    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
+    <h3>Copyright ©</h3>
+    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
   </div>
+  <div id="errorMessage" class="error-message"></div>
 
   <script>
-    function submitLogin() {
+    function login() {
       const name = document.getElementById('name').value.trim();
-      const phoneEmail = document.getElementById('phoneEmail').value.trim();
-
-      if (!name || !phoneEmail) {
-        alert('Please fill in all fields.');
+      const contact = document.getElementById('contact').value.trim();
+      if (!name || !contact) {
+        document.getElementById('errorMessage').textContent = 'Please fill in all fields.';
         return;
       }
-
-      const login = { id: Date.now(), name, phoneEmail, date: new Date().toISOString() };
-      let logins = JSON.parse(localStorage.getItem('logins') || '[]');
-      logins.push(login);
-      localStorage.setItem('logins', JSON.stringify(logins));
-      alert('Login saved successfully.');
+      localStorage.setItem('userName', name); // Temporary storage for session
       window.location.href = 'feedback.html';
     }
   </script>
