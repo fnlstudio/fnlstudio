@@ -145,7 +145,7 @@
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const errorMessage = document.getElementById("errorMessage");
     let rating = 0;
-    const userName = localStorage.getItem("userName") || "Anonymous"; // Assuming name is stored in localStorage from join.html
+    const userName = localStorage.getItem("userName") || "Anonymous"; // From join.html
 
     function setRating(value) {
       rating = value;
@@ -158,7 +158,7 @@
           stars[i].classList.add("outline");
         }
       }
-      document.getElementById("caption").focus(); // Jump to caption input
+      document.getElementById("caption").focus();
     }
 
     async function submitFeedback() {
@@ -173,7 +173,7 @@
         const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
         const data = await response.json();
         const feedbacks = data.record.feedbacks || [];
-        feedbacks.push({ name: userName, rating, caption, liked: false });
+        feedbacks.push({ id: Date.now(), name: userName, rating, caption, likes: 0, dislikes: 0, replies: [] });
         await fetch(API_URL, {
           method: "PUT",
           headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
@@ -194,5 +194,6 @@
       });
     };
   </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931313f9fcd87cc6',t:'MTc0NDgwMDE2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+</DOCUMENT>
