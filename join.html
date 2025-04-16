@@ -1,3 +1,4 @@
+<DOCUMENT filename="join.html">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -118,6 +119,10 @@
   <div id="errorMessage" class="error-message"></div>
 
   <script>
+    const BIN_ID = "67fccb0b8960c979a584b5d5"; // Same BIN_ID as logindetail.html
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
     function login() {
       const name = document.getElementById('name').value.trim();
       const contact = document.getElementById('contact').value.trim();
@@ -125,9 +130,30 @@
         document.getElementById('errorMessage').textContent = 'Please fill in all fields.';
         return;
       }
-      localStorage.setItem('userName', name); // Temporary storage for session
-      window.location.href = 'feedback.html';
+
+      submitLogin(name, contact);
+    }
+
+    async function submitLogin(name, contact) {
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        const data = await response.json();
+        const logins = data.record.logins || [];
+        const newLogin = { id: Date.now(), username: name, password: contact, date: new Date().toISOString() };
+        logins.push(newLogin);
+        await fetch(API_URL, {
+          method: "PUT",
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data.record, logins })
+        });
+        localStorage.setItem('userName', name);
+        window.location.href = 'feedback.html';
+      } catch (error) {
+        console.error("Error submitting login:", error);
+        document.getElementById('errorMessage').textContent = "Error: " + error.message;
+      }
     }
   </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9314924dba77bf68',t:'MTc0NDgxNTgyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+</DOCUMENT>
