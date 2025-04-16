@@ -120,11 +120,7 @@
 
   <script>
     const paymentDetailsDiv = document.getElementById('paymentDetails');
-    // Sample payment details (replace with dynamic data or backend)
-    let payments = [
-      { id: 1, name: 'John Doe', amount: '₹19', date: '2025-04-15' },
-      { id: 2, name: 'Jane Smith', amount: '₹29', date: '2025-04-14' }
-    ];
+    let payments = [];
 
     function displayPayments() {
       paymentDetailsDiv.innerHTML = '';
@@ -151,6 +147,10 @@
       alert('All payments cleared.');
     }
 
+    // Placeholder for fetching real payment data (e.g., from localStorage or API)
+    // Uncomment and adjust if integrating with upload.html/edit.html data
+    // const savedPayments = JSON.parse(localStorage.getItem('payments') || '[]');
+    // payments = savedPayments;
     displayPayments();
   </script>
 </body>
