@@ -302,6 +302,7 @@
       }
     }
 
+    setInterval(loadFeedbacks, 5000); // Polls every 5 seconds to reflect changes
     window.onload = () => {
       loadFeedbacks();
     };
