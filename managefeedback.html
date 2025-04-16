@@ -10,69 +10,165 @@
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #e2e8f0;
-      text-align: center;
-      padding: 20px;
       margin: 0;
+      padding: 20px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
     .logo img {
-      width: 200px;
+      width: 120px;
       height: auto;
-      margin-bottom: 30px;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+      margin-bottom: 20px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
-    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
-    .details-section {
-      background-color: #1e293b;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    h1 {
+      font-size: 1.5em;
+      color: #f1f5f9;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .feedback-container {
       max-width: 600px;
       width: 90%;
+    }
+    .feedback-item {
+      background: #1e293b;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid #2d3b4e;
       text-align: left;
     }
-    .details-section div {
-      background-color: #2d3b4e;
-      padding: 10px;
-      border-radius: 10px;
-      margin: 10px 0;
+    .feedback-item strong {
+      color: #10b981;
     }
-    .details-section button {
-      background-color: #ef4444;
-      padding: 5px 10px;
+    .feedback-item .rating {
+      font-size: 1.2em;
+      margin: 5px 0;
+      color: #FFD700;
+    }
+    .feedback-item .actions {
+      margin-top: 10px;
+    }
+    .action-btn {
+      background: none;
+      border: none;
+      color: #10b981;
+      cursor: pointer;
+      margin-right: 15px;
+      font-size: 1em;
+      transition: color 0.3s;
+    }
+    .action-btn:hover {
+      color: #059669;
+    }
+    .reply {
+      margin-top: 10px;
+      padding-left: 20px;
+      border-left: 2px solid #4a5b6f;
+      color: #a3bffa;
+    }
+    .reply strong {
+      font-weight: 600;
+    }
+    .reply span.admin {
+      color: #000;
+      font-weight: 600;
+      margin-left: 5px;
+    }
+    .back-button {
+      background: #4a5b6f;
+      padding: 10px 20px;
       border: none;
       border-radius: 5px;
       color: #e2e8f0;
       cursor: pointer;
-      font-weight: 600;
-      margin-left: 10px;
+      font-weight: 500;
+      margin-top: 10px;
       transition: background-color 0.3s;
     }
-    .details-section button:hover { background-color: #dc2626; }
-    .back-button {
-      background-color: #4a5b6f;
-      padding: 12px 30px;
-      border: none;
-      border-radius: 10px;
-      color: #e2e8f0;
-      cursor: pointer;
-      font-weight: 600;
-      margin-top: 20px;
-      transition: background-color 0.3s, transform 0.2s;
+    .back-button:hover {
+      background: #3a4b5f;
     }
-    .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
     .footer {
       margin-top: auto;
-      padding: 20px;
-      background-color: #0f172a;
+      padding: 15px;
+      background: #0f172a;
       width: 100%;
       text-align: center;
-      border-top: 1px solid #2d3b4e;
+      color: #e2e8f0;
+      font-size: 0.85em;
+      margin-top: 20px;
     }
-    .error-message { color: #ef4444; margin-top: 10px; }
+    .error-message {
+      color: #ef4444;
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .overlay-content {
+      background-color: #1e293b;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      position: relative;
+    }
+    .overlay-content textarea {
+      width: 100%;
+      height: 100px;
+      padding: 8px;
+      margin: 10px 0;
+      border: 1px solid #4a5b6f;
+      border-radius: 5px;
+      background: #2d3b4e;
+      color: #e2e8f0;
+      font-size: 0.95em;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    .overlay-content button {
+      background: #10b981;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 500;
+      margin: 5px;
+    }
+    .overlay-content button:hover {
+      background: #059669;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: #e2e8f0;
+      font-size: 24px;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    .close-btn:hover {
+      color: #ef4444;
+    }
   </style>
 </head>
 <body>
@@ -80,42 +176,83 @@
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
   <h1>Manage Feedback</h1>
-  <div class="details-section" id="detailsSection"></div>
-  <button class="back-button" onclick="window.location.href='admin.html'">Back</button>
+  <div class="feedback-container" id="feedbackList"></div>
+  <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   <div class="footer">
-    <h3>About Us</h3>
-    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
-    <h3>Copyright ©</h3>
-    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+    <p>© 2025 FNL Studio. All rights reserved.</p>
   </div>
-  <div id="errorMessage" class="error-message"></div>
+  <div class="error-message" id="errorMessage"></div>
+  <div class="overlay" id="replyOverlay">
+    <div class="overlay-content">
+      <button class="close-btn" onclick="closeReplyOverlay()">×</button>
+      <h2>Reply to Feedback</h2>
+      <textarea id="replyText" placeholder="Enter your reply here..." rows="4" required></textarea>
+      <button onclick="submitReply()">Submit</button>
+      <button onclick="closeReplyOverlay()">Cancel</button>
+    </div>
+  </div>
 
   <script>
-    const BIN_ID = "67fccb0b8960c979a584b5d5"; // Use the same BIN_ID as feedback
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const detailsSection = document.getElementById("detailsSection");
+    const feedbackList = document.getElementById('feedbackList');
+    const errorMessage = document.getElementById('errorMessage');
+    const replyOverlay = document.getElementById('replyOverlay');
+    const replyText = document.getElementById('replyText');
+    const userName = localStorage.getItem('userName') || 'Anonymous';
+    let currentFeedbackId = null;
 
-    async function loadFeedback() {
+    async function loadFeedbacks() {
       try {
         const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         const feedbacks = data.record.feedbacks || [];
-        detailsSection.innerHTML = feedbacks.map(f => `
-          <div>
-            ${f.name} - ${f.caption} (Rating: ${f.rating}⭐) - ${new Date(f.id).toLocaleString()}
-            <button onclick="deleteFeedback(${f.id})">Delete</button>
+        feedbackList.innerHTML = feedbacks.map(feedback => `
+          <div class="feedback-item" data-id="${feedback.id}">
+            <strong>${feedback.name}</strong>: ${feedback.caption}
+            <div class="rating">${'★'.repeat(feedback.rating)}</div>
+            <div class="actions">
+              <button class="action-btn" onclick="editFeedback(${feedback.id})">Edit</button>
+              <button class="action-btn" onclick="deleteFeedback(${feedback.id})">Delete</button>
+              <button class="action-btn" onclick="openReplyOverlay(${feedback.id})">💬</button>
+            </div>
+            ${feedback.replies.map(reply => `<div class="reply"><em><strong>${reply.name}</strong>: ${reply.text} <span class="admin">Admin •</span></em></div>`).join('')}
           </div>
-        `).join("") || "<div>No feedback to manage.</div>";
+        `).join('') || '<div class="feedback-item">No feedback available.</div>');
       } catch (error) {
-        console.error("Error loading feedback:", error);
-        detailsSection.innerHTML = "<div>Error loading feedback.</div>";
+        console.error("Error loading feedbacks:", error);
+        feedbackList.innerHTML = '<div class="feedback-item">Error loading feedbacks.</div>';
+      }
+    }
+
+    async function editFeedback(id) {
+      const newCaption = prompt('Enter new feedback caption:');
+      if (!newCaption) return;
+
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        const data = await response.json();
+        const feedbacks = data.record.feedbacks || [];
+        const feedback = feedbacks.find(f => f.id === id);
+        if (feedback) {
+          feedback.caption = newCaption;
+          await fetch(API_URL, {
+            method: "PUT",
+            headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+            body: JSON.stringify({ ...data.record, feedbacks })
+          });
+          loadFeedbacks();
+        }
+      } catch (error) {
+        console.error("Error editing feedback:", error);
       }
     }
 
     async function deleteFeedback(id) {
-      if (!confirm("Are you sure you want to delete this feedback?")) return;
+      if (!confirm('Are you sure you want to delete this feedback?')) return;
+
       try {
         const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
         const data = await response.json();
@@ -126,14 +263,49 @@
           headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
           body: JSON.stringify({ ...data.record, feedbacks: newFeedbacks })
         });
-        loadFeedback();
+        loadFeedbacks();
       } catch (error) {
         console.error("Error deleting feedback:", error);
       }
     }
 
-    window.onload = loadFeedback;
+    function openReplyOverlay(id) {
+      currentFeedbackId = id;
+      replyText.value = '';
+      replyOverlay.style.display = 'flex';
+    }
+
+    function closeReplyOverlay() {
+      replyOverlay.style.display = 'none';
+    }
+
+    async function submitReply() {
+      const replyTextValue = replyText.value.trim();
+      if (!replyTextValue) return;
+
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        const data = await response.json();
+        const feedbacks = data.record.feedbacks || [];
+        const feedback = feedbacks.find(f => f.id === currentFeedbackId);
+        feedback.replies = feedback.replies || [];
+        feedback.replies.push({ name: userName, text: replyTextValue });
+        await fetch(API_URL, {
+          method: "PUT",
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data.record, feedbacks })
+        });
+        closeReplyOverlay();
+        loadFeedbacks();
+      } catch (error) {
+        console.error("Error adding reply:", error);
+      }
+    }
+
+    window.onload = () => {
+      loadFeedbacks();
+    };
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931330dccdb753cc',t:'MTc0NDgwMTM1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931313f96f6ced80',t:'MTc0NDgwMDE2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93133ee03d88bf90',t:'MTc0NDgwMTkyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 </DOCUMENT>
