@@ -118,49 +118,6 @@
       font-size: 0.85em;
       text-align: center;
     }
-    .feedback-item {
-      margin: 10px 0;
-      padding: 10px;
-      border-bottom: 1px solid #4a5b6f;
-    }
-    .feedback-item .actions {
-      margin-top: 5px;
-    }
-    .feedback-item .action-btn {
-      background: none;
-      border: none;
-      color: #10b981;
-      cursor: pointer;
-      margin-right: 10px;
-      font-size: 0.9em;
-    }
-    .feedback-item .action-btn:hover {
-      color: #059669;
-    }
-    .edit-form {
-      display: none;
-    }
-    .edit-form textarea {
-      width: 100%;
-      padding: 5px;
-      margin: 5px 0;
-      border: 1px solid #4a5b6f;
-      border-radius: 5px;
-      background: #2d3b4e;
-      color: #e2e8f0;
-    }
-    .edit-form button {
-      background: #10b981;
-      padding: 5px 10px;
-      border: none;
-      border-radius: 5px;
-      color: #fff;
-      cursor: pointer;
-      margin-right: 5px;
-    }
-    .edit-form button:hover {
-      background: #059669;
-    }
   </style>
 </head>
 <body>
@@ -196,6 +153,7 @@
     const errorMessage = document.getElementById('errorMessage');
     let rating = 0;
     const userName = localStorage.getItem('userName') || 'Anonymous';
+    const isFromManage = document.referrer.includes('managefeedback.html');
 
     function rate(value) {
       rating = value;
@@ -224,7 +182,7 @@
         const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
         const data = await response.json();
         const feedbacks = data.record.feedbacks || [];
-        const newFeedback = { id: Date.now(), name: userName, rating, caption, likes: 0, dislikes: 0, replies: [] };
+        const newFeedback = { id: Date.now(), name: isFromManage ? 'Admin' : userName, rating, caption, likes: 0, dislikes: 0, replies: [] };
         feedbacks.push(newFeedback);
         await fetch(API_URL, {
           method: "PUT",
@@ -232,7 +190,7 @@
           body: JSON.stringify({ ...data.record, feedbacks })
         });
         localStorage.setItem('newFeedback', JSON.stringify(newFeedback));
-        window.location.href = "feedback.html";
+        window.location.href = isFromManage ? 'managefeedback.html' : 'feedback.html';
       } catch (error) {
         console.error("Error submitting feedback:", error);
         errorMessage.textContent = "Error: " + error.message;
@@ -240,9 +198,9 @@
     }
 
     window.onload = () => {
-      // No feedback loading here, just initialization if needed
+      // No feedback loading here
     };
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931313f96f6ced80',t:'MTc0NDgwMDE2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93133ee03d88bf90',t:'MTc0NDgwMTkyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93147bc5e9736765',t:'MTc0NDgxNDkwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931313f96f6ced80',t:'MTc0NDgwMDE2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93133ee03d88bf90',t:'MTc0NDgwMTkyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9314924dee76b05d',t:'MTc0NDgxNTgyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 </DOCUMENT>
