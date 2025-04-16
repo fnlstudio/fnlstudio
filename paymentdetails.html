@@ -112,7 +112,7 @@
       <!-- Payment details will be populated here -->
     </div>
     <button class="clear-button" onclick="clearAll()">Clear All</button>
-    <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+    <button class="back-button" onclick="window.location.href='admin.html'">Back</button>
   </div>
   <div class="footer">
     <p>© 2025 FNL Studio. All rights reserved.</p>
@@ -120,7 +120,7 @@
 
   <script>
     const paymentDetailsDiv = document.getElementById('paymentDetails');
-    let payments = [];
+    let payments = JSON.parse(localStorage.getItem('payments') || '[]');
 
     function displayPayments() {
       paymentDetailsDiv.innerHTML = '';
@@ -128,7 +128,7 @@
         const detailItem = document.createElement('div');
         detailItem.className = 'detail-item';
         detailItem.innerHTML = `
-          <span>${payment.name} - ${payment.amount} - ${payment.date}</span>
+          <span>Name of B: ${payment.name} - Amount: ${payment.amount} - Mobiles: ${payment.mobile} - Mobile: ${payment.mobile} - Date: ${payment.date}</span>
           <button onclick="deletePayment(${payment.id})">Delete</button>
         `;
         paymentDetailsDiv.appendChild(detailItem);
@@ -137,20 +137,19 @@
 
     function deletePayment(id) {
       payments = payments.filter(p => p.id !== id);
+      localStorage.setItem('payments', JSON.stringify(payments));
       displayPayments();
       alert('Payment deleted.');
     }
 
     function clearAll() {
       payments = [];
+      localStorage.setItem('payments', JSON.stringify(payments));
       displayPayments();
       alert('All payments cleared.');
     }
 
-    // Placeholder for fetching real payment data (e.g., from localStorage or API)
-    // Uncomment and adjust if integrating with upload.html/edit.html data
-    // const savedPayments = JSON.parse(localStorage.getItem('payments') || '[]');
-    // payments = savedPayments;
+    // Load and display saved payments
     displayPayments();
   </script>
 </body>
