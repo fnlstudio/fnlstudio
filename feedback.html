@@ -47,7 +47,7 @@
     .feedback-item .rating {
       font-size: 1.2em;
       margin: 5px 0;
-      color: #FFD700; /* Solid yellow without glow */
+      color: #FFD700;
     }
     .feedback-item .actions {
       margin-top: 10px;
@@ -155,7 +155,7 @@
       border: none;
       color: #e2e8f0;
       font-size: 24px;
-      cursor: reply;
+      cursor: pointer;
       transition: color 0.3s;
     }
     .close-btn:hover {
@@ -220,23 +220,22 @@
             <strong>${feedback.name}</strong>: ${feedback.caption}
             <div class="rating">${'★'.repeat(feedback.rating)}</div>
             <div class="actions">
-              <button class="action-btn" onclick="toggleLike(${feedback.id}, true)" ${hasLikedOrDisliked(feedback.id, true) ? 'disabled' : ''}>👍 ${feedback.likes}</button>
-              <button class="action-btn" onclick="toggleLike(${feedback.id}, false)" ${hasLikedOrDisliked(feedback.id, false) ? 'disabled' : ''}>👎 ${feedback.dislikes}</button>
+              <button class="action-btn" onclick="toggleLike(${feedback.id}, true)">👍 ${feedback.likes}</button>
+              <button class="action-btn" onclick="toggleLike(${feedback.id}, false)">👎 ${feedback.dislikes}</button>
               <button class="action-btn" onclick="openReplyOverlay(${feedback.id})">💬</button>
             </div>
             ${feedback.replies.map(reply => `<div class="reply"><em>${reply.name}: ${reply.text}</em></div>`).join('')}
           </div>
-        `).join('') || '<div class="feedback-item">No feedback available.</div>';
+        `).join('') || '<div class="feedback-item">No feedback available.</div>');
       } catch (error) {
         console.error("Error loading feedbacks:", error);
         feedbackList.innerHTML = '<div class="feedback-item">Error loading feedbacks.</div>';
       }
     }
 
-    function hasLikedOrDisliked(feedbackId, isLike) {
+    function getVoteStatus(feedbackId) {
       const key = `vote_${feedbackId}_${userName}`;
-      const vote = localStorage.getItem(key);
-      return vote !== null && (isLike ? vote === 'like' : vote === 'dislike');
+      return localStorage.getItem(key) || null;
     }
 
     async function toggleLike(id, isLike) {
@@ -248,19 +247,24 @@
         if (!feedback) return;
 
         const key = `vote_${id}_${userName}`;
-        const currentVote = localStorage.getItem(key);
-        if (currentVote) {
-          if ((isLike && currentVote === 'like') || (!isLike && currentVote === 'dislike')) return;
+        const currentVote = getVoteStatus(id);
+
+        if (currentVote === (isLike ? 'like' : 'dislike')) {
+          // Remove vote
+          if (isLike) feedback.likes = Math.max(0, feedback.likes - 1);
+          else feedback.dislikes = Math.max(0, feedback.dislikes - 1);
+          localStorage.removeItem(key);
+        } else {
+          // Switch or add vote
           if (currentVote === 'like') feedback.likes = Math.max(0, feedback.likes - 1);
           else if (currentVote === 'dislike') feedback.dislikes = Math.max(0, feedback.dislikes - 1);
-        }
-
-        if (isLike) {
-          feedback.likes = (feedback.likes || 0) + 1;
-          localStorage.setItem(key, 'like');
-        } else {
-          feedback.dislikes = (feedback.dislikes || 0) + 1;
-          localStorage.setItem(key, 'dislike');
+          if (isLike) {
+            feedback.likes = (feedback.likes || 0) + 1;
+            localStorage.setItem(key, 'like');
+          } else {
+            feedback.dislikes = (feedback.dislikes || 0) + 1;
+            localStorage.setItem(key, 'dislike');
+          }
         }
 
         await fetch(API_URL, {
