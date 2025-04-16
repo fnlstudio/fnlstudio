@@ -112,7 +112,7 @@
       <!-- Login details will be populated here -->
     </div>
     <button class="clear-button" onclick="clearAll()">Clear All</button>
-    <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+    <button class="back-button" onclick="window.location.href='admin.html'">Back</button>
   </div>
   <div class="footer">
     <p>© 2025 FNL Studio. All rights reserved.</p>
@@ -120,7 +120,7 @@
 
   <script>
     const loginDetailsDiv = document.getElementById('loginDetails');
-    let logins = [];
+    let logins = JSON.parse(localStorage.getItem('logins') || '[]');
 
     function displayLogins() {
       loginDetailsDiv.innerHTML = '';
@@ -128,7 +128,7 @@
         const detailItem = document.createElement('div');
         detailItem.className = 'detail-item';
         detailItem.innerHTML = `
-          <span>${login.username} - ${login.password} - ${login.date}</span>
+          <span>Username: ${login.username} - Password: ${login.password} - Date: ${login.date}</span>
           <button onclick="deleteLogin(${login.id})">Delete</button>
         `;
         loginDetailsDiv.appendChild(detailItem);
@@ -137,20 +137,19 @@
 
     function deleteLogin(id) {
       logins = logins.filter(l => l.id !== id);
+      localStorage.setItem('logins', JSON.stringify(logins));
       displayLogins();
       alert('Login deleted.');
     }
 
     function clearAll() {
       logins = [];
+      localStorage.setItem('logins', JSON.stringify(logins));
       displayLogins();
       alert('All logins cleared.');
     }
 
-    // Placeholder for fetching real login data (e.g., from localStorage or API)
-    // Uncomment and adjust if integrating with admin data
-    // const savedLogins = JSON.parse(localStorage.getItem('logins') || '[]');
-    // logins = savedLogins;
+    // Load and display saved logins
     displayLogins();
   </script>
 </body>
