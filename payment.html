@@ -1,3 +1,4 @@
+<DOCUMENT filename="payment.html">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -123,7 +124,7 @@
       border-radius: 5px;
       margin-top: 5px;
       display: none;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1));
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     .footer {
       margin-top: auto;
@@ -182,7 +183,6 @@
       <img id="proofImage" alt="Payment Proof">
     </div>
     <button class="download-button" id="downloadButton" style="display: none;" onclick="downloadPreset()">Download</button>
-    <!-- Added QR Code Section -->
     <div class="qr-code-section">
       <p>Scan the QR code to pay:</p>
       <img src="https://i.postimg.cc/TYwyC2xf/Whats-App-Image-2025-04-14-at-10-58-46-PM.jpg" alt="Payment QR Code" id="qrCode">
@@ -196,6 +196,9 @@
   </div>
 
   <script>
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const urlParams = new URLSearchParams(window.location.search);
     const presetStr = urlParams.get('preset');
     const priceInput = document.getElementById('price');
@@ -213,7 +216,6 @@
     const errorMessage = document.getElementById('errorMessage');
     let preset = null;
 
-    // Generate unique captcha code
     function generateCaptcha() {
       const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       let code = '';
@@ -237,7 +239,7 @@
       errorMessage.textContent = 'No preset selected. Go back and select a preset to buy.';
     }
 
-    function initiatePayment() {
+    async function initiatePayment() {
       const buyerName = buyerNameInput.value.trim();
       const email = emailInput.value.trim();
       const phone = phoneInput.value.trim();
@@ -260,10 +262,9 @@
         return;
       }
 
-      const upiId = '9747604405@fam'; // Your updated UPI ID
+      const upiId = '9747604405@fam';
       const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&am=${encodeURIComponent(preset.price)}&tn=${encodeURIComponent(`Payment for ${buyerName}`)}`;
       try {
-        // Attempt to open in a new window/tab
         const newWindow = window.open(upiUrl, '_blank');
         if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
           errorMessage.textContent = 'UPI app failed to open automatically. Please copy this URL and paste it into your UPI app: ' + upiUrl;
@@ -276,30 +277,57 @@
         console.error('UPI redirection error:', e);
       }
 
-      // Store payment details
-      const payment = { id: Date.now(), presetName: preset.name, price: `₹${preset.price}`, buyerName, email, phone, date: new Date().toISOString() };
-      let payments = JSON.parse(localStorage.getItem('payments') || '[]');
-      payments.push(payment);
-      localStorage.setItem('payments', JSON.stringify(payments));
-
-      payButton.style.display = 'none';
-      uploadProofButton.style.display = 'block';
+      const payment = { id: Date.now(), presetName: preset.name, price: `₹${preset.price}`, buyerName, email, phone, date: new Date().toISOString(), proofUrl: null };
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        const data = await response.json();
+        const payments = data.record.payments || [];
+        payments.push(payment);
+        await fetch(API_URL, {
+          method: "PUT",
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data.record, payments })
+        });
+        payButton.style.display = 'none';
+        uploadProofButton.style.display = 'block';
+      } catch (error) {
+        errorMessage.textContent = 'Error saving payment to cloud: ' + error.message;
+        console.error('Cloud save error:', error);
+      }
     }
 
     function uploadProof() {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
-      input.onchange = (e) => {
+      input.onchange = async (e) => {
         const file = e.target.files[0];
         if (file && file.type.startsWith('image/')) {
           const reader = new FileReader();
-          reader.onload = (event) => {
+          reader.onload = async (event) => {
             proofImage.src = event.target.result;
             proofImage.style.display = 'block';
             proofPreview.style.display = 'block';
             uploadProofButton.style.display = 'none';
             downloadButton.style.display = 'block';
+            const proofUrl = event.target.result; // Base64 URL
+            try {
+              const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+              const data = await response.json();
+              const payments = data.record.payments || [];
+              const latestPayment = payments[payments.length - 1];
+              if (latestPayment) {
+                latestPayment.proofUrl = proofUrl;
+                await fetch(API_URL, {
+                  method: "PUT",
+                  headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+                  body: JSON.stringify({ ...data.record, payments })
+                });
+              }
+            } catch (error) {
+              errorMessage.textContent = 'Error saving proof to cloud: ' + error.message;
+              console.error('Cloud save proof error:', error);
+            }
           };
           reader.readAsDataURL(file);
         } else {
@@ -315,17 +343,8 @@
       } else {
         errorMessage.textContent = 'Download URL not available.';
       }
-      // Store proof image URL with the payment
-      const proofUrl = proofImage.src;
-      if (proofUrl) {
-        let payments = JSON.parse(localStorage.getItem('payments') || '[]');
-        const latestPayment = payments[payments.length - 1];
-        if (latestPayment) {
-          latestPayment.proofUrl = proofUrl;
-          localStorage.setItem('payments', JSON.stringify(payments));
-        }
-      }
     }
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93123c0bdcc8139b',t:'MTc0NDc5MTMyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93123c0bdcc8139b',t:'MTc0NDc5MTMyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931566d7be3c44dc',t:'MTc0NDgyNDUzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+</DOCUMENT>
