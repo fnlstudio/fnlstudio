@@ -46,11 +46,21 @@
     .detail-item {
       padding: 10px;
       border-bottom: 1px solid #4a5b6f;
-      cursor: pointer;
       text-align: center;
     }
-    .detail-item:hover {
-      background-color: #2d3b4e;
+    .detail-item button {
+      background: #ef4444;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9em;
+      margin-left: 10px;
+    }
+    .detail-item button:hover {
+      background: #dc2626;
     }
     .clear-button {
       background: #ef4444;
@@ -90,58 +100,6 @@
       color: #e2e8f0;
       font-size: 0.85em;
     }
-    /* Overlay Styles */
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-    .overlay-content {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 400px;
-      width: 90%;
-      text-align: left;
-      border: 1px solid #2d3b4e;
-      position: relative;
-    }
-    .overlay-content h3 {
-      color: #f1f5f9;
-      margin: 0 0 15px 0;
-      font-weight: 600;
-    }
-    .overlay-content p {
-      margin: 10px 0;
-      color: #e2e8f0;
-    }
-    .overlay-content img {
-      max-width: 100%;
-      border-radius: 5px;
-      margin-top: 10px;
-    }
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #ef4444;
-      border: none;
-      border-radius: 5px;
-      color: #fff;
-      cursor: pointer;
-      padding: 5px 10px;
-      font-size: 0.9em;
-    }
-    .close-btn:hover {
-      background: #dc2626;
-    }
   </style>
 </head>
 <body>
@@ -154,83 +112,78 @@
       <!-- Payment details will be populated here -->
     </div>
     <button class="clear-button" onclick="clearAll()">Clear All</button>
-    <button class="back-button" onclick="window.location.href='admin.html'">Back</button>
+    <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   </div>
   <div class="footer">
     <p>© 2025 FNL Studio. All rights reserved.</p>
   </div>
 
-  <div id="overlay" class="overlay">
-    <div class="overlay-content">
-      <h3>Payment Details</h3>
-      <p><strong>Buyer Name:</strong> <span id="overlayBuyerName"></span></p>
-      <p><strong>Preset Name:</strong> <span id="overlayPresetName"></span></p>
-      <p><strong>Price:</strong> <span id="overlayPrice"></span></p>
-      <p><strong>Email:</strong> <span id="overlayEmail"></span></p>
-      <p><strong>Phone:</strong> <span id="overlayPhone"></span></p>
-      <p><strong>Date:</strong> <span id="overlayDate"></span></p>
-      <p><strong>Proof:</strong> <img id="overlayProof" alt="Payment Proof"></p>
-      <button class="close-btn" onclick="closeOverlay()">Close</button>
-    </div>
-  </div>
-
   <script>
+    const BIN_ID = "67fccb0b8960c979a584b5d5"; // Use a new BIN_ID for payments if needed
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const paymentDetailsDiv = document.getElementById('paymentDetails');
-    const overlay = document.getElementById('overlay');
-    const overlayBuyerName = document.getElementById('overlayBuyerName');
-    const overlayPresetName = document.getElementById('overlayPresetName');
-    const overlayPrice = document.getElementById('overlayPrice');
-    const overlayEmail = document.getElementById('overlayEmail');
-    const overlayPhone = document.getElementById('overlayPhone');
-    const overlayDate = document.getElementById('overlayDate');
-    const overlayProof = document.getElementById('overlayProof');
-    let payments = JSON.parse(localStorage.getItem('payments') || '[]');
 
-    function displayPayments() {
-      paymentDetailsDiv.innerHTML = '';
-      payments.forEach((payment, index) => {
-        const detailItem = document.createElement('div');
-        detailItem.className = 'detail-item';
-        detailItem.innerHTML = `
-          <span>${payment.buyerName} - ${payment.presetName} - ${payment.price}</span>
-        `;
-        detailItem.onclick = () => showOverlay(payment, index);
-        paymentDetailsDiv.appendChild(detailItem);
-      });
+    async function displayPayments() {
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const payments = data.record.payments || [];
+        paymentDetailsDiv.innerHTML = '';
+        payments.forEach(payment => {
+          const detailItem = document.createElement('div');
+          detailItem.className = 'detail-item';
+          detailItem.innerHTML = `
+            <span>${payment.name} - ${payment.amount} - ${payment.date}</span>
+            <button onclick="deletePayment(${payment.id})">Delete</button>
+          `;
+          paymentDetailsDiv.appendChild(detailItem);
+        });
+      } catch (error) {
+        console.error("Error loading payments:", error);
+        paymentDetailsDiv.innerHTML = '<p>Error loading payments.</p>';
+      }
     }
 
-    function showOverlay(payment, index) {
-      overlayBuyerName.textContent = payment.buyerName;
-      overlayPresetName.textContent = payment.presetName;
-      overlayPrice.textContent = payment.price;
-      overlayEmail.textContent = payment.email;
-      overlayPhone.textContent = payment.phone;
-      overlayDate.textContent = payment.date;
-      overlayProof.src = payment.proofUrl || '';
-      overlayProof.style.display = payment.proofUrl ? 'block' : 'none';
-      overlay.style.display = 'flex';
+    async function deletePayment(id) {
+      if (!confirm('Are you sure?')) return;
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        const data = await response.json();
+        const payments = data.record.payments || [];
+        const newPayments = payments.filter(p => p.id !== id);
+        await fetch(API_URL, {
+          method: "PUT",
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data.record, payments: newPayments })
+        });
+        displayPayments();
+        alert('Payment deleted.');
+      } catch (error) {
+        console.error("Error deleting payment:", error);
+      }
     }
 
-    function closeOverlay() {
-      overlay.style.display = 'none';
+    async function clearAll() {
+      if (!confirm('Are you sure?')) return;
+      try {
+        await fetch(API_URL, {
+          method: "PUT",
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ payments: [] })
+        });
+        displayPayments();
+        alert('All payments cleared.');
+      } catch (error) {
+        console.error("Error clearing payments:", error);
+      }
     }
 
-    function deletePayment(id) {
-      payments = payments.filter(p => p.id !== id);
-      localStorage.setItem('payments', JSON.stringify(payments));
+    window.onload = () => {
       displayPayments();
-      alert('Payment deleted.');
-    }
-
-    function clearAll() {
-      payments = [];
-      localStorage.setItem('payments', JSON.stringify(payments));
-      displayPayments();
-      alert('All payments cleared.');
-    }
-
-    // Load and display saved payments
-    displayPayments();
+    };
   </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93132943cd077bd6',t:'MTc0NDgwMTA0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+</DOCUMENT>
