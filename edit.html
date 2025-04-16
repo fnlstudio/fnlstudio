@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edit QR - FNL Studio</title>
+  <title>Edit Preset - FNL Studio</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -11,147 +11,165 @@
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #e2e8f0;
       text-align: center;
-      padding: 0;
+      padding: 20px;
       margin: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-    }
-    .logo {
-      margin-bottom: 20px;
     }
     .logo img {
-      width: 120px;
+      width: 200px;
       height: auto;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+      margin-bottom: 30px;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
     }
-    .edit-section {
+    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
+    .edit-form {
       background-color: #1e293b;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      max-width: 350px;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
       width: 90%;
       text-align: left;
-      border: 1px solid #2d3b4e;
     }
-    .edit-section h2 {
-      font-size: 1.5em;
-      color: #f1f5f9;
-      margin: 0 0 15px 0;
-      font-weight: 600;
-    }
-    .edit-details label {
+    .edit-form label {
       display: block;
-      margin: 8px 0 5px;
-      font-size: 0.95em;
-      color: #e2e8f0;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #f1f5f9;
     }
-    .edit-details input {
+    .edit-form input {
       width: 100%;
-      padding: 8px;
-      margin: 5px 0;
-      border: 1px solid #4a5b6f;
-      border-radius: 5px;
-      background: #2d3b4e;
-      color: #e2e8f0;
-      font-size: 0.95em;
-      box-sizing: border-box;
-    }
-    .edit-details input:focus {
-      border-color: #10b981;
-      outline: none;
-    }
-    .edit-button {
-      background: #10b981;
       padding: 10px;
+      margin-bottom: 15px;
       border: none;
-      border-radius: 5px;
-      color: #fff;
-      cursor: pointer;
-      font-weight: 500;
-      font-size: 0.95em;
-      margin: 10px 0;
-      width: 100%;
+      border-radius: 10px;
+      background-color: #2d3b4e;
+      color: #e2e8f0;
+      font-size: 14px;
     }
-    .edit-button:hover {
-      background: #059669;
+    .save-button {
+      background-color: #10b981;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .save-button:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
     }
     .back-button {
-      background: #4a5b6f;
-      padding: 10px;
+      background-color: #4a5b6f;
+      padding: 10px 20px;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       color: #e2e8f0;
       cursor: pointer;
-      font-weight: 500;
+      font-weight: 600;
       margin-top: 10px;
-      width: 100%;
+      transition: background-color 0.3s, transform 0.2s;
     }
-    .back-button:hover {
-      background: #3a4b5f;
-    }
+    .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
     .footer {
       margin-top: auto;
-      padding: 15px;
-      background: #0f172a;
+      padding: 20px;
+      background-color: #0f172a;
       width: 100%;
       text-align: center;
-      color: #e2e8f0;
-      font-size: 0.85em;
+      border-top: 1px solid #2d3b4e;
     }
-    .error-message {
-      color: #ef4444;
-      margin-top: 5px;
-      font-size: 0.85em;
-      text-align: center;
-    }
+    .error-message { color: #ef4444; margin-top: 10px; }
   </style>
 </head>
 <body>
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <div class="edit-section">
-    <h2>Edit QR Code</h2>
-    <div class="edit-details">
-      <label>Current QR URL:</label>
-      <input type="url" id="currentQrUrl" value="https://i.postimg.cc/TYwyC2xf/Whats-App-Image-2025-04-14-at-10-58-46-PM.jpg" disabled>
-      <label>New QR URL:</label>
-      <input type="url" id="newQrUrl" placeholder="Enter new QR code URL" required>
-    </div>
-    <button class="edit-button" onclick="editQr()">Save Changes</button>
-    <button class="back-button" onclick="window.location.href='index.html'">Back</button>
-    <p class="error-message" id="errorMessage"></p>
+  <h1>Edit Preset</h1>
+  <div class="edit-form" id="editForm">
+    <!-- Form will be populated by JavaScript -->
   </div>
+  <button class="back-button" onclick="window.location.href='admin.html'">Back</button>
+  <div id="errorMessage" class="error-message"></div>
   <div class="footer">
-    <p>© 2025 FNL Studio. All rights reserved.</p>
+    <h3>About Us</h3>
+    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
+    <h3>Copyright ©</h3>
+    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
   </div>
 
   <script>
-    const currentQrUrlInput = document.getElementById('currentQrUrl');
-    const newQrUrlInput = document.getElementById('newQrUrl');
-    const errorMessage = document.getElementById('errorMessage');
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const editForm = document.getElementById("editForm");
+    const errorMessage = document.getElementById("errorMessage");
+    const urlParams = new URLSearchParams(window.location.search);
+    const preset = JSON.parse(decodeURIComponent(urlParams.get('preset')));
 
-    function editQr() {
-      const newQrUrl = newQrUrlInput.value.trim();
-
-      if (!newQrUrl) {
-        errorMessage.textContent = 'Please enter a new QR code URL.';
-        return;
-      }
-      if (!/^(https?:\/\/)/.test(newQrUrl)) {
-        errorMessage.textContent = 'Please enter a valid URL starting with http:// or https://';
-        return;
-      }
-
-      // Simulate saving the new QR URL (replace with backend logic)
-      localStorage.setItem('qrCodeUrl', newQrUrl);
-      alert('QR code URL updated successfully. Changes will reflect on payment page.');
-      window.location.href = 'payment.html';
+    function populateForm() {
+      editForm.innerHTML = `
+        <label for="name">Name:</label>
+        <input type="text" id="name" value="${preset.name}" required />
+        <label for="price">Price (₹):</label>
+        <input type="number" id="price" value="${preset.price}" step="0.01" required />
+        <label for="download_url">Download URL:</label>
+        <input type="text" id="download_url" value="${preset.download_url}" required />
+        <label for="thumbnail_url">Thumbnail URL:</label>
+        <input type="text" id="thumbnail_url" value="${preset.thumbnail_url}" required />
+        <label for="sample1">Sample 1 (optional):</label>
+        <input type="text" id="sample1" value="${preset.sample1 || ''}" />
+        <label for="sample2">Sample 2 (optional):</label>
+        <input type="text" id="sample2" value="${preset.sample2 || ''}" />
+        <label for="sample3">Sample 3 (optional):</label>
+        <input type="text" id="sample3" value="${preset.sample3 || ''}" />
+        <button class="save-button" onclick="savePreset()">Save</button>
+      `;
     }
+
+    async function savePreset() {
+      const name = document.getElementById("name").value.trim();
+      const price = document.getElementById("price").value.trim();
+      const download_url = document.getElementById("download_url").value.trim();
+      const thumbnail_url = document.getElementById("thumbnail_url").value.trim();
+      const sample1 = document.getElementById("sample1").value.trim() || null;
+      const sample2 = document.getElementById("sample2").value.trim() || null;
+      const sample3 = document.getElementById("sample3").value.trim() || null;
+
+      if (!name || !price || !download_url || !thumbnail_url) {
+        errorMessage.textContent = "Required fields are missing.";
+        return;
+      }
+
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        const presets = data.record.presets.map(p => 
+          p.name === preset.name ? { name, price, download_url, thumbnail_url, sample1, sample2, sample3 } : p
+        );
+        const updateResponse = await fetch(API_URL, {
+          method: "PUT",
+          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data.record, presets })
+        });
+        if (!updateResponse.ok) throw new Error("Failed to save preset");
+        alert("Preset updated successfully!");
+        window.location.href = "admin.html";
+      } catch (error) {
+        console.error("Error saving preset:", error);
+        errorMessage.textContent = "Error saving preset: " + error.message;
+      }
+    }
+
+    window.onload = populateForm;
   </script>
 </body>
 </html>
