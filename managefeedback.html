@@ -212,13 +212,13 @@
         feedbackList.innerHTML = feedbacks.map(feedback => `
           <div class="feedback-item" data-id="${feedback.id}">
             <strong>${feedback.name}</strong>: ${feedback.caption}
-            <div class="rating">${'★'.repeat(feedback.rating)}</div>
+            <div class="rating">${'★'.repeat(feedback.rating || 0)}</div>
             <div class="actions">
               <button class="action-btn" onclick="editFeedback(${feedback.id})">Edit</button>
               <button class="action-btn" onclick="deleteFeedback(${feedback.id})">Delete</button>
               <button class="action-btn" onclick="openReplyOverlay(${feedback.id})">💬</button>
             </div>
-            ${feedback.replies.map(reply => `<div class="reply"><em><strong>${reply.name}</strong>: ${reply.text} <span class="admin">Admin •</span></em></div>`).join('')}
+            ${feedback.replies ? feedback.replies.map(reply => `<div class="reply"><em><strong>${reply.name}</strong>: ${reply.text} <span class="admin">Admin •</span></em></div>`).join('') : ''}
           </div>
         `).join('') || '<div class="feedback-item">No feedback available.</div>');
       } catch (error) {
@@ -302,7 +302,7 @@
       }
     }
 
-    setInterval(loadFeedbacks, 5000); // Polls every 5 seconds to reflect changes
+    setInterval(loadFeedbacks, 5000);
     window.onload = () => {
       loadFeedbacks();
     };
