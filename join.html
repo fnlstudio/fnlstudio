@@ -6,7 +6,6 @@
   <title>Join - FNL Studio</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
-    /* Assuming similar styling to other pages */
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -89,10 +88,10 @@
   </div>
   <div class="form-section">
     <h2>Join</h2>
-    <label for="username">Username:</label>
-    <input type="text" id="username" required />
-    <label for="password">Password:</label>
-    <input type="password" id="password" required />
+    <label>Name:</label>
+    <input type="text" id="name" placeholder="Enter your name" required />
+    <label>Phone number or Email:</label>
+    <input type="text" id="phoneEmail" placeholder="Enter phone or email" required />
     <button onclick="submitLogin()">Submit</button>
   </div>
   <div class="footer">
@@ -101,20 +100,20 @@
 
   <script>
     function submitLogin() {
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const phoneEmail = document.getElementById('phoneEmail').value.trim();
 
-      if (!username || !password) {
+      if (!name || !phoneEmail) {
         alert('Please fill in all fields.');
         return;
       }
 
-      const login = { id: Date.now(), username, password, date: new Date().toISOString() };
+      const login = { id: Date.now(), name, phoneEmail, date: new Date().toISOString() };
       let logins = JSON.parse(localStorage.getItem('logins') || '[]');
       logins.push(login);
       localStorage.setItem('logins', JSON.stringify(logins));
       alert('Login saved successfully.');
-      window.location.href = 'logindetail.html';
+      window.location.href = 'feedback.html';
     }
   </script>
 </body>
