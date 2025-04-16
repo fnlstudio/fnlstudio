@@ -222,6 +222,7 @@
   <div class="presets-section" id="presetsSection">
     <!-- Presets will be populated by JavaScript -->
   </div>
+  <div class="top-feedback" id="topFeedback"></div>
   <button class="read-more" onclick="window.location.href='join.html'">Read More Feedback</button>
   <div class="footer">
     <h3>About Us</h3>
@@ -245,7 +246,6 @@
       <div id="loading" class="loading" style="display: none;">Loading...</div>
     </div>
   </div>
-  <div class="top-feedback" id="topFeedback"></div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
@@ -288,7 +288,7 @@
         const sortedFeedbacks = feedbacks.sort((a, b) => b.rating - a.rating || b.caption.length - a.caption.length).slice(0, 3);
         if (sortedFeedbacks.length > 0) {
           topFeedback.innerHTML = sortedFeedbacks.map(feedback => `
-            <p><strong>${feedback.name}</strong>: ${feedback.caption} (Rating: ${feedback.rating}⭐)</p>
+            <p><strong>${feedback.name}</strong>: ${feedback.caption} (Rating: ${feedback.rating}⭐) <button onclick="window.location.href='join.html'">Review</button></p>
           `).join('');
           topFeedback.style.display = 'block';
         }
@@ -402,6 +402,5 @@
       setupSwipe();
     };
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931314193e38b0d6',t:'MTc0NDgwMDE3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931314193e38b0d6',t:'MTc0NDgwMDE3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9313657eaffcbd37',t:'MTc0NDgwMzUwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-</DOCUMENT>
