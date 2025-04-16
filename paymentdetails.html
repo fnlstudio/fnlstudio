@@ -1,3 +1,4 @@
+<DOCUMENT filename="paymentdetails.html">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,6 +48,26 @@
       padding: 10px;
       border-bottom: 1px solid #4a5b6f;
       text-align: center;
+      cursor: pointer;
+    }
+    .detail-item.expanded {
+      text-align: left;
+    }
+    .detail-item .summary {
+      font-weight: 500;
+    }
+    .detail-item .full-details {
+      display: none;
+      margin-top: 10px;
+    }
+    .detail-item .full-details p {
+      margin: 5px 0;
+      font-size: 0.9em;
+    }
+    .detail-item .full-details img {
+      max-width: 100%;
+      border-radius: 5px;
+      margin-top: 5px;
     }
     .detail-item button {
       background: #ef4444;
@@ -119,7 +140,7 @@
   </div>
 
   <script>
-    const BIN_ID = "67fccb0b8960c979a584b5d5"; // Use a new BIN_ID for payments if needed
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const paymentDetailsDiv = document.getElementById('paymentDetails');
@@ -135,8 +156,15 @@
           const detailItem = document.createElement('div');
           detailItem.className = 'detail-item';
           detailItem.innerHTML = `
-            <span>${payment.name} - ${payment.amount} - ${payment.date}</span>
-            <button onclick="deletePayment(${payment.id})">Delete</button>
+            <span class="summary" onclick="toggleDetails(this)">${payment.buyerName} - ${payment.price}</span>
+            <div class="full-details">
+              <p><strong>Preset Name:</strong> ${payment.presetName}</p>
+              <p><strong>Email:</strong> ${payment.email}</p>
+              <p><strong>Phone:</strong> ${payment.phone}</p>
+              <p><strong>Date:</strong> ${new Date(payment.date).toLocaleString()}</p>
+              ${payment.proofUrl ? `<img src="${payment.proofUrl}" alt="Payment Proof">` : '<p>No proof uploaded</p>'}
+              <button onclick="deletePayment(${payment.id}, event)">Delete</button>
+            </div>
           `;
           paymentDetailsDiv.appendChild(detailItem);
         });
@@ -146,7 +174,14 @@
       }
     }
 
-    async function deletePayment(id) {
+    function toggleDetails(element) {
+      const fullDetails = element.nextElementSibling;
+      fullDetails.style.display = fullDetails.style.display === 'block' ? 'none' : 'block';
+      element.parentElement.classList.toggle('expanded');
+    }
+
+    async function deletePayment(id, event) {
+      event.stopPropagation();
       if (!confirm('Are you sure?')) return;
       try {
         const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
@@ -184,6 +219,6 @@
       displayPayments();
     };
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93132943cd077bd6',t:'MTc0NDgwMTA0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93132943cd077bd6',t:'MTc0NDgwMTA0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931566d75fb1dd1e',t:'MTc0NDgyNDUzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 </DOCUMENT>
