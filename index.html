@@ -41,18 +41,27 @@
     }
     .preset-item {
       background-color: #1e293b;
-      padding: 15px;
+      padding: 20px;
       border-radius: 15px;
       margin: 15px 0;
       max-width: 500px;
       width: 90%;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       transition: transform 0.3s;
-      text-align: left;
+      text-align: center; /* Changed to center for better alignment */
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px; /* Added for spacing between elements */
     }
     .preset-item:hover {
       transform: scale(1.05);
+    }
+    .preset-item h3 {
+      color: #e2e8f0;
+      font-size: 1.5em;
+      margin: 0;
     }
     .preset-item a {
       color: #10b981;
@@ -67,10 +76,12 @@
       border-radius: 10px;
       margin-top: 10px;
       cursor: pointer;
+      max-height: 200px;
+      object-fit: cover;
     }
     .buy-button {
-      background-color: #f97316; /* Changed to orange */
-      padding: 8px 15px;
+      background-color: #f97316;
+      padding: 10px 20px;
       border: none;
       border-radius: 10px;
       color: white;
@@ -78,13 +89,14 @@
       font-weight: 600;
       margin-top: 10px;
       transition: background-color 0.3s, transform 0.2s;
+      width: 120px; /* Fixed width for consistent alignment */
     }
     .buy-button:hover {
       background-color: #ea580c;
       transform: translateY(-2px);
     }
     .read-more {
-      background-color: #ef4444; /* Changed to red */
+      background-color: #ef4444;
       padding: 12px 30px;
       border: none;
       border-radius: 10px;
@@ -140,9 +152,9 @@
     }
     .full-screen-image-container {
       position: relative;
-      max-width: 85%; /* Decreased from 95% to 85% */
-      max-height: 85%; /* Decreased from 95% to 85% */
-      overflow: hidden; /* Prevent vertical scrolling */
+      max-width: 85%;
+      max-height: 85%;
+      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -203,7 +215,7 @@
       color: #10b981;
     }
     .top-feedback {
-      display: none; /* Shown if feedback exists */
+      display: none;
       margin: 20px 0;
       background-color: #1e293b;
       padding: 15px;
@@ -276,8 +288,8 @@
         } else {
           presetsSection.innerHTML = presets.map(preset => `
             <div class="preset-item" data-id="${preset.name}">
-              <a href="${preset.download_url}" target="_blank" style="display:none;">${preset.name}</a><br>
-              Price: ₹${preset.price}<br>
+              <h3>${preset.name}</h3>
+              <p>Price: ₹${preset.price}</p>
               <img src="${preset.thumbnail_url}" alt="${preset.name}" onclick="showPreview('${encodeURIComponent(JSON.stringify(preset))}')" style="max-width: 100%; border-radius: 10px; max-height: 200px; object-fit: cover;">
               <button class="buy-button" onclick="window.location.href='payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}'">Buy</button>
             </div>
@@ -402,5 +414,5 @@
       setupSwipe();
     };
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931314193e38b0d6',t:'MTc0NDgwMDE3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9313657eaffcbd37',t:'MTc0NDgwMzUwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931314193e38b0d6',t:'MTc0NDgwMDE3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9313657eaffcbd37',t:'MTc0NDgwMzUwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9315b3650ec66777',t:'MTc0NDgyNzY2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
