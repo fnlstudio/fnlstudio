@@ -11,89 +11,147 @@
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #e2e8f0;
       text-align: center;
-      padding: 20px;
+      padding: 0;
       margin: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+    }
+    .logo {
+      margin-bottom: 20px;
     }
     .logo img {
-      width: 200px;
+      width: 120px;
       height: auto;
-      margin-bottom: 30px;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
-    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
     .details-section {
       background-color: #1e293b;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      max-width: 600px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      max-width: 350px;
       width: 90%;
       text-align: left;
+      border: 1px solid #2d3b4e;
     }
-    .details-section div {
-      background-color: #2d3b4e;
+    .details-section h2 {
+      font-size: 1.5em;
+      color: #f1f5f9;
+      margin: 0 0 15px 0;
+      font-weight: 600;
+    }
+    .detail-item {
       padding: 10px;
-      border-radius: 10px;
+      border-bottom: 1px solid #4a5b6f;
+      text-align: center;
+    }
+    .detail-item button {
+      background: #ef4444;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9em;
+      margin-left: 10px;
+    }
+    .detail-item button:hover {
+      background: #dc2626;
+    }
+    .clear-button {
+      background: #ef4444;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.95em;
       margin: 10px 0;
+      width: 100%;
+    }
+    .clear-button:hover {
+      background: #dc2626;
     }
     .back-button {
-      background-color: #4a5b6f;
-      padding: 12px 30px;
+      background: #4a5b6f;
+      padding: 10px;
       border: none;
-      border-radius: 10px;
+      border-radius: 5px;
       color: #e2e8f0;
       cursor: pointer;
-      font-weight: 600;
-      margin-top: 20px;
-      transition: background-color 0.3s, transform 0.2s;
+      font-weight: 500;
+      margin-top: 10px;
+      width: 100%;
     }
-    .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
+    .back-button:hover {
+      background: #3a4b5f;
+    }
     .footer {
       margin-top: auto;
-      padding: 20px;
-      background-color: #0f172a;
+      padding: 15px;
+      background: #0f172a;
       width: 100%;
       text-align: center;
-      border-top: 1px solid #2d3b4e;
+      color: #e2e8f0;
+      font-size: 0.85em;
     }
-    .error-message { color: #ef4444; margin-top: 10px; }
   </style>
 </head>
 <body>
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <h1>Login Details</h1>
-  <div class="details-section" id="detailsSection"></div>
-  <button class="back-button" onclick="window.location.href='admin.html'">Back</button>
-  <div class="footer">
-    <h3>About Us</h3>
-    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
-    <h3>Copyright ©</h3>
-    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+  <div class="details-section">
+    <h2>Login Details</h2>
+    <div id="loginDetails">
+      <!-- Login details will be populated here -->
+    </div>
+    <button class="clear-button" onclick="clearAll()">Clear All</button>
+    <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   </div>
-  <div id="errorMessage" class="error-message"></div>
+  <div class="footer">
+    <p>© 2025 FNL Studio. All rights reserved.</p>
+  </div>
 
   <script>
-    const BIN_ID = "67fccb0b8960c979a584b5d5";
-    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
-    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const detailsSection = document.getElementById("detailsSection");
+    const loginDetailsDiv = document.getElementById('loginDetails');
+    // Sample login details (replace with dynamic data or backend)
+    let logins = [
+      { id: 1, username: 'user1', password: 'pass123', date: '2025-04-15' },
+      { id: 2, username: 'user2', password: 'pass456', date: '2025-04-14' }
+    ];
 
-    async function loadLoginDetails() {
-      try {
-        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
-        const data = await response.json();
-        const loginDetails = data.record.login_details || [];
-        detailsSection.innerHTML = loginDetails.length ? loginDetails.map(d => `<div>Name: ${d.name}, Email: ${d.email}, Phone: ${d.phone}, Time: ${new Date(d.timestamp).toLocaleString()}</div>`).join("") : "<div>No login details available.</div>";
-      } catch (error) { console.error("Error loading login details:", error); }
+    function displayLogins() {
+      loginDetailsDiv.innerHTML = '';
+      logins.forEach(login => {
+        const detailItem = document.createElement('div');
+        detailItem.className = 'detail-item';
+        detailItem.innerHTML = `
+          <span>${login.username} - ${login.password} - ${login.date}</span>
+          <button onclick="deleteLogin(${login.id})">Delete</button>
+        `;
+        loginDetailsDiv.appendChild(detailItem);
+      });
     }
 
-    window.onload = loadLoginDetails;
+    function deleteLogin(id) {
+      logins = logins.filter(l => l.id !== id);
+      displayLogins();
+      alert('Login deleted.');
+    }
+
+    function clearAll() {
+      logins = [];
+      displayLogins();
+      alert('All logins cleared.');
+    }
+
+    displayLogins();
   </script>
 </body>
 </html>
