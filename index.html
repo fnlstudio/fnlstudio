@@ -69,7 +69,7 @@
       cursor: pointer;
     }
     .buy-button {
-      background-color: #10b981;
+      background-color: #f97316; /* Changed to orange */
       padding: 8px 15px;
       border: none;
       border-radius: 10px;
@@ -80,11 +80,11 @@
       transition: background-color 0.3s, transform 0.2s;
     }
     .buy-button:hover {
-      background-color: #059669;
+      background-color: #ea580c;
       transform: translateY(-2px);
     }
     .read-more {
-      background-color: #10b981;
+      background-color: #ef4444; /* Changed to red */
       padding: 12px 30px;
       border: none;
       border-radius: 10px;
@@ -95,7 +95,7 @@
       transition: background-color 0.3s, transform 0.2s;
     }
     .read-more:hover {
-      background-color: #059669;
+      background-color: #dc2626;
       transform: translateY(-2px);
     }
     .overlay {
@@ -202,6 +202,15 @@
       font-size: 1.5em;
       color: #10b981;
     }
+    .top-feedback {
+      display: none; /* Shown if feedback exists */
+      margin: 20px 0;
+      background-color: #1e293b;
+      padding: 15px;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 90%;
+    }
   </style>
 </head>
 <body>
@@ -236,6 +245,7 @@
       <div id="loading" class="loading" style="display: none;">Loading...</div>
     </div>
   </div>
+  <div class="top-feedback" id="topFeedback"></div>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
@@ -249,6 +259,7 @@
     const buyNowBtn = document.getElementById("buyNowBtn");
     const fullScreenImage = document.getElementById("fullScreenImage");
     const loading = document.getElementById("loading");
+    const topFeedback = document.getElementById("topFeedback");
     let currentPreset = null;
     let currentImageIndex = 0;
 
@@ -267,13 +278,22 @@
             <div class="preset-item" data-id="${preset.name}">
               <a href="${preset.download_url}" target="_blank" style="display:none;">${preset.name}</a><br>
               Price: ₹${preset.price}<br>
-              <img src="${preset.thumbnail_url}" alt="${preset.name}" onclick="showPreview('${encodeURIComponent(JSON.stringify(preset))}')" style="max-width: 100%; border-radius: 10px;">
+              <img src="${preset.thumbnail_url}" alt="${preset.name}" onclick="showPreview('${encodeURIComponent(JSON.stringify(preset))}')" style="max-width: 100%; border-radius: 10px; max-height: 200px; object-fit: cover;">
               <button class="buy-button" onclick="window.location.href='payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}'">Buy</button>
             </div>
           `).join("");
         }
+        // Load and display top 3 feedback
+        const feedbacks = data.record.feedbacks || [];
+        const sortedFeedbacks = feedbacks.sort((a, b) => b.rating - a.rating || b.caption.length - a.caption.length).slice(0, 3);
+        if (sortedFeedbacks.length > 0) {
+          topFeedback.innerHTML = sortedFeedbacks.map(feedback => `
+            <p><strong>${feedback.name}</strong>: ${feedback.caption} (Rating: ${feedback.rating}⭐)</p>
+          `).join('');
+          topFeedback.style.display = 'block';
+        }
       } catch (error) {
-        console.error("Error loading presets:", error);
+        console.error("Error loading presets or feedback:", error);
         presetsSection.innerHTML = "<p>Error loading presets. Contact admin.</p>";
       }
     }
@@ -288,7 +308,7 @@
         currentPreset.sample3 || ''
       ].filter(img => img);
       overlayImages.innerHTML = images.map((img, index) => `
-        <img src="${img}" alt="${currentPreset.name} Sample ${index + 1}" onclick="showFullScreen(${index})">
+        <img src="${img}" alt="${currentPreset.name} Sample ${index + 1}" onclick="showFullScreen(${index})" style="max-width: 100%; max-height: 200px; object-fit: cover; margin: 5px;">
       `).join("");
       buyNowBtn.onclick = () => window.location.href = `payment.html?preset=${encodeURIComponent(JSON.stringify(currentPreset))}`;
       previewOverlay.style.display = "flex";
@@ -326,6 +346,8 @@
         currentPreset.sample3 || ''
       ].filter(img => img);
       fullScreenImage.src = images[currentImageIndex] || images[0];
+      fullScreenImage.style.maxHeight = "80vh";
+      fullScreenImage.style.objectFit = "contain";
     }
 
     function setupSwipe() {
@@ -380,5 +402,6 @@
       setupSwipe();
     };
   </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931314193e38b0d6',t:'MTc0NDgwMDE3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+</DOCUMENT>
