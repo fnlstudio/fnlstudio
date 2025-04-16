@@ -69,7 +69,7 @@
       border-left: 2px solid #4a5b6f;
       color: #a3bffa;
     }
-    .back-button {
+    .back-button, .add-feedback-btn {
       background: #4a5b6f;
       padding: 10px 20px;
       border: none;
@@ -77,10 +77,10 @@
       color: #e2e8f0;
       cursor: pointer;
       font-weight: 500;
-      margin-top: 20px;
+      margin-top: 10px;
       transition: background-color 0.3s;
     }
-    .back-button:hover {
+    .back-button:hover, .add-feedback-btn:hover {
       background: #3a4b5f;
     }
     .footer {
@@ -107,6 +107,7 @@
   <h1>Feedback</h1>
   <div class="feedback-container" id="feedbackList"></div>
   <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+  <button class="add-feedback-btn" onclick="window.location.href='addfeedback.html'">ADD FEEDBACK</button>
   <div class="footer">
     <p>© 2025 FNL Studio. All rights reserved.</p>
   </div>
@@ -126,6 +127,19 @@
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         const feedbacks = data.record.feedbacks || [];
+        const newFeedback = localStorage.getItem('newFeedback');
+        if (newFeedback) {
+          const parsedFeedback = JSON.parse(newFeedback);
+          if (!feedbacks.some(f => f.id === parsedFeedback.id)) {
+            feedbacks.push(parsedFeedback);
+            await fetch(API_URL, {
+              method: "PUT",
+              headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
+              body: JSON.stringify({ ...data.record, feedbacks })
+            });
+          }
+          localStorage.removeItem('newFeedback');
+        }
         feedbackList.innerHTML = feedbacks.map(feedback => `
           <div class="feedback-item" data-id="${feedback.id}">
             <strong>${feedback.name}</strong>: ${feedback.caption}
@@ -184,6 +198,7 @@
       }
     }
 
+    setInterval(loadFeedbacks, 5000);
     window.onload = () => {
       loadFeedbacks();
     };
