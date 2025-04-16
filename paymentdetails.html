@@ -46,21 +46,11 @@
     .detail-item {
       padding: 10px;
       border-bottom: 1px solid #4a5b6f;
+      cursor: pointer;
       text-align: center;
     }
-    .detail-item button {
-      background: #ef4444;
-      padding: 5px 10px;
-      border: none;
-      border-radius: 5px;
-      color: #fff;
-      cursor: pointer;
-      font-weight: 500;
-      font-size: 0.9em;
-      margin-left: 10px;
-    }
-    .detail-item button:hover {
-      background: #dc2626;
+    .detail-item:hover {
+      background-color: #2d3b4e;
     }
     .clear-button {
       background: #ef4444;
@@ -100,6 +90,58 @@
       color: #e2e8f0;
       font-size: 0.85em;
     }
+    /* Overlay Styles */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .overlay-content {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 90%;
+      text-align: left;
+      border: 1px solid #2d3b4e;
+      position: relative;
+    }
+    .overlay-content h3 {
+      color: #f1f5f9;
+      margin: 0 0 15px 0;
+      font-weight: 600;
+    }
+    .overlay-content p {
+      margin: 10px 0;
+      color: #e2e8f0;
+    }
+    .overlay-content img {
+      max-width: 100%;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ef4444;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      padding: 5px 10px;
+      font-size: 0.9em;
+    }
+    .close-btn:hover {
+      background: #dc2626;
+    }
   </style>
 </head>
 <body>
@@ -118,21 +160,59 @@
     <p>© 2025 FNL Studio. All rights reserved.</p>
   </div>
 
+  <div id="overlay" class="overlay">
+    <div class="overlay-content">
+      <h3>Payment Details</h3>
+      <p><strong>Buyer Name:</strong> <span id="overlayBuyerName"></span></p>
+      <p><strong>Preset Name:</strong> <span id="overlayPresetName"></span></p>
+      <p><strong>Price:</strong> <span id="overlayPrice"></span></p>
+      <p><strong>Email:</strong> <span id="overlayEmail"></span></p>
+      <p><strong>Phone:</strong> <span id="overlayPhone"></span></p>
+      <p><strong>Date:</strong> <span id="overlayDate"></span></p>
+      <p><strong>Proof:</strong> <img id="overlayProof" alt="Payment Proof"></p>
+      <button class="close-btn" onclick="closeOverlay()">Close</button>
+    </div>
+  </div>
+
   <script>
     const paymentDetailsDiv = document.getElementById('paymentDetails');
+    const overlay = document.getElementById('overlay');
+    const overlayBuyerName = document.getElementById('overlayBuyerName');
+    const overlayPresetName = document.getElementById('overlayPresetName');
+    const overlayPrice = document.getElementById('overlayPrice');
+    const overlayEmail = document.getElementById('overlayEmail');
+    const overlayPhone = document.getElementById('overlayPhone');
+    const overlayDate = document.getElementById('overlayDate');
+    const overlayProof = document.getElementById('overlayProof');
     let payments = JSON.parse(localStorage.getItem('payments') || '[]');
 
     function displayPayments() {
       paymentDetailsDiv.innerHTML = '';
-      payments.forEach(payment => {
+      payments.forEach((payment, index) => {
         const detailItem = document.createElement('div');
         detailItem.className = 'detail-item';
         detailItem.innerHTML = `
-          <span>Name of B: ${payment.name} - Amount: ${payment.amount} - Mobiles: ${payment.mobile} - Mobile: ${payment.mobile} - Date: ${payment.date}</span>
-          <button onclick="deletePayment(${payment.id})">Delete</button>
+          <span>${payment.buyerName} - ${payment.presetName} - ${payment.price}</span>
         `;
+        detailItem.onclick = () => showOverlay(payment, index);
         paymentDetailsDiv.appendChild(detailItem);
       });
+    }
+
+    function showOverlay(payment, index) {
+      overlayBuyerName.textContent = payment.buyerName;
+      overlayPresetName.textContent = payment.presetName;
+      overlayPrice.textContent = payment.price;
+      overlayEmail.textContent = payment.email;
+      overlayPhone.textContent = payment.phone;
+      overlayDate.textContent = payment.date;
+      overlayProof.src = payment.proofUrl || '';
+      overlayProof.style.display = payment.proofUrl ? 'block' : 'none';
+      overlay.style.display = 'flex';
+    }
+
+    function closeOverlay() {
+      overlay.style.display = 'none';
     }
 
     function deletePayment(id) {
