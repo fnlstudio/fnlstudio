@@ -43,15 +43,44 @@
       margin: 0 0 15px 0;
       font-weight: 600;
     }
-    .preset-list {
-      margin: 10px 0;
+    .search-bar {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #4a5b6f;
+      border-radius: 5px;
+      background: #2d3b4e;
+      color: #e2e8f0;
+      font-size: 0.95em;
+      box-sizing: border-box;
     }
-    .preset-item {
+    .search-bar:focus {
+      border-color: #10b981;
+      outline: none;
+    }
+    .product-list {
+      margin: 10px 0;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .product-item {
       padding: 10px;
       border-bottom: 1px solid #4a5b6f;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      text-align: left;
     }
-    .preset-item button {
+    .product-item img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      margin-right: 10px;
+      border-radius: 5px;
+    }
+    .product-item .info {
+      flex-grow: 1;
+    }
+    .product-item button {
       background: #10b981;
       padding: 5px 10px;
       border: none;
@@ -60,12 +89,11 @@
       cursor: pointer;
       font-weight: 500;
       font-size: 0.9em;
-      margin-left: 10px;
     }
-    .preset-item button:hover {
+    .product-item button:hover {
       background: #059669;
     }
-    .back-button, .admin-button {
+    .back-button {
       background: #4a5b6f;
       padding: 10px;
       border: none;
@@ -76,7 +104,21 @@
       margin-top: 10px;
       width: 100%;
     }
-    .back-button:hover, .admin-button:hover {
+    .back-button:hover {
+      background: #3a4b5f;
+    }
+    .admin-button {
+      background: #4a5b6f;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      color: #e2e8f0;
+      cursor: pointer;
+      font-weight: 500;
+      margin-top: 10px;
+      width: 100%;
+    }
+    .admin-button:hover {
       background: #3a4b5f;
     }
     .footer {
@@ -96,38 +138,46 @@
   </div>
   <div class="menu-section">
     <h2>Menu</h2>
-    <div class="preset-list" id="presetList">
-      <!-- Presets will be populated here -->
+    <input type="text" class="search-bar" id="searchBar" placeholder="Search presets..." onkeyup="filterProducts()">
+    <div class="product-list" id="productList">
+      <!-- Products will be populated here from upload.html/edit.html -->
     </div>
     <button class="back-button" onclick="window.location.href='index.html'">Back</button>
-    <button class="admin-button" onclick="window.location.href='admin.html'">Admin</button>
+    <button class="admin-button" onclick="window.location.href='adminlogin.html'">Admin</button>
   </div>
   <div class="footer">
     <p>© 2025 FNL Studio. All rights reserved.</p>
   </div>
 
   <script>
-    const presetList = document.getElementById('presetList');
-    // Sample presets (replace with dynamic data or backend)
-    const presets = [
-      { name: 'Preset 1', price: 19, url: 'payment.html?preset={"name":"Preset 1","price":19,"download_url":"example.com"}' },
-      { name: 'Preset 2', price: 29, url: 'payment.html?preset={"name":"Preset 2","price":29,"download_url":"example.com"}' }
-    ];
+    const productList = document.getElementById('productList');
+    const searchBar = document.getElementById('searchBar');
+    let products = JSON.parse(localStorage.getItem('products') || '[]');
 
-    function displayPresets() {
-      presetList.innerHTML = '';
-      presets.forEach(preset => {
-        const presetItem = document.createElement('div');
-        presetItem.className = 'preset-item';
-        presetItem.innerHTML = `
-          <span>${preset.name} - ₹${preset.price}</span>
-          <button onclick="window.location.href='${preset.url}'">Buy</button>
+    function displayProducts(productsToShow) {
+      productList.innerHTML = '';
+      productsToShow.forEach((product, index) => {
+        const productItem = document.createElement('div');
+        productItem.className = 'product-item';
+        productItem.innerHTML = `
+          <img src="${product.thumbnail || 'https://via.placeholder.com/50?text=No+Image'}" alt="${product.name}">
+          <div class="info"><span>${product.name || 'Unnamed Product'} - ₹${product.price || 0}</span></div>
+          <button onclick="window.location.href='payment.html?product=${encodeURIComponent(JSON.stringify(product))}'">Buy</button>
         `;
-        presetList.appendChild(presetItem);
+        productList.appendChild(productItem);
       });
     }
 
-    displayPresets();
+    function filterProducts() {
+      const searchTerm = searchBar.value.toLowerCase();
+      const filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(searchTerm)
+      );
+      displayProducts(filteredProducts);
+    }
+
+    // Load and display products from localStorage
+    displayProducts(products);
   </script>
 </body>
 </html>
