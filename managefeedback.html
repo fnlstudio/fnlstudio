@@ -1,3 +1,4 @@
+<DOCUMENT filename="managefeedback.html">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,16 +54,27 @@
       margin-top: 10px;
     }
     .action-btn {
-      background: none;
+      padding: 5px 15px;
       border: none;
-      color: #10b981;
+      border-radius: 15px; /* Curved edge box */
       cursor: pointer;
-      margin-right: 15px;
       font-size: 1em;
-      transition: color 0.3s;
+      margin-right: 15px;
+      transition: background-color 0.3s;
     }
-    .action-btn:hover {
-      color: #059669;
+    .action-btn.edit {
+      background-color: #007BFF; /* Blue for edit */
+      color: white;
+    }
+    .action-btn.edit:hover {
+      background-color: #0056b3; /* Darker blue on hover */
+    }
+    .action-btn.delete {
+      background-color: #DC3545; /* Red for delete */
+      color: white;
+    }
+    .action-btn.delete:hover {
+      background-color: #a71d2a; /* Darker red on hover */
     }
     .reply {
       margin-top: 10px;
@@ -200,7 +212,6 @@
     const errorMessage = document.getElementById('errorMessage');
     const replyOverlay = document.getElementById('replyOverlay');
     const replyText = document.getElementById('replyText');
-    const userName = localStorage.getItem('userName') || 'Anonymous';
     let currentFeedbackId = null;
 
     async function loadFeedbacks() {
@@ -208,22 +219,28 @@
         const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
+        console.log("Fetched data:", data); // Debug: Log the fetched data
         const feedbacks = data.record.feedbacks || [];
-        feedbackList.innerHTML = feedbacks.map(feedback => `
-          <div class="feedback-item" data-id="${feedback.id}">
-            <strong>${feedback.name}</strong>: ${feedback.caption}
-            <div class="rating">${'★'.repeat(feedback.rating || 0)}</div>
-            <div class="actions">
-              <button class="action-btn" onclick="editFeedback(${feedback.id})">Edit</button>
-              <button class="action-btn" onclick="deleteFeedback(${feedback.id})">Delete</button>
-              <button class="action-btn" onclick="openReplyOverlay(${feedback.id})">💬</button>
+        if (feedbacks.length === 0) {
+          feedbackList.innerHTML = '<div class="feedback-item">No feedback available yet. Add some to get started!</div>';
+        } else {
+          feedbackList.innerHTML = feedbacks.map(feedback => `
+            <div class="feedback-item" data-id="${feedback.id}">
+              <strong>${feedback.name}</strong>: ${feedback.caption}
+              <div class="rating">${'★'.repeat(feedback.rating || 0)}</div>
+              <div class="actions">
+                <button class="action-btn edit" onclick="editFeedback(${feedback.id})">Edit</button>
+                <button class="action-btn delete" onclick="deleteFeedback(${feedback.id})">Delete</button>
+                <button class="action-btn" onclick="openReplyOverlay(${feedback.id})">💬</button>
+              </div>
+              ${feedback.replies ? feedback.replies.map(reply => `<div class="reply"><em><strong>${reply.name}</strong>: ${reply.text} <span class="admin">Admin •</span></em></div>`).join('') : ''}
             </div>
-            ${feedback.replies ? feedback.replies.map(reply => `<div class="reply"><em><strong>${reply.name}</strong>: ${reply.text} <span class="admin">Admin •</span></em></div>`).join('') : ''}
-          </div>
-        `).join('') || '<div class="feedback-item">No feedback available.</div>');
+          `).join('');
+        }
       } catch (error) {
         console.error("Error loading feedbacks:", error);
-        feedbackList.innerHTML = '<div class="feedback-item">Error loading feedbacks.</div>';
+        errorMessage.textContent = `Error loading feedbacks: ${error.message}`;
+        feedbackList.innerHTML = '<div class="feedback-item">Failed to load feedback. Check console for details.</div>';
       }
     }
 
@@ -307,6 +324,6 @@
       loadFeedbacks();
     };
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931313f96f6ced80',t:'MTc0NDgwMDE2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93133ee03d88bf90',t:'MTc0NDgwMTkyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931313f96f6ced80',t:'MTc0NDgwMDE2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93133ee03d88bf90',t:'MTc0NDgwMTkyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9314ab534a044575',t:'MTc0NDgxNjg1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 </DOCUMENT>
