@@ -1,3 +1,4 @@
+<DOCUMENT filename="feedback.html">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -211,7 +212,15 @@
               <button class="action-btn" onclick="toggleLike(${feedback.id}, false)">👎 ${feedback.dislikes || 0}</button>
               <button class="action-btn" onclick="openReplyOverlay(${feedback.id})">💬</button>
             </div>
-            ${feedback.replies ? feedback.replies.map(reply => `<div class="reply"><em>${reply.name}: ${reply.text}</em></div>`).join('') : ''}
+            ${feedback.replies ? feedback.replies.map(reply => `
+              <div class="reply">
+                <em>${reply.name}: ${reply.text}</em>
+                <div class="actions">
+                  <button class="action-btn" onclick="toggleLike(${feedback.id}, '${reply.name}', true)">👍 ${reply.likes || 0}</button>
+                  <button class="action-btn" onclick="toggleLike(${feedback.id}, '${reply.name}', false)">👎 ${reply.dislikes || 0}</button>
+                </div>
+              </div>
+            `).join('') : ''}
           </div>
         `).join('') || '<div class="feedback-item">No feedback available.</div>';
       } catch (error) {
@@ -220,12 +229,12 @@
       }
     }
 
-    function getVoteStatus(feedbackId) {
-      const key = `vote_${feedbackId}_${userName}`;
+    function getVoteStatus(feedbackId, replyName = null) {
+      const key = replyName ? `vote_${feedbackId}_${replyName}_${userName}` : `vote_${feedbackId}_${userName}`;
       return localStorage.getItem(key) || null;
     }
 
-    async function toggleLike(id, isLike) {
+    async function toggleLike(id, isLike, replyName = null) {
       try {
         const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
         const data = await response.json();
@@ -233,22 +242,43 @@
         const feedback = feedbacks.find(f => f.id === id);
         if (!feedback) return;
 
-        const key = `vote_${id}_${userName}`;
-        const currentVote = getVoteStatus(id);
+        const key = replyName ? `vote_${id}_${replyName}_${userName}` : `vote_${id}_${userName}`;
+        const currentVote = getVoteStatus(id, replyName);
 
-        if (currentVote === (isLike ? 'like' : 'dislike')) {
-          if (isLike) feedback.likes = Math.max(0, (feedback.likes || 0) - 1);
-          else feedback.dislikes = Math.max(0, (feedback.dislikes || 0) - 1);
-          localStorage.removeItem(key);
-        } else {
-          if (currentVote === 'like') feedback.likes = Math.max(0, (feedback.likes || 0) - 1);
-          else if (currentVote === 'dislike') feedback.dislikes = Math.max(0, (feedback.dislikes || 0) - 1);
-          if (isLike) {
-            feedback.likes = (feedback.likes || 0) + 1;
-            localStorage.setItem(key, 'like');
+        if (replyName) {
+          const reply = feedback.replies.find(r => r.name === replyName);
+          if (!reply) return;
+
+          if (currentVote === (isLike ? 'like' : 'dislike')) {
+            if (isLike) reply.likes = Math.max(0, (reply.likes || 0) - 1);
+            else reply.dislikes = Math.max(0, (reply.dislikes || 0) - 1);
+            localStorage.removeItem(key);
           } else {
-            feedback.dislikes = (feedback.dislikes || 0) + 1;
-            localStorage.setItem(key, 'dislike');
+            if (currentVote === 'like') reply.likes = Math.max(0, (reply.likes || 0) - 1);
+            else if (currentVote === 'dislike') reply.dislikes = Math.max(0, (reply.dislikes || 0) - 1);
+            if (isLike) {
+              reply.likes = (reply.likes || 0) + 1;
+              localStorage.setItem(key, 'like');
+            } else {
+              reply.dislikes = (reply.dislikes || 0) + 1;
+              localStorage.setItem(key, 'dislike');
+            }
+          }
+        } else {
+          if (currentVote === (isLike ? 'like' : 'dislike')) {
+            if (isLike) feedback.likes = Math.max(0, (feedback.likes || 0) - 1);
+            else feedback.dislikes = Math.max(0, (feedback.dislikes || 0) - 1);
+            localStorage.removeItem(key);
+          } else {
+            if (currentVote === 'like') feedback.likes = Math.max(0, (feedback.likes || 0) - 1);
+            else if (currentVote === 'dislike') feedback.dislikes = Math.max(0, (feedback.dislikes || 0) - 1);
+            if (isLike) {
+              feedback.likes = (feedback.likes || 0) + 1;
+              localStorage.setItem(key, 'like');
+            } else {
+              feedback.dislikes = (feedback.dislikes || 0) + 1;
+              localStorage.setItem(key, 'dislike');
+            }
           }
         }
 
@@ -283,7 +313,7 @@
         const feedbacks = data.record.feedbacks || [];
         const feedback = feedbacks.find(f => f.id === currentFeedbackId);
         feedback.replies = feedback.replies || [];
-        feedback.replies.push({ name: userName, text: replyTextValue });
+        feedback.replies.push({ name: userName, text: replyTextValue, likes: 0, dislikes: 0 });
         await fetch(API_URL, {
           method: "PUT",
           headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
@@ -301,6 +331,6 @@
       loadFeedbacks();
     };
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931313f96f6ced80',t:'MTc0NDgwMDE2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93133ee03d88bf90',t:'MTc0NDgwMTkyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931313f96f6ced80',t:'MTc0NDgwMDE2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93133ee03d88bf90',t:'MTc0NDgwMTkyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93157da07ecfadc3',t:'MTc0NDgyNTQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
 </DOCUMENT>
