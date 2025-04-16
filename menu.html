@@ -11,147 +11,122 @@
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #e2e8f0;
       text-align: center;
-      padding: 20px;
+      padding: 0;
       margin: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+    }
+    .logo {
+      margin-bottom: 20px;
     }
     .logo img {
-      width: 200px;
+      width: 120px;
       height: auto;
-      margin-bottom: 30px;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
-    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
-    .search-bar {
-      width: 80%;
-      max-width: 400px;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: none;
+    .menu-section {
+      background-color: #1e293b;
+      padding: 20px;
       border-radius: 10px;
-      background-color: #2d3b4e;
-      color: #e2e8f0;
-      font-size: 14px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      max-width: 350px;
+      width: 90%;
+      text-align: left;
+      border: 1px solid #2d3b4e;
     }
-    .presets-section {
-      margin: 20px 0;
+    .menu-section h2 {
+      font-size: 1.5em;
+      color: #f1f5f9;
+      margin: 0 0 15px 0;
+      font-weight: 600;
+    }
+    .preset-list {
+      margin: 10px 0;
     }
     .preset-item {
-      background-color: #1e293b;
-      padding: 15px;
-      border-radius: 15px;
-      margin: 15px 0;
-      max-width: 500px;
-      width: 90%;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s;
+      padding: 10px;
+      border-bottom: 1px solid #4a5b6f;
+      text-align: center;
     }
-    .preset-item:hover {
-      transform: scale(1.05);
-    }
-    .preset-item a {
-      color: #10b981;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .preset-item a:hover {
-      text-decoration: underline;
-    }
-    .menu-button {
-      background-color: #10b981;
-      padding: 12px 30px;
+    .preset-item button {
+      background: #10b981;
+      padding: 5px 10px;
       border: none;
-      border-radius: 10px;
-      color: white;
+      border-radius: 5px;
+      color: #fff;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 16px;
-      transition: background-color 0.3s, transform 0.2s;
+      font-weight: 500;
+      font-size: 0.9em;
+      margin-left: 10px;
     }
-    .menu-button:hover { background-color: #059669; transform: translateY(-2px); }
+    .preset-item button:hover {
+      background: #059669;
+    }
     .back-button {
-      background-color: #4a5b6f;
-      padding: 12px 30px;
+      background: #4a5b6f;
+      padding: 10px;
       border: none;
-      border-radius: 10px;
+      border-radius: 5px;
       color: #e2e8f0;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 500;
       margin-top: 10px;
-      transition: background-color 0.3s, transform 0.2s;
+      width: 100%;
     }
-    .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
+    .back-button:hover {
+      background: #3a4b5f;
+    }
     .footer {
       margin-top: auto;
-      padding: 20px;
-      background-color: #0f172a;
+      padding: 15px;
+      background: #0f172a;
       width: 100%;
       text-align: center;
-      border-top: 1px solid #2d3b4e;
+      color: #e2e8f0;
+      font-size: 0.85em;
     }
-    .error-message { color: #ef4444; margin-top: 10px; }
   </style>
 </head>
 <body>
   <div class="logo">
     <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
   </div>
-  <h1>Menu</h1>
-  <input type="text" class="search-bar" id="searchBar" placeholder="Search presets..." />
-  <div class="presets-section" id="presetsSection">
-    <!-- Presets will be populated by JavaScript -->
+  <div class="menu-section">
+    <h2>Menu</h2>
+    <div class="preset-list" id="presetList">
+      <!-- Presets will be populated here -->
+    </div>
+    <button class="back-button" onclick="window.location.href='index.html'">Back</button>
   </div>
-  <button class="back-button" onclick="window.location.href='index.html'">Back</button>
-  <button class="menu-button" onclick="window.location.href='adminlogin.html'">Admin</button>
   <div class="footer">
-    <h3>About Us</h3>
-    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
-    <h3>Copyright ©</h3>
-    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+    <p>© 2025 FNL Studio. All rights reserved.</p>
   </div>
-  <div id="errorMessage" class="error-message"></div>
 
   <script>
-    const BIN_ID = "67fccb0b8960c979a584b5d5";
-    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
-    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const presetsSection = document.getElementById("presetsSection");
-    const searchBar = document.getElementById("searchBar");
+    const presetList = document.getElementById('presetList');
+    // Sample presets (replace with dynamic data or backend)
+    const presets = [
+      { name: 'Preset 1', price: 19, url: 'payment.html?preset={"name":"Preset 1","price":19,"download_url":"example.com"}' },
+      { name: 'Preset 2', price: 29, url: 'payment.html?preset={"name":"Preset 2","price":29,"download_url":"example.com"}' }
+    ];
 
-    async function loadPresets() {
-      try {
-        const response = await fetch(API_URL + "/latest", {
-          headers: { "X-Master-Key": MASTER_KEY }
-        });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        const presets = data.record.presets || [];
-        if (presets.length === 0) {
-          presetsSection.innerHTML = "<p>No presets available. Add via admin.</p>";
-        } else {
-          presetsSection.innerHTML = presets.map(url => `<div class="preset-item"><a href="${url}" target="_blank">${url.split('/').pop().replace(/\.view$/, '')}</a></div>`).join("");
-        }
-        filterPresets();
-      } catch (error) {
-        console.error("Error loading presets:", error);
-        presetsSection.innerHTML = "<p>Error loading presets. Contact admin.</p>";
-      }
+    function displayPresets() {
+      presetList.innerHTML = '';
+      presets.forEach(preset => {
+        const presetItem = document.createElement('div');
+        presetItem.className = 'preset-item';
+        presetItem.innerHTML = `
+          <span>${preset.name} - ₹${preset.price}</span>
+          <button onclick="window.location.href='${preset.url}'">Buy</button>
+        `;
+        presetList.appendChild(presetItem);
+      });
     }
 
-    function filterPresets() {
-      const searchTerm = searchBar.value.toLowerCase();
-      const presetItems = presetsSection.getElementsByClassName("preset-item");
-      for (let item of presetItems) {
-        const url = item.textContent.toLowerCase();
-        item.style.display = url.includes(searchTerm) ? "block" : "none";
-      }
-    }
-
-    searchBar.addEventListener("input", filterPresets);
-    window.onload = loadPresets;
+    displayPresets();
   </script>
 </body>
 </html>
