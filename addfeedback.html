@@ -62,14 +62,12 @@
       cursor: pointer;
     }
     .star-rating span {
+      color: #4b5e6d; /* Outline color by default */
       transition: transform 0.3s, color 0.3s;
     }
     .star-rating span.filled {
       color: #f59e0b; /* Filled gold */
       transform: scale(1.2); /* Blow up effect */
-    }
-    .star-rating span.outline {
-      color: #4b5e6d; /* Outline color */
     }
     .submit-button {
       background-color: #10b981;
@@ -145,17 +143,15 @@
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const errorMessage = document.getElementById("errorMessage");
     let rating = 0;
-    const userName = localStorage.getItem("userName") || "Anonymous"; // From join.html
+    const userName = localStorage.getItem("userName") || "Anonymous";
 
     function setRating(value) {
       rating = value;
       const stars = document.getElementById("starRating").getElementsByTagName("span");
       for (let i = 0; i < stars.length; i++) {
-        stars[i].classList.remove("filled", "outline");
+        stars[i].classList.remove("filled");
         if (i < value) {
           stars[i].classList.add("filled");
-        } else {
-          stars[i].classList.add("outline");
         }
       }
       document.getElementById("caption").focus();
