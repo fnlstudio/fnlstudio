@@ -1,115 +1,399 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>FNL Studio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      color: #e2e8f0;
-      text-align: center;
-      padding: 20px;
+    :root {
+      --bg: #f2f2f7;
+      --text: #1a1a1a;
+      --accent: #e0e7ff;
+      --highlight: #5b5fc7;
+      --hover: #4f46e5;
+    }
+
+    [data-theme="dark"] {
+      --bg: #111827;
+      --text: #e5e7eb;
+      --accent: #1f2937;
+      --highlight: #93c5fd;
+      --hover: #60a5fa;
+    }
+
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: background-color 0.6s ease, color 0.6s ease;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 2rem;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      justify-content: space-between;
       overflow-x: hidden;
-      touch-action: pan-y;
+      position: relative;
     }
-    .logo img {
+
+    #cursor-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .intro-highlight {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--highlight);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      animation: fadeOutIntro 2s ease 1s forwards;
+    }
+
+    .intro-highlight img {
       width: 200px;
-      height: auto;
-      margin-bottom: 30px;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+      animation: pulseLogo 1.5s ease infinite;
     }
-    .menu-dots {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 24px;
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+      animation: fadeIn 1.5s ease;
+    }
+
+    .logo img {
+      height: 40px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+    }
+
+    nav a {
+      margin-left: 2rem;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      transition: color 0.3s ease;
       cursor: pointer;
+    }
+
+    nav a:hover {
+      color: var(--hover);
+    }
+
+    .theme-toggle {
       background: none;
       border: none;
-      color: #e2e8f0;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      margin-left: 2rem;
+      transition: transform 0.5s ease;
     }
-    .presets-section {
-      margin: 20px 0;
+
+    .theme-toggle img {
+      width: 100%;
+      height: 100%;
+      transition: fill 0.3s ease;
     }
+
+    .theme-toggle:hover {
+      transform: scale(1.2);
+    }
+
+    .theme-toggle.sun {
+      animation: spinFade 0.5s ease forwards;
+      background-image: url('https://i.postimg.cc/hPQD2Tdd/brightness-9.png');
+    }
+
+    .theme-toggle.moon {
+      animation: spinFade 0.5s ease forwards;
+      background-image: url('https://i.postimg.cc/sXRY6L58/moon-4-512.png');
+    }
+
+    .hero {
+      background: var(--accent);
+      padding: 2rem;
+      border-radius: 14px;
+      max-width: 700px;
+      animation: fadeUp 1.8s ease;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: var(--text);
+    }
+
+    .btn {
+      margin-top: 1rem;
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      background-color: var(--highlight);
+      color: var(--bg);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: background-color 0.4s ease, transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: var(--hover);
+      transform: scale(1.05);
+    }
+
+    .presets {
+      margin-top: 4rem;
+      text-align: center;
+      animation: fadeIn 2s ease;
+    }
+
+    .presets h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .presets p {
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
     .preset-item {
-      background-color: #1e293b;
-      padding: 20px;
-      border-radius: 15px;
-      margin: 15px 0;
-      max-width: 500px;
-      width: 90%;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s;
-      text-align: center; /* Changed to center for better alignment */
-      position: relative;
+      background: var(--accent);
+      padding: 0.75rem;
+      border-radius: 8px;
+      text-align: center;
+      transition: transform 0.3s ease;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 10px; /* Added for spacing between elements */
+      height: 100%;
     }
+
     .preset-item:hover {
       transform: scale(1.05);
     }
-    .preset-item h3 {
-      color: #e2e8f0;
-      font-size: 1.5em;
-      margin: 0;
-    }
-    .preset-item a {
-      color: #10b981;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .preset-item a:hover {
-      text-decoration: underline;
-    }
+
     .preset-item img {
-      max-width: 100%;
-      border-radius: 10px;
-      margin-top: 10px;
+      width: 100%;
+      height: 200px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
       cursor: pointer;
-      max-height: 200px;
-      object-fit: cover;
     }
-    .buy-button {
-      background-color: #f97316;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      margin-top: 10px;
-      transition: background-color 0.3s, transform 0.2s;
-      width: 120px; /* Fixed width for consistent alignment */
+
+    .preset-item h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      flex-grow: 0;
     }
-    .buy-button:hover {
-      background-color: #ea580c;
-      transform: translateY(-2px);
+
+    .preset-item p {
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+      flex-grow: 0;
     }
-    .read-more {
-      background-color: #ef4444;
-      padding: 12px 30px;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 16px;
-      transition: background-color 0.3s, transform 0.2s;
+
+    .preset-item .btn {
+      margin-top: auto;
+      padding: 0.5rem 1.5rem;
+      font-size: 0.85rem;
+      flex-grow: 0;
     }
-    .read-more:hover {
-      background-color: #dc2626;
-      transform: translateY(-2px);
+
+    .explore-presets {
+      text-align: center;
+      margin-top: 2rem;
     }
+
+    .faq {
+      margin-top: 4rem;
+      text-align: center;
+      animation: fadeIn 2s ease;
+    }
+
+    .faq h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .faq-item {
+      max-width: 700px;
+      margin: 0 auto 1.5rem;
+      text-align: left;
+    }
+
+    .faq-item h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .faq-item p {
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    footer {
+      margin-top: 4rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text);
+      animation: fadeIn 2s ease;
+    }
+
+    footer h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    footer p {
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto 1rem;
+    }
+
+    footer .quote {
+      font-style: italic;
+      color: var(--highlight);
+      margin: 1rem auto;
+      max-width: 600px;
+    }
+
+    footer .copyright {
+      color: #888;
+      margin-top: 2rem;
+    }
+
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .social-icons a {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.3s ease;
+    }
+
+    .social-icons a:hover {
+      transform: scale(1.2);
+    }
+
+    .social-icons img,
+    .social-icons svg {
+      width: 70%;
+      height: 70%;
+      fill: var(--text);
+    }
+
+    .social-icons .insta {
+      background-image: url('https://i.postimg.cc/qRyjvmhT/20250422-095624.png');
+      background-size: cover;
+    }
+
+    [data-theme="dark"] .social-icons .insta {
+      background-image: url('https://i.postimg.cc/JhMx07QT/Insta-icon-Dark-Mode.png');
+    }
+
+    .social-icons .mail {
+      background-color: var(--bg);
+    }
+
+    [data-theme="dark"] .social-icons .mail {
+      background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"%3E%3Cpath d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/%3E%3C/svg%3E');
+      background-size: cover;
+    }
+
+    [data-theme="light"] .social-icons .mail {
+      background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black"%3E%3Cpath d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/%3E%3C/svg%3E');
+      background-size: cover;
+    }
+
+    .supported-apps {
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    .supported-apps h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .app-grid {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .app-item {
+      text-align: center;
+    }
+
+    .app-item img {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 0.5rem;
+      object-fit: contain;
+    }
+
+    .app-item p {
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .error-message {
+      color: #ef4444;
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+
+    /* Overlay Styles */
     .overlay {
       display: none;
       position: fixed;
@@ -117,302 +401,396 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      justify-content: center;
-      align-items: center;
+      background: rgba(0, 0, 0, 0.8);
       z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease;
     }
+
     .overlay-content {
-      background-color: #1e293b;
-      padding: 20px;
+      background: var(--accent);
+      padding: 25px;
       border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      text-align: center;
-      max-width: 600px;
+      max-width: 400px;
+      min-width: 320px;
       width: 90%;
+      text-align: center;
       position: relative;
     }
-    .overlay-content img {
-      max-width: 100%;
-      border-radius: 10px;
-      margin: 10px 0;
-      cursor: pointer;
+
+    .sample-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
     }
-    .full-screen-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
+
+    .sample-grid img {
       width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
+      max-height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
     }
-    .full-screen-image-container {
-      position: relative;
-      max-width: 85%;
-      max-height: 85%;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .full-screen-image-container img {
-      display: block;
-      max-width: 100%;
-      max-height: 100%;
-      margin: 0;
-      object-fit: contain;
-      transition: transform 0.3s;
-    }
-    .full-screen-image-container .zoom-in {
-      transform: scale(1.5);
-    }
-    .close-btn {
+
+    .close-button {
       position: absolute;
       top: 10px;
       right: 10px;
       background: none;
       border: none;
-      color: #e2e8f0;
-      font-size: 24px;
+      font-size: 20px;
+      color: var(--text);
       cursor: pointer;
-      transition: color 0.3s;
-      z-index: 2001;
+      transition: color 0.3s ease;
     }
-    .close-btn:hover {
-      color: #ef4444;
+
+    .close-button:hover {
+      color: var(--hover);
     }
-    .buy-now-btn {
-      background-color: #f97316;
-      padding: 12px 30px;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 16px;
-      transition: background-color 0.3s, transform 0.2s;
-      margin-top: 15px;
+
+    .overlay .btn {
+      margin-top: 10px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
     }
-    .buy-now-btn:hover {
-      background-color: #ea580c;
-      transform: translateY(-2px);
+
+    /* Mobile Adjustments */
+    @media (max-width: 600px) {
+      .preset-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+      }
+
+      .preset-item img {
+        height: 150px;
+      }
+
+      .preset-item h3 {
+        font-size: 1rem;
+      }
+
+      .preset-item p {
+        font-size: 0.9rem;
+      }
+
+      .preset-item .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+      }
+
+      .sample-grid {
+        grid-template-columns: 1fr;
+      }
     }
-    .footer {
-      margin-top: auto;
-      padding: 20px;
-      background-color: #0f172a;
-      width: 100%;
-      text-align: center;
-      border-top: 1px solid #2d3b4e;
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .error-message { color: #ef4444; margin-top: 10px; }
-    .loading {
-      font-size: 1.5em;
-      color: #10b981;
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .top-feedback {
-      display: none;
-      margin: 20px 0;
-      background-color: #1e293b;
-      padding: 15px;
-      border-radius: 15px;
-      max-width: 500px;
-      width: 90%;
+
+    @keyframes spinFade {
+      0% { opacity: 0; transform: rotate(90deg) scale(0.5); }
+      100% { opacity: 1; transform: rotate(0deg) scale(1); }
+    }
+
+    @keyframes fadeOutIntro {
+      from { opacity: 1; }
+      to { opacity: 0; visibility: hidden; }
+    }
+
+    @keyframes pulseLogo {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
     }
   </style>
 </head>
 <body>
-  <div class="logo">
-    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
+  <div class="intro-highlight">
+    <img src="https://i.postimg.cc/52SYd9y2/fnl-studio-logo.png" alt="FNL Studio Intro Logo" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAGFBMVEUAAAD///8AAAD/AAD/////AAAA/wD//wC3K4xiAAAAB3RSTlMA/4D/gP+Av4CXUwAAAEhJREFUeAHtkkEKwCAMBENR+v9fO8gJLNskK6ZQsYEBuA3XgU8iEskkmUwqR2AymWSSSSaTZmAymWSSSSaTZmAymWSSSSaTZmD4BTwBBj2rKmcAAAAASUVORK5CYII=';">
   </div>
-  <button class="menu-dots" onclick="window.location.href='menu.html'">⋮</button>
-  <h1 style="display:none;">FNL Presets</h1>
-  <div class="presets-section" id="presetsSection">
-    <!-- Presets will be populated by JavaScript -->
-  </div>
-  <div class="top-feedback" id="topFeedback"></div>
-  <button class="read-more" onclick="window.location.href='join.html'">Read More Feedback</button>
-  <div class="footer">
-    <h3>About Us</h3>
-    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
-    <h3>Copyright ©</h3>
-    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
-  </div>
-  <div id="errorMessage" class="error-message"></div>
-  <div class="overlay" id="previewOverlay">
+  <canvas id="cursor-canvas"></canvas>
+  <div id="presetOverlay" class="overlay">
     <div class="overlay-content">
-      <button class="close-btn" onclick="closeOverlay()">×</button>
-      <h2 id="overlayName"></h2>
-      <div id="overlayImages"></div>
-      <button class="buy-now-btn" id="buyNowBtn">Buy Now</button>
+      <button class="close-button" onclick="closeOverlay()">✕</button>
+      <div id="sampleGrid" class="sample-grid"></div>
+      <a id="overlayBuyButton" href="#" class="btn">Buy</a>
     </div>
   </div>
-  <div class="full-screen-overlay" id="fullScreenOverlay">
-    <button class="close-btn" onclick="closeFullScreen()">×</button>
-    <div class="full-screen-image-container">
-      <img id="fullScreenImage" src="" alt="Full Screen Image">
-      <div id="loading" class="loading" style="display: none;">Loading...</div>
+  <header>
+    <div class="logo">
+      <img src="https://i.postimg.cc/52SYd9y2/fnl-studio-logo.png" alt="FNL Studio Logo" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAGFBMVEUAAAD///8AAAD/AAD/////AAAA/wD//wC3K4xiAAAAB3RSTlMA/4D/gP+Av4CXUwAAAEhJREFUeAHtkkEKwCAMBENR+v9fO8gJLNskK6ZQsYEBuA3XgU8iEskkmUwqR2AymWSSSSaTZmAymWSSSSaTZmAymWSSSSaTZmD4BTwBBj2rKmcAAAAASUVORK5CYII=';">
     </div>
-  </div>
+    <nav>
+      <a onclick="scrollToSection('presets')">Presets</a>
+      <a onclick="scrollToSection('contact')">Contact</a>
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <img class="theme-icon" src="" alt="Theme Toggle">
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>FNL Presets — Edit Smarter, Create Better</h1>
+      <p>Timeless tones for the storytellers of today.</p>
+      <a href="presets.html" class="btn">Explore Presets</a>
+    </section>
+    <section class="presets" id="presets">
+      <h2>Our Presets</h2>
+      <p>Explore our collection of professionally crafted presets designed to elevate your photos and videos with timeless tones and stunning effects.</p>
+      <div id="presetGrid" class="preset-grid"></div>
+      <div id="errorMessage" class="error-message"></div>
+    </section>
+    <section class="explore-presets">
+      <a href="presets.html" class="btn">Explore Presets</a>
+    </section>
+    <section class="faq" id="faq">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h3>What are presets?</h3>
+        <p>Presets are pre-configured settings for photo and video editing software that allow you to apply a specific look or style with a single click.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Which apps are supported?</h3>
+        <p>Our presets are compatible with Lightroom, Lightroom Classic, Photoshop, Da Vinci Resolve, and VN.</p>
+      </div>
+      <div class="faq-item">
+        <h3>How do I install the presets?</h3>
+        <p>After purchase, you'll receive detailed instructions on how to install and use the presets in your preferred editing software.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contact">
+    <div class="supported-apps">
+      <h2>Supported Apps</h2>
+      <div class="app-grid">
+        <div class="app-item">
+          <img src="https://i.postimg.cc/FsWWkwHb/Adobe-Photoshop-Lightroom-CC-logo-svg.png" alt="Lightroom">
+          <p>Lightroom</p>
+        </div>
+        <div class="app-item">
+          <img src="https://i.postimg.cc/L54DnVd0/Adobe-Photoshop-Lightroom-Classic-CC-icon-svg.png" alt="Lightroom Classic">
+          <p>Lightroom Classic</p>
+        </div>
+        <div class="app-item">
+          <img src="https://i.postimg.cc/rsF6MWfq/Adobe-Photoshop-CC-icon-svg.png" alt="Photoshop">
+          <p>Photoshop</p>
+        </div>
+        <div class="app-item">
+          <img src="https://i.postimg.cc/kG5NnX80/Da-Vinci-Resolve-17-logo-svg-1.png" alt="Da Vinci Resolve">
+          <p>Da Vinci Resolve</p>
+        </div>
+        <div class="app-item">
+          <img src="https://i.postimg.cc/prvhPyvC/20250422-100345.png" alt="VN">
+          <p>VN</p>
+        </div>
+      </div>
+    </div>
+    <div class="contact-us">
+      <h2>Contact Us</h2>
+      <div class="social-icons">
+        <a href="https://www.instagram.com/fnl_studio_?igsh=MWwxeG5ieWUxamZjbQ==" target="_blank" class="insta" aria-label="Instagram"></a>
+        <a href="/cdn-cgi/l/email-protection#61070f0d12151405080e5021060c00080d4f020e0c" class="mail" aria-label="Email"></a>
+      </div>
+    </div>
+    <div class="about-us">
+      <h2>About Us</h2>
+      <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
+    </div>
+    <div class="quote">
+      <p>"Makes the site user-friendly. Keeps visitors longer and increases chances of purchase."</p>
+    </div>
+    <div class="copyright">
+      <p>© 2025 FNL Studio. All rights reserved.</p>
+      <p>All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+    </div>
+  </footer>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const presetsSection = document.getElementById("presetsSection");
-    const previewOverlay = document.getElementById("previewOverlay");
-    const fullScreenOverlay = document.getElementById("fullScreenOverlay");
-    const overlayName = document.getElementById("overlayName");
-    const overlayImages = document.getElementById("overlayImages");
-    const buyNowBtn = document.getElementById("buyNowBtn");
-    const fullScreenImage = document.getElementById("fullScreenImage");
-    const loading = document.getElementById("loading");
-    const topFeedback = document.getElementById("topFeedback");
-    let currentPreset = null;
-    let currentImageIndex = 0;
+    const presetGrid = document.getElementById("presetGrid");
+    const errorMessage = document.getElementById("errorMessage");
+    const presetOverlay = document.getElementById("presetOverlay");
+    const sampleGrid = document.getElementById("sampleGrid");
+    const overlayBuyButton = document.getElementById("overlayBuyButton");
+    const themeButton = document.querySelector('.theme-toggle');
+    const themeIcon = document.querySelector('.theme-icon');
+    window.presets = [];
 
-    async function loadPresets() {
-      try {
-        const response = await fetch(API_URL + "/latest", {
-          headers: { "X-Master-Key": MASTER_KEY }
-        });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        const presets = data.record.presets || [];
-        if (presets.length === 0) {
-          presetsSection.innerHTML = "<p>No presets available. Add via admin.</p>";
-        } else {
-          presetsSection.innerHTML = presets.map(preset => `
-            <div class="preset-item" data-id="${preset.name}">
-              <h3>${preset.name}</h3>
-              <p>Price: ₹${preset.price}</p>
-              <img src="${preset.thumbnail_url}" alt="${preset.name}" onclick="showPreview('${encodeURIComponent(JSON.stringify(preset))}')" style="max-width: 100%; border-radius: 10px; max-height: 200px; object-fit: cover;">
-              <button class="buy-button" onclick="window.location.href='payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}'">Buy</button>
-            </div>
-          `).join("");
-        }
-        // Load and display top 3 feedback
-        const feedbacks = data.record.feedbacks || [];
-        const sortedFeedbacks = feedbacks.sort((a, b) => b.rating - a.rating || b.caption.length - a.caption.length).slice(0, 3);
-        if (sortedFeedbacks.length > 0) {
-          topFeedback.innerHTML = sortedFeedbacks.map(feedback => `
-            <p><strong>${feedback.name}</strong>: ${feedback.caption} (Rating: ${feedback.rating}⭐) <button onclick="window.location.href='join.html'">Review</button></p>
-          `).join('');
-          topFeedback.style.display = 'block';
-        }
-      } catch (error) {
-        console.error("Error loading presets or feedback:", error);
-        presetsSection.innerHTML = "<p>Error loading presets. Contact admin.</p>";
+    // Theme Toggle
+    const root = document.documentElement;
+
+    if (!localStorage.getItem("theme")) {
+      root.setAttribute("data-theme", "dark");
+      themeButton.classList.add('moon');
+      themeIcon.src = 'https://i.postimg.cc/sXRY6L58/moon-4-512.png';
+    } else {
+      const currentTheme = localStorage.getItem("theme");
+      root.setAttribute("data-theme", currentTheme);
+      themeButton.classList.add(currentTheme === 'dark' ? 'moon' : 'sun');
+      themeIcon.src = currentTheme === 'dark' ? 'https://i.postimg.cc/sXRY6L58/moon-4-512.png' : 'https://i.postimg.cc/hPQD2Tdd/brightness-9.png';
+    }
+
+    function toggleTheme() {
+      const newTheme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+      themeButton.classList.remove('sun', 'moon');
+      themeButton.classList.add(newTheme === 'dark' ? 'moon' : 'sun');
+      themeIcon.src = newTheme === 'dark' ? 'https://i.postimg.cc/sXRY6L58/moon-4-512.png' : 'https://i.postimg.cc/hPQD2Tdd/brightness-9.png';
+    }
+
+    // Smooth Scrolling
+    function scrollToSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
       }
     }
 
-    function showPreview(presetStr) {
-      currentPreset = JSON.parse(decodeURIComponent(presetStr));
-      overlayName.textContent = currentPreset.name;
-      const images = [
-        currentPreset.thumbnail_url,
-        currentPreset.sample1 || '',
-        currentPreset.sample2 || '',
-        currentPreset.sample3 || ''
-      ].filter(img => img);
-      overlayImages.innerHTML = images.map((img, index) => `
-        <img src="${img}" alt="${currentPreset.name} Sample ${index + 1}" onclick="showFullScreen(${index})" style="max-width: 100%; max-height: 200px; object-fit: cover; margin: 5px;">
-      `).join("");
-      buyNowBtn.onclick = () => window.location.href = `payment.html?preset=${encodeURIComponent(JSON.stringify(currentPreset))}`;
-      previewOverlay.style.display = "flex";
+    // Overlay Functions
+    function showOverlay(preset) {
+      sampleGrid.innerHTML = '';
+      const samples = [preset.sample1, preset.sample2, preset.sample3].filter(url => url);
+      if (samples.length === 0) {
+        sampleGrid.innerHTML = '<p>No sample images available.</p>';
+      } else {
+        samples.forEach(url => {
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = `${preset.name} Sample`;
+          img.onerror = () => {
+            img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAGFBMVEUAAAD///8AAAD/AAD/////AAAA/wD//wC3K4xiAAAAB3RSTlMA/4D/gP+Av4CXUwAAAEhJREFUeAHtkkEKwCAMBENR+v9fO8gJLNskK6ZQsYEBuA3XgU8iEskkmUwqR2AymWSSSSaTZmAymWSSSSaTZmAymWSSSSaTZmD4BTwBBj2rKmcAAAAASUVORK5CYII=';
+          };
+          sampleGrid.appendChild(img);
+        });
+      }
+      overlayBuyButton.href = `payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}`;
+      presetOverlay.style.display = 'flex';
     }
 
     function closeOverlay() {
-      previewOverlay.style.display = "none";
-      fullScreenOverlay.style.display = "none";
+      presetOverlay.style.display = 'none';
     }
 
-    function showFullScreen(index) {
-      currentImageIndex = index;
-      loading.style.display = "block";
-      fullScreenImage.classList.remove("zoom-in");
-      updateFullScreenImage();
-      fullScreenOverlay.style.display = "flex";
-      fullScreenImage.onload = () => {
-        loading.style.display = "none";
-      };
-      fullScreenImage.onerror = () => {
-        loading.style.display = "none";
-        alert("Failed to load image.");
-      };
+    // Fetch and Display Presets
+    async function fetchPresets() {
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        window.presets = data.record.presets || [];
+        displayPresets(window.presets);
+      } catch (error) {
+        console.error("Error fetching presets:", error);
+        errorMessage.textContent = "Error fetching presets: Please check the console for details or try again later.";
+      }
     }
 
-    function closeFullScreen() {
-      fullScreenOverlay.style.display = "none";
-    }
-
-    function updateFullScreenImage() {
-      const images = [
-        currentPreset.thumbnail_url,
-        currentPreset.sample1 || '',
-        currentPreset.sample2 || '',
-        currentPreset.sample3 || ''
-      ].filter(img => img);
-      fullScreenImage.src = images[currentImageIndex] || images[0];
-      fullScreenImage.style.maxHeight = "80vh";
-      fullScreenImage.style.objectFit = "contain";
-    }
-
-    function setupSwipe() {
-      let touchStartX = 0;
-      let touchEndX = 0;
-
-      fullScreenOverlay.addEventListener('touchstart', e => {
-        touchStartX = e.touches[0].clientX;
+    function displayPresets(presets) {
+      presetGrid.innerHTML = '';
+      if (presets.length === 0) {
+        presetGrid.innerHTML = '<p>No presets available.</p>';
+        return;
+      }
+      presets.forEach((preset, index) => {
+        const presetItem = document.createElement('div');
+        presetItem.className = 'preset-item';
+        presetItem.innerHTML = `
+          <img src="${preset.thumbnail_url}" alt="${preset.name} Thumbnail" data-preset-index="${index}">
+          <h3>${preset.name}</h3>
+          <p>₹${preset.price}</p>
+          <a href="payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}" class="btn">Buy</a>
+        `;
+        presetGrid.appendChild(presetItem);
       });
 
-      fullScreenOverlay.addEventListener('touchmove', e => {
-        touchEndX = e.touches[0].clientX;
+      // Add click listeners to preset images
+      document.querySelectorAll('.preset-item img').forEach(img => {
+        img.addEventListener('click', () => {
+          const index = img.getAttribute('data-preset-index');
+          showOverlay(window.presets[index]);
+        });
       });
+    }
 
-      fullScreenOverlay.addEventListener('touchend', e => {
-        const diffX = touchStartX - touchEndX;
-        const images = [
-          currentPreset.thumbnail_url,
-          currentPreset.sample1 || '',
-          currentPreset.sample2 || '',
-          currentPreset.sample3 || ''
-        ].filter(img => img);
-        if (Math.abs(diffX) > 50) {
-          if (diffX > 0 && currentImageIndex < images.length - 1) {
-            currentImageIndex++;
-          } else if (diffX < 0 && currentImageIndex > 0) {
-            currentImageIndex--;
-          }
-          showFullScreen(currentImageIndex);
+    // Cursor Animation
+    const canvas = document.getElementById('cursor-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let particles = [];
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = Math.random() * 2 - 1;
+        this.speedY = Math.random() * 2 - 1;
+        this.opacity = 1;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.opacity -= 0.02;
+        this.size = Math.max(0, this.size - 0.05);
+      }
+
+      draw() {
+        if (this.size > 0) {
+          ctx.fillStyle = `rgba(91, 95, 199, ${this.opacity})`;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
         }
-      });
-
-      let lastTap = 0;
-      fullScreenImage.addEventListener('click', e => {
-        const currentTime = new Date().getTime();
-        const tapLength = currentTime - lastTap;
-        if (tapLength < 300 && tapLength > 0) {
-          fullScreenImage.classList.toggle("zoom-in");
-        }
-        lastTap = currentTime;
-      });
+      }
     }
 
-    window.onload = () => {
-      loadPresets();
-      fullScreenOverlay.addEventListener('click', (e) => {
-        if (e.target === fullScreenOverlay) closeFullScreen();
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
       });
-      previewOverlay.addEventListener('click', (e) => {
-        if (e.target === previewOverlay) closeOverlay();
-      });
-      setupSwipe();
-    };
+      particles = particles.filter(p => p.opacity > 0 && p.size > 0);
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    document.addEventListener('mousemove', (e) => {
+      const particle = new Particle(e.clientX, e.clientY);
+      particles.push(particle);
+    });
+
+    // Close overlay when clicking outside content
+    presetOverlay.addEventListener('click', (e) => {
+      if (e.target === presetOverlay) {
+        closeOverlay();
+      }
+    });
+
+    window.onload = fetchPresets;
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931314193e38b0d6',t:'MTc0NDgwMDE3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9313657eaffcbd37',t:'MTc0NDgwMzUwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9315b3650ec66777',t:'MTc0NDgyNzY2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9342e79bcfdfbcb6',t:'MTc0NTMwMTY2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9343361d28deb093',t:'MTc0NTMwNDg4Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
 </html>
