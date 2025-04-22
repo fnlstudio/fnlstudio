@@ -4,12 +4,35 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Upload Preset - FNL Studio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
+    :root {
+      --bg: #f2f2f7;
+      --text: #1a1a1a;
+      --accent: #e0e7ff;
+      --highlight: #5b5fc7;
+      --hover: #4f46e5;
+    }
+
+    [data-theme="dark"] {
+      --bg: #111827;
+      --text: #e5e7eb;
+      --accent: #1f2937;
+      --highlight: #93c5fd;
+      --hover: #60a5fa;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: background-color 0.6s ease, color 0.6s ease;
+    }
+
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
       text-align: center;
       padding: 20px;
       margin: 0;
@@ -18,96 +41,180 @@
       flex-direction: column;
       align-items: center;
     }
-    .logo img {
-      width: 200px;
-      height: auto;
-      margin-bottom: 30px;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 20px;
     }
-    h1 { font-size: 1.5em; margin: 15px 0; color: #f1f5f9; font-weight: 600; }
+
+    .logo img {
+      height: 40px;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      transition: transform 0.5s ease;
+    }
+
+    .theme-toggle svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--text);
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.2);
+    }
+
+    .theme-toggle.sun {
+      animation: spinFade 0.5s ease forwards;
+    }
+
+    .theme-toggle.moon {
+      animation: spinFade 0.5s ease forwards;
+    }
+
+    h1 {
+      font-size: 1.5em;
+      margin: 15px 0;
+      font-weight: 600;
+    }
+
     .upload-form {
-      background-color: #1e293b;
+      background-color: var(--accent);
       padding: 25px;
       border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       max-width: 400px;
       width: 90%;
       text-align: left;
     }
-    .upload-form label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #f1f5f9;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
     }
-    .upload-form input {
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .form-group input {
       width: 100%;
       padding: 10px;
-      margin-bottom: 15px;
-      border: none;
+      border: 1px solid var(--text);
       border-radius: 10px;
-      background-color: #2d3b4e;
-      color: #e2e8f0;
+      background-color: var(--bg);
+      color: var(--text);
       font-size: 14px;
     }
+
     .upload-button {
-      background-color: #10b981;
+      background-color: var(--highlight);
       padding: 12px 30px;
       border: none;
       border-radius: 10px;
-      color: white;
+      color: var(--bg);
       cursor: pointer;
       font-weight: 600;
       font-size: 16px;
       transition: background-color 0.3s, transform 0.2s;
     }
+
     .upload-button:hover {
-      background-color: #059669;
+      background-color: var(--hover);
       transform: translateY(-2px);
     }
+
     .back-button {
-      background-color: #4a5b6f;
+      background-color: var(--accent);
       padding: 10px 20px;
       border: none;
       border-radius: 10px;
-      color: #e2e8f0;
+      color: var(--text);
       cursor: pointer;
       font-weight: 600;
       margin-top: 10px;
       transition: background-color 0.3s, transform 0.2s;
     }
-    .back-button:hover { background-color: #3a4b5f; transform: translateY(-2px); }
+
+    .back-button:hover {
+      background-color: var(--hover);
+      color: var(--bg);
+      transform: translateY(-2px);
+    }
+
     .footer {
       margin-top: auto;
       padding: 20px;
-      background-color: #0f172a;
+      background-color: var(--accent);
       width: 100%;
       text-align: center;
-      border-top: 1px solid #2d3b4e;
     }
-    .error-message { color: #ef4444; margin-top: 10px; }
+
+    .error-message {
+      color: #ef4444;
+      margin-top: 10px;
+    }
+
+    /* Animations */
+    @keyframes spinFade {
+      0% { opacity: 0; transform: rotate(90deg) scale(0.5); }
+      100% { opacity: 1; transform: rotate(0deg) scale(1); }
+    }
   </style>
 </head>
 <body>
-  <div class="logo">
-    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
-  </div>
+  <header>
+    <div class="logo">
+      <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg class="theme-icon" viewBox="0 0 24 24">
+        <path d="M12 17a5 5 0 100-10 5 5 0 000 10zm0 2a7 7 0 110-14 7 7 0 010 14zm-9-7h2m14 0h2M6.3 17.7l1.4-1.4m10.6-10.6l-1.4 1.4m0 14.2l1.4-1.4M6.3 6.3l1.4 1.4M5 12a7 7 0 017-7m7 7a7 7 0 01-7 7"/>
+      </svg>
+    </button>
+  </header>
   <h1>Upload Preset</h1>
   <div class="upload-form" id="uploadForm">
-    <label for="name">Name:</label>
-    <input type="text" id="name" required />
-    <label for="price">Price (₹):</label>
-    <input type="number" id="price" step="0.01" required />
-    <label for="download_url">Download URL:</label>
-    <input type="text" id="download_url" required />
-    <label for="thumbnail_url">Thumbnail URL:</label>
-    <input type="text" id="thumbnail_url" required />
-    <label for="sample1">Sample 1 (optional):</label>
-    <input type="text" id="sample1" />
-    <label for="sample2">Sample 2 (optional):</label>
-    <input type="text" id="sample2" />
-    <label for="sample3">Sample 3 (optional):</label>
-    <input type="text" id="sample3" />
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" id="name" required />
+    </div>
+    <div class="form-group">
+      <label for="price">Price (₹):</label>
+      <input type="number" id="price" step="0.01" required />
+    </div>
+    <div class="form-group">
+      <label for="download_url">Download URL:</label>
+      <input type="text" id="download_url" required />
+    </div>
+    <div class="form-group">
+      <label for="thumbnail_url">Thumbnail URL:</label>
+      <input type="text" id="thumbnail_url" required />
+    </div>
+    <div class="form-group">
+      <label for="sample1">Sample 1 (optional):</label>
+      <input type="text" id="sample1" />
+    </div>
+    <div class="form-group">
+      <label for="sample2">Sample 2 (optional):</label>
+      <input type="text" id="sample2" />
+    </div>
+    <div class="form-group">
+      <label for="sample3">Sample 3 (optional):</label>
+      <input type="text" id="sample3" />
+    </div>
     <button class="upload-button" onclick="uploadPreset()">Upload</button>
   </div>
   <button class="back-button" onclick="window.location.href='admin.html'">Back</button>
@@ -124,6 +231,35 @@
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const errorMessage = document.getElementById("errorMessage");
+
+    // Theme Toggle
+    const root = document.documentElement;
+    const themeButton = document.querySelector('.theme-toggle');
+    const themeIcon = document.querySelector('.theme-icon');
+
+    if (!localStorage.getItem("theme")) {
+      root.setAttribute("data-theme", "dark");
+      themeButton.classList.add('moon');
+      themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>';
+    } else {
+      const currentTheme = localStorage.getItem("theme");
+      root.setAttribute("data-theme", currentTheme);
+      themeButton.classList.add(currentTheme === 'dark' ? 'moon' : 'sun');
+      themeIcon.innerHTML = currentTheme === 'dark' ? 
+        '<path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>' : 
+        '<path d="M12 17a5 5 0 100-10 5 5 0 000 10zm0 2a7 7 0 110-14 7 7 0 010 14zm-9-7h2m14 0h2M6.3 17.7l1.4-1.4m10.6-10.6l-1.4 1.4m0 14.2l1.4-1.4M6.3 6.3l1.4 1.4M5 12a7 7 0 017-7m7 7a7 7 0 01-7 7"/>';
+    }
+
+    function toggleTheme() {
+      const newTheme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+      themeButton.classList.remove('sun', 'moon');
+      themeButton.classList.add(newTheme === 'dark' ? 'moon' : 'sun');
+      themeIcon.innerHTML = newTheme === 'dark' ?
+        '<path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>' :
+        '<path d="M12 17a5 5 0 100-10 5 5 0 000 10zm0 2a7 7 0 110-14 7 7 0 010 14zm-9-7h2m14 0h2M6.3 17.7l1.4-1.4m10.6-10.6l-1.4 1.4m0 14.2l1.4-1.4M6.3 6.3l1.4 1.4M5 12a7 7 0 017-7m7 7a7 7 0 01-7 7"/>';
+    }
 
     async function uploadPreset() {
       const name = document.getElementById("name").value.trim();
@@ -168,5 +304,7 @@
       });
     };
   </script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933f0ae0ac8ad6a1',t:'MTc0NTI2MTE2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933f7980da736765',t:'MTc0NTI2NTcwMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
