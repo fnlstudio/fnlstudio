@@ -212,7 +212,6 @@
 
     .preset-item img {
       width: 100%;
-      height: 200px;
       object-fit: contain;
       border-radius: 8px;
       margin-bottom: 0.75rem;
@@ -241,6 +240,67 @@
     .explore-presets {
       text-align: center;
       margin-top: 2rem;
+    }
+
+    .image-viewer {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 10001;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .image-viewer img {
+      max-width: 90%;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .viewer-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .viewer-nav button {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: #fff;
+      cursor: pointer;
+      transition: opacity 0.3s ease;
+    }
+
+    .viewer-nav button:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .close-viewer {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #fff;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .close-viewer:hover {
+      color: var(--highlight);
     }
 
     .faq {
@@ -462,10 +522,6 @@
         gap: 1rem;
       }
 
-      .preset-item img {
-        height: 150px;
-      }
-
       .preset-item h3 {
         font-size: 1rem;
       }
@@ -523,6 +579,14 @@
       <div id="sampleGrid" class="sample-grid"></div>
       <a id="overlayBuyButton" href="#" class="btn">Buy</a>
     </div>
+  </div>
+  <div id="imageViewer" class="image-viewer">
+    <button class="close-viewer" onclick="closeImageViewer()">✕</button>
+    <div class="viewer-nav">
+      <button id="prevImage" onclick="changeImage(-1)">❮</button>
+      <button id="nextImage" onclick="changeImage(1)">❯</button>
+    </div>
+    <img id="viewerImage" src="" alt="Preset Image">
   </div>
   <header>
     <div class="logo">
@@ -626,6 +690,12 @@
     const overlayBuyButton = document.getElementById("overlayBuyButton");
     const themeButton = document.querySelector('.theme-toggle');
     const themeIcon = document.querySelector('.theme-icon');
+    const imageViewer = document.getElementById("imageViewer");
+    const viewerImage = document.getElementById("viewerImage");
+    const prevImageBtn = document.getElementById("prevImage");
+    const nextImageBtn = document.getElementById("nextImage");
+    let currentPresetIndex = -1;
+    let currentImageIndex = 0;
     window.presets = [];
 
     // Theme Toggle
@@ -684,6 +754,66 @@
       presetOverlay.style.display = 'none';
     }
 
+    // Image Viewer Functions
+    function showImageViewer(index) {
+      currentPresetIndex = index;
+      const preset = window.presets[currentPresetIndex];
+      const images = [preset.sample1, preset.sample2, preset.sample3].filter(url => url);
+      if (images.length > 0) {
+        currentImageIndex = 0;
+        updateViewerImage(images);
+        imageViewer.style.display = 'flex';
+        document.addEventListener('keydown', handleKeyPress);
+        initSwipe();
+      }
+    }
+
+    function updateViewerImage(images) {
+      viewerImage.src = images[currentImageIndex] || '';
+      viewerImage.alt = `Preset Image ${currentImageIndex + 1}`;
+      prevImageBtn.disabled = currentImageIndex === 0;
+      nextImageBtn.disabled = currentImageIndex === images.length - 1;
+    }
+
+    function changeImage(direction) {
+      const preset = window.presets[currentPresetIndex];
+      const images = [preset.sample1, preset.sample2, preset.sample3].filter(url => url);
+      currentImageIndex += direction;
+      if (currentImageIndex < 0) currentImageIndex = 0;
+      if (currentImageIndex >= images.length) currentImageIndex = images.length - 1;
+      updateViewerImage(images);
+    }
+
+    function closeImageViewer() {
+      imageViewer.style.display = 'none';
+      document.removeEventListener('keydown', handleKeyPress);
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === 'ArrowLeft') changeImage(-1);
+      if (e.key === 'ArrowRight') changeImage(1);
+      if (e.key === 'Escape') closeImageViewer();
+    }
+
+    function initSwipe() {
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      imageViewer.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, false);
+
+      imageViewer.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe(touchEndX - touchStartX);
+      }, false);
+    }
+
+    function handleSwipe(distance) {
+      if (distance > 50) changeImage(-1); // Swipe left
+      if (distance < -50) changeImage(1); // Swipe right
+    }
+
     // Fetch and Display Presets
     async function fetchPresets() {
       try {
@@ -720,7 +850,7 @@
       document.querySelectorAll('.preset-item img').forEach(img => {
         img.addEventListener('click', () => {
           const index = img.getAttribute('data-preset-index');
-          showOverlay(window.presets[index]);
+          showImageViewer(index);
         });
       });
     }
