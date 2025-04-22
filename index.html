@@ -212,6 +212,7 @@
 
     .preset-item img {
       width: 100%;
+      max-height: 200px;
       object-fit: contain;
       border-radius: 8px;
       margin-bottom: 0.75rem;
@@ -489,8 +490,9 @@
     .sample-grid img {
       width: 100%;
       max-height: 150px;
-      object-fit: cover;
+      object-fit: contain;
       border-radius: 8px;
+      cursor: pointer;
     }
 
     .close-button {
@@ -743,6 +745,7 @@
           img.onerror = () => {
             img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAGFBMVEUAAAD///8AAAD/AAD/////AAAA/wD//wC3K4xiAAAAB3RSTlMA/4D/gP+Av4CXUwAAAEhJREFUeAHtkkEKwCAMBENR+v9fO8gJLNskK6ZQsYEBuA3XgU8iEskkmUwqR2AymWSSSSaTZmAymWSSSSaTZmAymWSSSSaTZmD4BTwBBj2rKmcAAAAASUVORK5CYII=';
           };
+          img.addEventListener('click', () => showImageViewerFromOverlay(preset, samples));
           sampleGrid.appendChild(img);
         });
       }
@@ -755,17 +758,13 @@
     }
 
     // Image Viewer Functions
-    function showImageViewer(index) {
-      currentPresetIndex = index;
-      const preset = window.presets[currentPresetIndex];
-      const images = [preset.sample1, preset.sample2, preset.sample3].filter(url => url);
-      if (images.length > 0) {
-        currentImageIndex = 0;
-        updateViewerImage(images);
-        imageViewer.style.display = 'flex';
-        document.addEventListener('keydown', handleKeyPress);
-        initSwipe();
-      }
+    function showImageViewerFromOverlay(preset, images) {
+      currentPresetIndex = window.presets.indexOf(preset);
+      currentImageIndex = images.indexOf(preset.sample1);
+      updateViewerImage(images);
+      imageViewer.style.display = 'flex';
+      document.addEventListener('keydown', handleKeyPress);
+      initSwipe();
     }
 
     function updateViewerImage(images) {
@@ -850,7 +849,7 @@
       document.querySelectorAll('.preset-item img').forEach(img => {
         img.addEventListener('click', () => {
           const index = img.getAttribute('data-preset-index');
-          showImageViewer(index);
+          showOverlay(window.presets[index]);
         });
       });
     }
