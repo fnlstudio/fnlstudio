@@ -1,0 +1,411 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>FNL Presets</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f2f2f7;
+      --text: #1a1a1a;
+      --accent: #e0e7ff;
+      --highlight: #5b5fc7;
+      --hover: #4f46e5;
+    }
+
+    [data-theme="dark"] {
+      --bg: #111827;
+      --text: #e5e7eb;
+      --accent: #1f2937;
+      --highlight: #93c5fd;
+      --hover: #60a5fa;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: background-color 0.6s ease, color 0.6s ease;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 2rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      transition: transform 0.5s ease;
+      z-index: 1001;
+    }
+
+    .theme-toggle img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.2);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .sort-btn {
+      padding: 0.5rem 1rem;
+      background-color: var(--highlight);
+      color: var(--bg);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.4s ease;
+      margin-right: 1rem;
+    }
+
+    .sort-btn:hover {
+      background-color: var(--hover);
+    }
+
+    .search-bar {
+      padding: 0.5rem;
+      width: 60%;
+      border: 2px solid var(--highlight);
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .sort-overlay {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--accent);
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 0.5rem 0;
+      z-index: 1000;
+      min-width: 150px;
+    }
+
+    .sort-overlay.active {
+      display: block;
+    }
+
+    .sort-option {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .sort-option:hover {
+      background-color: var(--hover);
+      color: var(--bg);
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .preset-item {
+      background: var(--accent);
+      padding: 0.75rem;
+      border-radius: 8px;
+      text-align: center;
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .preset-item:hover {
+      transform: scale(1.05);
+    }
+
+    .preset-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+    }
+
+    .preset-item h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      flex-grow: 0;
+    }
+
+    .preset-item p {
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+      flex-grow: 0;
+    }
+
+    .preset-item .btn {
+      margin-top: auto;
+      padding: 0.5rem 1.5rem;
+      background-color: var(--highlight);
+      color: var(--bg);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: background-color 0.4s ease;
+      display: inline-block;
+    }
+
+    .preset-item .btn:hover {
+      background-color: var(--hover);
+    }
+
+    .about-us {
+      margin-top: 4rem;
+      text-align: center;
+    }
+
+    .about-us h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .about-us p {
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto 1rem;
+    }
+
+    .copyright {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    @media (max-width: 600px) {
+      .theme-toggle {
+        top: 0.5rem;
+        right: 0.5rem;
+      }
+      .controls {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .sort-btn {
+        margin-right: 0;
+      }
+      .search-bar {
+        width: 100%;
+      }
+      .preset-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()">
+    <img class="theme-icon" src="" alt="Theme Toggle">
+  </button>
+  <div class="container">
+    <div class="controls">
+      <button class="sort-btn" onclick="toggleSortOverlay()">Sort By</button>
+      <input type="text" class="search-bar" placeholder="Search presets..." onkeyup="filterPresets()">
+      <div id="sortOverlay" class="sort-overlay">
+        <div class="sort-option" onclick="sortPresets('relevance')">Relevance</div>
+        <div class="sort-option" onclick="sortPresets('popularity')">Popularity</div>
+        <div class="sort-option" onclick="sortPresets('latest')">Latest First</div>
+        <div class="sort-option" onclick="sortPresets('oldest')">Oldest First</div>
+      </div>
+    </div>
+    <div id="presetGrid" class="preset-grid"></div>
+  </div>
+
+  <div class="about-us">
+    <h2>About Us</h2>
+    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
+  </div>
+  <div class="copyright">
+    <p>© 2025 FNL Studio. All rights reserved.</p>
+    <p>All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+  </div>
+
+  <script>
+    const BIN_ID = "67fccb0b8960c979a584b5d5";
+    const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const presetGrid = document.getElementById("presetGrid");
+    const sortOverlay = document.getElementById("sortOverlay");
+    let presets = [];
+
+    const root = document.documentElement;
+    const themeButton = document.querySelector('.theme-toggle');
+    const themeIcon = document.querySelector('.theme-icon');
+
+    if (!localStorage.getItem("theme")) {
+      root.setAttribute("data-theme", "dark");
+      themeButton.classList.add('sun');
+      themeIcon.src = 'https://i.postimg.cc/sXRY6L58/moon-4-512.png';
+    } else {
+      const currentTheme = localStorage.getItem("theme");
+      root.setAttribute("data-theme", currentTheme);
+      themeButton.classList.add(currentTheme === 'dark' ? 'sun' : 'moon');
+      themeIcon.src = currentTheme === 'dark' ? 'https://i.postimg.cc/sXRY6L58/moon-4-512.png' : 'https://i.postimg.cc/hPQD2Tdd/brightness-9.png';
+    }
+
+    function toggleTheme() {
+      const newTheme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+      themeButton.classList.remove('sun', 'moon');
+      themeButton.classList.add(newTheme === 'dark' ? 'sun' : 'moon');
+      themeIcon.src = newTheme === 'dark' ? 'https://i.postimg.cc/sXRY6L58/moon-4-512.png' : 'https://i.postimg.cc/hPQD2Tdd/brightness-9.png';
+    }
+
+    function toggleSortOverlay() {
+      sortOverlay.classList.toggle('active');
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.sort-btn') && !e.target.closest('#sortOverlay')) {
+        sortOverlay.classList.remove('active');
+      }
+    });
+
+    async function fetchPresets() {
+      try {
+        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        presets = data.record.presets || [];
+        displayPresets(presets);
+      } catch (error) {
+        console.error("Error fetching presets:", error);
+        presetGrid.innerHTML = '<p>Error fetching presets: Please check the console for details or try again later.</p>';
+      }
+    }
+
+    function displayPresets(presetsToShow) {
+      presetGrid.innerHTML = '';
+      if (presetsToShow.length === 0) {
+        presetGrid.innerHTML = '<p>No presets found.</p>';
+        return;
+      }
+      presetsToShow.forEach((preset) => {
+        const presetItem = document.createElement('div');
+        presetItem.className = 'preset-item';
+        presetItem.innerHTML = `
+          <img src="${preset.thumbnail_url}" alt="${preset.name} Thumbnail" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAGFBMVEUAAAD///8AAAD/AAD/////AAAA/wD//wC3K4xiAAAAB3RSTlMA/4D/gP+Av4CXUwAAAEhJREFUeAHtkkEKwCAMBENR+v9fO8gJLNskK6ZQsYEBuA3XgU8iEskkmUwqR2AymWSSSSaTZmAymWSSSSaTZmAymWSSSSaTZmD4BTwBBj2rKmcAAAAASUVORK5CYII=';">
+          <h3>${preset.name}</h3>
+          <p>₹${preset.price}</p>
+          <a href="payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}" class="btn">Buy</a>
+        `;
+        presetGrid.appendChild(presetItem);
+      });
+    }
+
+    function filterPresets() {
+      const searchTerm = document.querySelector('.search-bar').value.toLowerCase();
+      const filteredPresets = presets.filter(preset => 
+        preset.name.toLowerCase().includes(searchTerm)
+      );
+      displayPresets(filteredPresets);
+    }
+
+    function sortPresets(option) {
+      let sortedPresets = [...presets];
+      switch (option) {
+        case 'relevance':
+          sortedPresets.sort((a, b) => b.name.length - a.name.length);
+          break;
+        case 'popularity':
+          sortedPresets.sort((a, b) => b.price - a.price);
+          break;
+        case 'latest':
+          sortedPresets.sort((a, b) => b.name.localeCompare(a.name));
+          break;
+        case 'oldest':
+          sortedPresets.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+      }
+      displayPresets(sortedPresets);
+      sortOverlay.classList.remove('active');
+    }
+
+    window.onload = fetchPresets;
+  </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93437ef1dd6669e9',t:'MTc0NTMwNzg2NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
