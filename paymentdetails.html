@@ -1,18 +1,40 @@
-<DOCUMENT filename="paymentdetails.html">
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Payment Details - FNL Studio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      color: #e2e8f0;
-      text-align: center;
+    :root {
+      --bg: #f2f2f7;
+      --text: #1a1a1a;
+      --accent: #e0e7ff;
+      --highlight: #5b5fc7;
+      --hover: #4f46e5;
+    }
+
+    [data-theme="dark"] {
+      --bg: #111827;
+      --text: #e5e7eb;
+      --accent: #1f2937;
+      --highlight: #93c5fd;
+      --hover: #60a5fa;
+    }
+
+    * {
+      margin: 0;
       padding: 0;
+      box-sizing: border-box;
+      transition: background-color 0.6s ease, color 0.6s ease;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      text-align: center;
+      padding: 20px;
       margin: 0;
       min-height: 100vh;
       display: flex;
@@ -20,120 +42,186 @@
       align-items: center;
       justify-content: center;
     }
-    .logo {
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 350px;
       margin-bottom: 20px;
     }
+
     .logo img {
-      width: 120px;
-      height: auto;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+      height: 40px;
     }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      transition: transform 0.5s ease;
+    }
+
+    .theme-toggle svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--text);
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.2);
+    }
+
+    .theme-toggle.sun {
+      animation: spinFade 0.5s ease forwards;
+    }
+
+    .theme-toggle.moon {
+      animation: spinFade 0.5s ease forwards;
+    }
+
     .details-section {
-      background-color: #1e293b;
+      background-color: var(--accent);
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       max-width: 350px;
       width: 90%;
       text-align: left;
-      border: 1px solid #2d3b4e;
+      border: 1px solid var(--text);
     }
+
     .details-section h2 {
       font-size: 1.5em;
-      color: #f1f5f9;
+      color: var(--text);
       margin: 0 0 15px 0;
       font-weight: 600;
     }
+
     .detail-item {
       padding: 10px;
-      border-bottom: 1px solid #4a5b6f;
+      border-bottom: 1px solid var(--text);
       text-align: center;
       cursor: pointer;
     }
+
     .detail-item.expanded {
       text-align: left;
     }
+
     .detail-item .summary {
       font-weight: 500;
     }
+
     .detail-item .full-details {
       display: none;
       margin-top: 10px;
     }
+
     .detail-item .full-details p {
       margin: 5px 0;
       font-size: 0.9em;
     }
+
     .detail-item .full-details img {
       max-width: 100%;
       border-radius: 5px;
       margin-top: 5px;
     }
+
     .detail-item button {
-      background: #ef4444;
+      background: var(--highlight);
       padding: 5px 10px;
       border: none;
       border-radius: 5px;
-      color: #fff;
+      color: var(--bg);
       cursor: pointer;
       font-weight: 500;
       font-size: 0.9em;
       margin-left: 10px;
     }
+
     .detail-item button:hover {
-      background: #dc2626;
+      background: var(--hover);
     }
+
     .clear-button {
-      background: #ef4444;
+      background: var(--highlight);
       padding: 10px;
       border: none;
       border-radius: 5px;
-      color: #fff;
+      color: var(--bg);
       cursor: pointer;
       font-weight: 500;
       font-size: 0.95em;
       margin: 10px 0;
       width: 100%;
     }
+
     .clear-button:hover {
-      background: #dc2626;
+      background: var(--hover);
     }
+
     .back-button {
-      background: #4a5b6f;
+      background: var(--highlight);
       padding: 10px;
       border: none;
       border-radius: 5px;
-      color: #e2e8f0;
+      color: var(--bg);
       cursor: pointer;
       font-weight: 500;
       margin-top: 10px;
       width: 100%;
     }
+
     .back-button:hover {
-      background: #3a4b5f;
+      background: var(--hover);
     }
+
     .footer {
       margin-top: auto;
       padding: 15px;
-      background: #0f172a;
+      background: var(--accent);
       width: 100%;
       text-align: center;
-      color: #e2e8f0;
+      color: var(--text);
       font-size: 0.85em;
+    }
+
+    .error-message {
+      color: #ef4444;
+      margin-top: 5px;
+      font-size: 0.85em;
+      text-align: center;
+    }
+
+    /* Animations */
+    @keyframes spinFade {
+      0% { opacity: 0; transform: rotate(90deg) scale(0.5); }
+      100% { opacity: 1; transform: rotate(0deg) scale(1); }
     }
   </style>
 </head>
 <body>
-  <div class="logo">
-    <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
-  </div>
+  <header>
+    <div class="logo">
+      <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo" />
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg class="theme-icon" viewBox="0 0 24 24">
+        <path d="M12 17a5 5 0 100-10 5 5 0 000 10zm0 2a7 7 0 110-14 7 7 0 010 14zm-9-7h2m14 0h2M6.3 17.7l1.4-1.4m10.6-10.6l-1.4 1.4m0 14.2l1.4-1.4M6.3 6.3l1.4 1.4M5 12a7 7 0 017-7m7 7a7 7 0 01-7 7"/>
+      </svg>
+    </button>
+  </header>
   <div class="details-section">
     <h2>Payment Details</h2>
     <div id="paymentDetails">
       <!-- Payment details will be populated here -->
     </div>
     <button class="clear-button" onclick="clearAll()">Clear All</button>
-    <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+    <button class="back-button" onclick="window.location.href='admin.html'">Back</button>
   </div>
   <div class="footer">
     <p>© 2025 FNL Studio. All rights reserved.</p>
@@ -144,6 +232,34 @@
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const paymentDetailsDiv = document.getElementById('paymentDetails');
+
+    // Theme Toggle
+    function toggleTheme() {
+      const root = document.documentElement;
+      const themeButton = document.querySelector('.theme-toggle');
+      const themeIcon = document.querySelector('.theme-icon');
+      const newTheme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+      themeButton.classList.remove('sun', 'moon');
+      themeButton.classList.add(newTheme === 'dark' ? 'moon' : 'sun');
+      themeIcon.innerHTML = newTheme === 'dark' ?
+        '<path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>' :
+        '<path d="M12 17a5 5 0 100-10 5 5 0 000 10zm0 2a7 7 0 110-14 7 7 0 010 14zm-9-7h2m14 0h2M6.3 17.7l1.4-1.4m10.6-10.6l-1.4 1.4m0 14.2l1.4-1.4M6.3 6.3l1.4 1.4M5 12a7 7 0 017-7m7 7a7 7 0 01-7 7"/>';
+    }
+
+    // Initialize Theme
+    (function initializeTheme() {
+      const root = document.documentElement;
+      const themeButton = document.querySelector('.theme-toggle');
+      const themeIcon = document.querySelector('.theme-icon');
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      root.setAttribute("data-theme", savedTheme);
+      themeButton.classList.add(savedTheme === 'dark' ? 'moon' : 'sun');
+      themeIcon.innerHTML = savedTheme === 'dark' ? 
+        '<path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>' : 
+        '<path d="M12 17a5 5 0 100-10 5 5 0 000 10zm0 2a7 7 0 110-14 7 7 0 010 14zm-9-7h2m14 0h2M6.3 17.7l1.4-1.4m10.6-10.6l-1.4 1.4m0 14.2l1.4-1.4M6.3 6.3l1.4 1.4M5 12a7 7 0 017-7m7 7a7 7 0 01-7 7"/>';
+    })();
 
     async function displayPayments() {
       try {
@@ -170,7 +286,7 @@
         });
       } catch (error) {
         console.error("Error loading payments:", error);
-        paymentDetailsDiv.innerHTML = '<p>Error loading payments.</p>';
+        paymentDetailsDiv.innerHTML = '<p class="error-message">Error loading payments.</p>';
       }
     }
 
@@ -197,6 +313,7 @@
         alert('Payment deleted.');
       } catch (error) {
         console.error("Error deleting payment:", error);
+        paymentDetailsDiv.innerHTML = '<p class="error-message">Error deleting payment.</p>';
       }
     }
 
@@ -212,6 +329,7 @@
         alert('All payments cleared.');
       } catch (error) {
         console.error("Error clearing payments:", error);
+        paymentDetailsDiv.innerHTML = '<p class="error-message">Error clearing payments.</p>';
       }
     }
 
@@ -219,6 +337,7 @@
       displayPayments();
     };
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93132943cd077bd6',t:'MTc0NDgwMTA0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931566d75fb1dd1e',t:'MTc0NDgyNDUzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93132943cd077bd6',t:'MTc0NDgwMTA0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931566d75fb1dd1e',t:'MTc0NDgyNDUzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
 </html>
-</DOCUMENT>
