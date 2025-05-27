@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Preset - FNL Studio</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -34,329 +33,268 @@
       font-family: 'Inter', sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      text-align: center;
-      padding: 20px;
-      margin: 0;
+      padding: 2rem;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      justify-content: space-between;
     }
 
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      width: 100%;
-      max-width: 400px;
-      margin-bottom: 20px;
+      margin-bottom: 3rem;
     }
 
     .logo img {
       height: 40px;
     }
 
-    .theme-toggle {
-      background: none;
-      border: none;
-      cursor: pointer;
-      width: 24px;
-      height: 24px;
-      transition: transform 0.5s ease;
-    }
-
-    .theme-toggle svg {
-      width: 100%;
-      height: 100%;
-      fill: var(--text);
-    }
-
-    .theme-toggle:hover {
-      transform: scale(1.2);
-    }
-
-    .theme-toggle.sun {
-      animation: spinFade 0.5s ease forwards;
-    }
-
-    .theme-toggle.moon {
-      animation: spinFade 0.5s ease forwards;
-    }
-
-    h1 {
-      font-size: 1.5em;
-      margin: 15px 0;
+    nav a {
+      margin-left: 2rem;
+      text-decoration: none;
+      color: var(--text);
       font-weight: 600;
+      transition: color 0.3s ease;
+      cursor: pointer;
+    }
+
+    nav a:hover {
+      color: var(--hover);
     }
 
     main {
-      width: 100%;
-      max-width: 400px;
+      max-width: 600px;
       margin: 0 auto;
+      background: var(--accent);
+      padding: 2rem;
+      border-radius: 14px;
     }
 
-    .upload-form {
-      background-color: var(--accent);
-      padding: 25px;
-      border-radius: 15px;
-      max-width: 400px;
-      min-width: 320px;
-      width: 90%;
-      text-align: left;
-      margin: 0 auto;
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
     }
 
     .form-group {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 15px;
+      margin-bottom: 1.5rem;
     }
 
-    .form-group label {
+    label {
       display: block;
-      margin-bottom: 5px;
       font-weight: 600;
+      margin-bottom: 0.5rem;
     }
 
-    .form-group input {
+    input {
       width: 100%;
-      padding: 10px;
-      border: 1px solid var(--text);
-      border-radius: 10px;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
       background-color: var(--bg);
       color: var(--text);
-      font-size: 14px;
     }
 
-    .upload-button {
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 2rem;
       background-color: var(--highlight);
-      padding: 12px 30px;
-      border: none;
-      border-radius: 10px;
       color: var(--bg);
-      cursor: pointer;
+      text-decoration: none;
+      border-radius: 8px;
       font-weight: 600;
-      font-size: 16px;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-
-    .upload-button:hover {
-      background-color: var(--hover);
-      transform: translateY(-2px);
-    }
-
-    .back-button {
-      background-color: var(--accent);
-      padding: 10px 20px;
+      transition: background-color 0.4s ease, transform 0.3s ease;
+      cursor: pointer;
       border: none;
-      border-radius: 10px;
-      color: var(--text);
-      cursor: pointer;
-      font-weight: 600;
-      margin-top: 10px;
-      transition: background-color 0.3s, transform 0.2s;
+      margin-right: 1rem;
     }
 
-    .back-button:hover {
+    .btn:hover {
       background-color: var(--hover);
-      color: var(--bg);
-      transform: translateY(-2px);
+      transform: scale(1.05);
     }
 
-    .footer {
-      margin-top: auto;
-      padding: 20px;
-      background-color: var(--accent);
-      width: 100%;
-      text-align: center;
+    .btn.cancel {
+      background-color: #888;
+    }
+
+    .btn.cancel:hover {
+      background-color: #666;
     }
 
     .error-message {
       color: #ef4444;
-      margin-top: 10px;
+      margin-top: 1rem;
+      font-size: 1rem;
+      text-align: center;
     }
 
-    /* Animations */
-    @keyframes spinFade {
-      0% { opacity: 0; transform: rotate(90deg) scale(0.5); }
-      100% { opacity: 1; transform: rotate(0deg) scale(1); }
+    footer {
+      margin-top: 4rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    footer h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    footer p {
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto 1rem;
+    }
+
+    .copyright {
+      color: #888;
+      margin-top: 2rem;
     }
   </style>
 </head>
 <body>
   <header>
     <div class="logo">
-      <img src="https://i.postimg.cc/kX2rSgJw/20250414-095948.png" alt="FNL Studio Logo">
+      <img src="https://i.postimg.cc/52SYd9y2/fnl-studio-logo.png" alt="FNL Studio Logo" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAGFBMVEUAAAD///8AAAD/AAD/////AAAA/wD//wC3K4xiAAAAB3RSTlMA/4D/gP+Av4CXUwAAAEhJREFUeAHtkkEKwCAMBENR+v9fO8gJLNskK6ZQsYEBuA3XgU8iEskkmUwqR2AymWSSSSaTZmAymWSSSSaTZmAymWSSSSaTZmD4BTwBBj2rKmcAAAAASUVORK5CYII=';">
     </div>
-    <button class="theme-toggle" onclick="toggleTheme()">
-      <svg class="theme-icon" viewBox="0 0 24 24">
-        <path d="M12 17a5 5 0 100-10 5 5 0 000 10zm0 2a7 7 0 110-14 7 7 0 010 14zm-9-7h2m14 0h2M6.3 17.7l1.4-1.4m10.6-10.6l-1.4 1.4m0 14.2l1.4-1.4M6.3 6.3l1.4 1.4M5 12a7 7 0 017-7m7 7a7 7 0 01-7 7"/>
-      </svg>
-    </button>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="presets.html">Presets</a>
+    </nav>
   </header>
 
   <main>
     <h1>Edit Preset</h1>
-    <div class="upload-form" id="editForm">
+    <form id="editForm">
       <div class="form-group">
         <label for="name">Name:</label>
-        <input type="text" id="name" required />
+        <input type="text" id="name" name="name" required>
       </div>
       <div class="form-group">
         <label for="price">Price (₹):</label>
-        <input type="number" id="price" step="0.01" required />
+        <input type="number" id="price" name="price" required>
       </div>
       <div class="form-group">
         <label for="download_url">Download URL:</label>
-        <input type="text" id="download_url" required />
+        <input type="url" id="download_url" name="download_url" required>
       </div>
       <div class="form-group">
         <label for="thumbnail_url">Thumbnail URL:</label>
-        <input type="text" id="thumbnail_url" required />
+        <input type="url" id="thumbnail_url" name="thumbnail_url" required>
       </div>
       <div class="form-group">
         <label for="sample1">Sample 1 (optional):</label>
-        <input type="text" id="sample1" />
+        <input type="url" id="sample1" name="sample1">
       </div>
       <div class="form-group">
         <label for="sample2">Sample 2 (optional):</label>
-        <input type="text" id="sample2" />
+        <input type="url" id="sample2" name="sample2">
       </div>
       <div class="form-group">
         <label for="sample3">Sample 3 (optional):</label>
-        <input type="text" id="sample3" />
+        <input type="url" id="sample3" name="sample3">
       </div>
-      <button class="upload-button" onclick="updatePreset()">Save</button>
-    </div>
-    <button class="back-button" onclick="window.location.href='admin.html'">Cancel</button>
+      <button type="submit" class="btn">Save</button>
+      <a href="index.html" class="btn cancel">Cancel</a>
+    </form>
     <div id="errorMessage" class="error-message"></div>
   </main>
 
-  <div class="footer">
-    <h3>About Us</h3>
-    <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
-    <h3>Copyright ©</h3>
-    <p>© 2025 FNL Studio. All rights reserved. All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
-  </div>
+  <footer>
+    <div class="about-us">
+      <h2>About Us</h2>
+      <p>Welcome to FNL Studio – a creative collaboration between Light Editz and Flash Editz. We're passionate about visual storytelling and dedicated to providing high-quality, professional-grade presets for photo and video editors. Whether you're just starting out or you're a seasoned creator, our presets are crafted to give your content a unique, polished look with just a few clicks.</p>
+    </div>
+    <div class="copyright">
+      <p>© 2025 FNL Studio. All rights reserved.</p>
+      <p>All content on this website, including presets, visuals, and text, is the intellectual property of FNL Studio and is protected by copyright laws. Any unauthorized use, reproduction, or distribution of our materials is strictly prohibited.</p>
+    </div>
+  </footer>
 
   <script>
     const BIN_ID = "67fccb0b8960c979a584b5d5";
     const MASTER_KEY = "$2a$10$PlYW4zt8k/Be46UjnPgRSex64CZn7Sk7ifMW09AgYaT1.jS2pwjnO";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const form = document.getElementById("editForm");
     const errorMessage = document.getElementById("errorMessage");
 
-    // Theme Toggle
+    // Load theme from localStorage
     const root = document.documentElement;
-    const themeButton = document.querySelector('.theme-toggle');
-    const themeIcon = document.querySelector('.theme-icon');
+    const currentTheme = localStorage.getItem("theme") || "dark";
+    root.setAttribute("data-theme", currentTheme);
 
-    if (!localStorage.getItem("theme")) {
-      root.setAttribute("data-theme", "dark");
-      themeButton.classList.add('moon');
-      themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>';
+    // Get preset data from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const presetData = JSON.parse(decodeURIComponent(urlParams.get("preset")));
+
+    // Populate form with existing preset data
+    if (presetData) {
+      document.getElementById("name").value = presetData.name || "";
+      document.getElementById("price").value = presetData.price || "";
+      document.getElementById("download_url").value = presetData.download_url || "";
+      document.getElementById("thumbnail_url").value = presetData.thumbnail_url || "";
+      document.getElementById("sample1").value = presetData.sample1 || "";
+      document.getElementById("sample2").value = presetData.sample2 || "";
+      document.getElementById("sample3").value = presetData.sample3 || "";
     } else {
-      const currentTheme = localStorage.getItem("theme");
-      root.setAttribute("data-theme", currentTheme);
-      themeButton.classList.add(currentTheme === 'dark' ? 'moon' : 'sun');
-      themeIcon.innerHTML = currentTheme === 'dark' ? 
-        '<path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>' : 
-        '<path d="M12 17a5 5 0 100-10 5 5 0 000 10zm0 2a7 7 0 110-14 7 7 0 010 14zm-9-7h2m14 0h2M6.3 17.7l1.4-1.4m10.6-10.6l-1.4 1.4m0 14.2l1.4-1.4M6.3 6.3l1.4 1.4M5 12a7 7 0 017-7m7 7a7 7 0 01-7 7"/>';
+      errorMessage.textContent = "No preset data found. Please go back and try again.";
+      form.style.display = "none";
     }
 
-    function toggleTheme() {
-      const newTheme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      root.setAttribute("data-theme", newTheme);
-      localStorage.setItem("theme", newTheme);
-      themeButton.classList.remove('sun', 'moon');
-      themeButton.classList.add(newTheme === 'dark' ? 'moon' : 'sun');
-      themeIcon.innerHTML = newTheme === 'dark' ?
-        '<path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>' :
-        '<path d="M12 17a5 5 0 100-10 5 5 0 000 10zm0 2a7 7 0 110-14 7 7 0 010 14zm-9-7h2m14 0h2M6.3 17.7l1.4-1.4m10.6-10.6l-1.4 1.4m0 14.2l1.4-1.4M6.3 6.3l1.4 1.4M5 12a7 7 0 017-7m7 7a7 7 0 01-7 7"/>';
-    }
-
-    // Load Preset Data
-    function loadPresetData() {
-      const params = new URLSearchParams(window.location.search);
-      const presetStr = params.get('preset');
-      if (!presetStr) {
-        errorMessage.textContent = "No preset data provided.";
-        window.location.href = 'admin.html';
-        return null;
-      }
-      try {
-        const preset = JSON.parse(decodeURIComponent(presetStr));
-        document.getElementById('name').value = preset.name || '';
-        document.getElementById('price').value = preset.price || '';
-        document.getElementById('download_url').value = preset.download_url || '';
-        document.getElementById('thumbnail_url').value = preset.thumbnail_url || '';
-        document.getElementById('sample1').value = preset.sample1 || '';
-        document.getElementById('sample2').value = preset.sample2 || '';
-        document.getElementById('sample3').value = preset.sample3 || '';
-        return preset;
-      } catch (error) {
-        console.error("Error parsing preset:", error);
-        errorMessage.textContent = "Error loading preset data.";
-        window.location.href = 'admin.html';
-        return null;
-      }
-    }
-
-    // Update Preset
-    async function updatePreset() {
-      const originalPreset = loadPresetData();
-      if (!originalPreset) return;
+    // Handle form submission
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
       const updatedPreset = {
-        name: document.getElementById('name').value.trim(),
-        price: parseFloat(document.getElementById('price').value),
-        download_url: document.getElementById('download_url').value.trim(),
-        thumbnail_url: document.getElementById('thumbnail_url').value.trim(),
-        sample1: document.getElementById('sample1').value.trim() || null,
-        sample2: document.getElementById('sample2').value.trim() || null,
-        sample3: document.getElementById('sample3').value.trim() || null
+        name: document.getElementById("name").value,
+        price: parseInt(document.getElementById("price").value),
+        download_url: document.getElementById("download_url").value,
+        thumbnail_url: document.getElementById("thumbnail_url").value,
+        sample1: document.getElementById("sample1").value || "",
+        sample2: document.getElementById("sample2").value || "",
+        sample3: document.getElementById("sample3").value || ""
       };
 
-      if (!updatedPreset.name || isNaN(updatedPreset.price) || !updatedPreset.download_url || !updatedPreset.thumbnail_url) {
-        errorMessage.textContent = "Required fields are missing.";
-        return;
-      }
-
       try {
-        const response = await fetch(API_URL + "/latest", { headers: { "X-Master-Key": MASTER_KEY } });
+        // Fetch the current presets from JSONBin
+        const response = await fetch(API_URL + "/latest", {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         const presets = data.record.presets || [];
-        const presetIndex = presets.findIndex(p => p.name === originalPreset.name);
-        if (presetIndex === -1) throw new Error("Preset not found.");
 
-        // Check for duplicate name (excluding the current preset)
-        if (presets.some((p, i) => i !== presetIndex && p.name === updatedPreset.name)) {
-          errorMessage.textContent = "Preset name already exists.";
-          return;
-        }
+        // Find the index of the preset to update
+        const presetIndex = presets.findIndex(p => p.name === presetData.name && p.price === presetData.price && p.download_url === presetData.download_url);
+        if (presetIndex === -1) throw new Error("Preset not found in the database.");
 
+        // Update the preset
         presets[presetIndex] = updatedPreset;
+
+        // Save the updated presets back to JSONBin
         const updateResponse = await fetch(API_URL, {
           method: "PUT",
-          headers: { "X-Master-Key": MASTER_KEY, "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data.record, presets })
+          headers: {
+            "X-Master-Key": MASTER_KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ presets })
         });
-        if (!updateResponse.ok) throw new Error("Failed to update preset.");
-        alert("Preset updated successfully!");
-        window.location.href = 'admin.html';
+
+        if (!updateResponse.ok) throw new Error(`HTTP error! status: ${updateResponse.status}`);
+
+        // Show success pop-up and redirect on "Okay"
+        alert("Saved Successfully");
+        window.location.href = "admin.html";
       } catch (error) {
         console.error("Error updating preset:", error);
-        errorMessage.textContent = "Error updating preset: " + error.message;
+        errorMessage.textContent = "Error updating preset: Please check the console for details or try again later.";
       }
-    }
-
-    window.onload = () => {
-      loadPresetData();
-      document.getElementById("editForm").addEventListener("submit", (e) => {
-        e.preventDefault();
-        updatePreset();
-      });
-    };
+    });
   </script>
 </body>
 </html>
