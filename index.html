@@ -210,12 +210,29 @@
       transform: scale(1.05);
     }
 
+    .preset-item .image-wrapper {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 16px;
+      position: relative;
+      margin-bottom: 0.75rem;
+      background: var(--bg);
+    }    
+
+    .sample-grid .image-wrapper {
+      width: 100%;
+      height: 25px; /* Change this value to resize */
+      overflow: hidden;
+      border-radius: 16px;
+      position: relative;
+      background: var(--bg);
+    }
+
     .preset-item img {
       width: 100%;
-      max-height: 200px;
+      height: auto;
       object-fit: contain;
-      border-radius: 8px;
-      margin-bottom: 0.75rem;
+      display: block;
       cursor: pointer;
     }
 
@@ -261,7 +278,7 @@
       max-width: 90%;
       max-height: 90vh;
       object-fit: contain;
-      border-radius: 8px;
+      border-radius: 16px;
     }
 
     .viewer-nav {
@@ -487,11 +504,19 @@
       margin-bottom: 20px;
     }
 
+    .sample-grid .image-wrapper {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 16px;
+      position: relative;
+      background: var(--bg);
+    }
+
     .sample-grid img {
       width: 100%;
-      max-height: 150px;
+      height: auto;
       object-fit: contain;
-      border-radius: 8px;
+      display: block;
       cursor: pointer;
     }
 
@@ -731,6 +756,20 @@
       }
     }
 
+    // Function to adjust wrapper aspect ratio based on image dimensions
+    function adjustWrapperAspectRatio(img, wrapper) {
+      img.onload = () => {
+        const aspectRatio = img.naturalWidth / img.naturalHeight;
+        wrapper.style.aspectRatio = aspectRatio;
+        wrapper.style.width = '100%';
+        wrapper.style.height = 'auto';
+      };
+      img.onerror = () => {
+        // Fallback aspect ratio if image fails to load
+        wrapper.style.aspectRatio = '1 / 1';
+      };
+    }
+
     // Overlay Functions
     function showOverlay(preset) {
       sampleGrid.innerHTML = '';
@@ -739,14 +778,18 @@
         sampleGrid.innerHTML = '<p>No sample images available.</p>';
       } else {
         samples.forEach(url => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'image-wrapper sample-wrapper';
           const img = document.createElement('img');
           img.src = url;
           img.alt = `${preset.name} Sample`;
           img.onerror = () => {
             img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAGFBMVEUAAAD///8AAAD/AAD/////AAAA/wD//wC3K4xiAAAAB3RSTlMA/4D/gP+Av4CXUwAAAEhJREFUeAHtkkEKwCAMBENR+v9fO8gJLNskK6ZQsYEBuA3XgU8iEskkmUwqR2AymWSSSSaTZmAymWSSSSaTZmAymWSSSSaTZmD4BTwBBj2rKmcAAAAASUVORK5CYII=';
           };
+          adjustWrapperAspectRatio(img, wrapper);
           img.addEventListener('click', () => showImageViewerFromOverlay(preset, samples));
-          sampleGrid.appendChild(img);
+          wrapper.appendChild(img);
+          sampleGrid.appendChild(wrapper);
         });
       }
       overlayBuyButton.href = `payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}`;
@@ -837,11 +880,16 @@
         const presetItem = document.createElement('div');
         presetItem.className = 'preset-item';
         presetItem.innerHTML = `
-          <img src="${preset.thumbnail_url}" alt="${preset.name} Thumbnail" data-preset-index="${index}" style="border-radius: 8px;">
+          <div class="image-wrapper">
+            <img src="${preset.thumbnail_url}" alt="${preset.name} Thumbnail" data-preset-index="${index}">
+          </div>
           <h3>${preset.name}</h3>
           <p>₹${preset.price}</p>
           <a href="payment.html?preset=${encodeURIComponent(JSON.stringify(preset))}" class="btn">Buy</a>
         `;
+        const img = presetItem.querySelector('img');
+        const wrapper = presetItem.querySelector('.image-wrapper');
+        adjustWrapperAspectRatio(img, wrapper);
         presetGrid.appendChild(presetItem);
       });
 
